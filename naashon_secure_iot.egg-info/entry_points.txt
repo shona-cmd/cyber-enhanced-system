@@ -1,0 +1,2 @@
+[console_scripts]
+naashon-secure-iot = naashon_secure_iot.core:main
