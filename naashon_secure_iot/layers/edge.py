@@ -8,6 +8,7 @@ import logging
 from typing import Dict, Any
 from ..config import Config
 from ..utils.anomaly_detector import IoTAnomalyDetector
+from ..utils.federated_learning import FederatedLearning
 
 
 class EdgeLayer:
@@ -20,6 +21,7 @@ class EdgeLayer:
             model_path=self.config.ml_model_path,
             threshold=self.config.anomaly_threshold
         )
+        self.federated_learning = FederatedLearning()
         self.active_threats = 0
         self.logger.info("Edge layer initialized with anomaly detector")
 
@@ -34,6 +36,8 @@ class EdgeLayer:
             Anomaly score (0-1)
         """
         try:
+            # Train model using federated learning
+            self.federated_learning.train_model(data)
             # If data is encrypted, we assume it's been decrypted by network layer
             # For this implementation, we'll work with raw data
             score = self.detector.detect_anomaly(data)

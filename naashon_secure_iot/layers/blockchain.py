@@ -9,8 +9,8 @@ import logging
 import hashlib
 import time
 from typing import Dict, Any, List
+from collections import deque
 from ..config import Config
-
 
 class BlockchainEntry:
     """Represents a block in the blockchain."""
@@ -69,7 +69,7 @@ class BlockchainLayer:
     def __init__(self, config: Config, logger: logging.Logger):
         self.config = config
         self.logger = logger
-        self.chain: List[BlockchainEntry] = []
+        self.chain: deque[BlockchainEntry] = deque(maxlen=1000)  # Limit blockchain size
         self.smart_contracts: Dict[str, SmartContract] = {}
         self.difficulty = 2  # Simple PoW difficulty
 
@@ -218,7 +218,7 @@ class BlockchainLayer:
                 "timestamp": block.timestamp,
                 "data": block.data
             })
-        return entries
+        return list(entries)
 
     def shutdown(self):
         """Shutdown the blockchain layer."""

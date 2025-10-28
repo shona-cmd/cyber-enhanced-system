@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NaashonSecureIoT Dashboard</title>
+</head>
+<body>
+    <style>
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .dashboard-item {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+        }
+        .dashboard-image {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>NaashonSecureIoT Dashboard</h1>
+        <div class="dashboard-item">
+            <img src="static/device.png" alt="Device" class="dashboard-image">
+            <p>Device Count: {{ device_count }}</p>
+        </div>
+        <div class="dashboard-item">
+            <img src="static/alert.png" alt="Alert" class="dashboard-image">
+            <p>Edge Alerts: {{ edge_alerts }}</p>
+        </div>
+        <div class="dashboard-item">
+            <img src="static/network.png" alt="Network" class="dashboard-image">
+            <p>Network Anomalies: {{ network_anomalies }}</p>
+        </div>
+        <div class="dashboard-item">
+            <img src="static/blockchain.png" alt="Blockchain" class="dashboard-image">
+            <p>Blockchain Transactions: {{ blockchain_transactions }}</p>
+        </div>
+    </div>
+</body>
+</html>

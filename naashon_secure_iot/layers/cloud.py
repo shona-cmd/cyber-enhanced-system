@@ -8,6 +8,7 @@ import logging
 import time
 from typing import Dict, Any, List
 from ..config import Config
+from ..utils.threat_intelligence import ThreatIntelligence
 
 
 class CloudLayer:
@@ -16,6 +17,7 @@ class CloudLayer:
     def __init__(self, config: Config, logger: logging.Logger):
         self.config = config
         self.logger = logger
+        self.threat_intelligence_module = ThreatIntelligence()
         self.threat_intelligence: Dict[str, Any] = {}
         self.predictions: List[Dict[str, Any]] = []
         self.backup_data: List[Dict[str, Any]] = []
@@ -105,6 +107,7 @@ class CloudLayer:
 
     def get_threat_intelligence(self, device_id: str = None) -> Dict[str, Any]:
         """Get threat intelligence data."""
+        threat_data = self.threat_intelligence_module.get_threat_intelligence()
         if device_id:
             return self.threat_intelligence.get(f"device_{device_id}", {})
 
@@ -117,7 +120,8 @@ class CloudLayer:
             "recent_threats": len([
                 p for p in self.predictions
                 if time.time() - p["timestamp"] < 3600  # Last hour
-            ])
+            ]),
+            "external_threat_data": threat_data
         }
 
     def get_prediction_count(self) -> int:
@@ -171,7 +175,7 @@ class CloudLayer:
         ]
 
         self.predictions = [
-            pred for pred in self.predictions
+            pred for pred in the self.predictions
             if pred["timestamp"] > cutoff_time
         ]
 
