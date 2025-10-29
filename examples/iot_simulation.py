@@ -8,6 +8,9 @@ import random
 import sys
 import os
 from typing import Dict, Any
+import logging
+import hashlib
+from collections import deque
 
 from naashon_secure_iot import NaashonSecureIoT
 from naashon_secure_iot.dashboard import IoTDashboard
@@ -135,7 +138,7 @@ def run_simulation():
         data["total_packets"] = random.randint(1000, 10000)  # High packet count
         data["bytes_per_second"] = random.uniform(1000000, 10000000)  # Very high throughput
 
-        result = framework.process_data("sensor_001", data)
+        result = framework.process_data(device_id, data)
         if result['anomaly_detected']:
             detected_anomalies += 1
             if result['response_taken']:
@@ -152,7 +155,7 @@ def run_simulation():
     print("\n--- Threat Intelligence ---")
     # intel = framework.cloud_layer.get_threat_intelligence()
     # for key, value in intel.items():
-        #     print(f"{key}: {value}")
+    #     print(f"{key}: {value}")
     intel = {}
     print(f"Threat Intelligence: {intel}")
 
@@ -160,7 +163,7 @@ def run_simulation():
     print("\n--- Recent Blockchain Entries ---")
     # entries = framework.blockchain_layer.get_recent_entries(5)
     # for entry in entries:
-        #     print(f"Block {entries['hash'][:16]}...: {entry['data'].get('type', 'unknown')}")
+        #     print(f"Block {entries['hash[:16]}...: {entry['data'].get('type', 'unknown')}")
     entries = []
     print(f"Blockchain Entries: {entries}")
 
@@ -198,8 +201,8 @@ def run_simulation():
     # Step 9: Generate Sample Dataset
     print("\n--- Generating Sample Dataset ---")
     generator = IoTDataGenerator()
-    sample_data = generator.generate_mixed_dataset("sensor_001",
-                                                    "temperature_sensor", 100, 0.2)
+    sample_data = generator.generate_mixed_dataset(
+        "sensor_001", "temperature_sensor", 100, 0.2)
     generator.save_to_csv(sample_data, "data/cicids2017_sample.csv")
     print("Sample dataset saved to data/cicids2017_sample.csv")
 
@@ -211,12 +214,16 @@ def run_simulation():
     print("Press Ctrl+C to stop...")
 
     try:
-        # Cleanup
-        dashboard.stop()
-        framework.shutdown()
-        print("\nSimulation completed successfully!")
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         print("\nStopping dashboard...")
+
+    # Cleanup
+    dashboard.stop()
+    framework.shutdown()
+    print("\nSimulation completed successfully!")
+
 
 if __name__ == "__main__":
     # Initialize variables
