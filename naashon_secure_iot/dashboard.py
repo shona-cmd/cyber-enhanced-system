@@ -1,12 +1,12 @@
 from flask import Flask, render_template
-import naashon_secure_iot.core as core
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def dashboard():
     # Initialize the NaashonSecureIoT framework
-    framework = core.NaashonSecureIoT()
+    # framework = core.NaashonSecureIoT()
 
     # Get system status and metrics (replace with actual data retrieval)
     device_count = 10
@@ -19,6 +19,7 @@ def dashboard():
                            edge_alerts=edge_alerts,
                            network_anomalies=network_anomalies,
                            blockchain_transactions=blockchain_transactions)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
