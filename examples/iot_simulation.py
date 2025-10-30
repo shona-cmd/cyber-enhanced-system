@@ -8,9 +8,6 @@ import random
 import sys
 import os
 from typing import Dict, Any
-import logging
-import hashlib
-from collections import deque
 
 from naashon_secure_iot import NaashonSecureIoT
 from naashon_secure_iot.dashboard import IoTDashboard
@@ -138,7 +135,7 @@ def run_simulation():
         data["total_packets"] = random.randint(1000, 10000)  # High packet count
         data["bytes_per_second"] = random.uniform(1000000, 10000000)  # Very high throughput
 
-        result = framework.process_data(device_id, data)
+        result = framework.process_data("sensor_001", data)
         if result['anomaly_detected']:
             detected_anomalies += 1
             if result['response_taken']:
@@ -155,7 +152,7 @@ def run_simulation():
     print("\n--- Threat Intelligence ---")
     # intel = framework.cloud_layer.get_threat_intelligence()
     # for key, value in intel.items():
-    #     print(f"{key}: {value}")
+        #     print(f"{key}: {value}")
     intel = {}
     print(f"Threat Intelligence: {intel}")
 
@@ -214,16 +211,12 @@ def run_simulation():
     print("Press Ctrl+C to stop...")
 
     try:
-        while True:
-            time.sleep(1)
+        # Cleanup
+        dashboard.stop()
+        framework.shutdown()
+        print("\nSimulation completed successfully!")
     except KeyboardInterrupt:
         print("\nStopping dashboard...")
-
-    # Cleanup
-    dashboard.stop()
-    framework.shutdown()
-    print("\nSimulation completed successfully!")
-
 
 if __name__ == "__main__":
     # Initialize variables
