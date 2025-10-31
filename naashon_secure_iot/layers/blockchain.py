@@ -42,6 +42,7 @@ class SmartContract:
         self.contract_id = contract_id
         self.conditions = {}
         self.actions = {}
+        self.cache = {}  # Initialize cache
 
     def add_condition(self, condition_name: str, condition_func):
         """Add a condition to the contract."""
@@ -53,9 +54,25 @@ class SmartContract:
 
     def execute(self, data: Dict[str, Any]) -> bool:
         """Execute contract if conditions are met."""
-        for condition in self.conditions.values():
-            if not condition(data):
-                return False
+        cache_key = tuple(sorted(data.items()))
+
+        for condition_name, condition in self.conditions.items():
+            if condition_name in self.cache and cache_key in self.cache[condition_name]:
+                if not self.cache[condition_name][cache_key]:
+                    return False
+                else:
+                    continue
+            else:
+                condition_result = condition(data)
+                if not condition_result:
+                    if condition_name not in self.cache:
+                        self.cache[condition_name] = {}
+                    self.cache[condition_name][cache_key] = False
+                    return False
+                else:
+                    if condition_name not in self.cache:
+                        self.cache[condition_name] = {}
+                    self.cache[condition_name][cache_key] = True
 
         for action in self.actions.values():
             action(data)
@@ -64,26 +81,30 @@ class SmartContract:
 
 
 class BlockchainLayer:
-    """Blockchain layer for secure logging and smart contracts."""
+    """
+    Blockchain layer for secure logging and smart contracts.
+
+    Handles blockchain operations such as logging events,
+    managing smart contracts, and verifying the integrity of the chain.
+    """
 
     def __init__(self, config: Config, logger: logging.Logger):
         self.config = config
         self.logger = logger
-        self.chain: deque[BlockchainEntry] = deque(maxlen=1000)  # Limit blockchain size
+        self.chain: deque[BlockchainEntry] = deque(maxlen=1000)
         self.smart_contracts: Dict[str, SmartContract] = {}
-        self.difficulty = 2  # Simple PoW difficulty
+        self.difficulty = 2
 
-        # Create genesis block
         self._create_genesis_block()
-
-        # Initialize default smart contracts
         self._initialize_smart_contracts()
 
-        self.logger.info("Blockchain layer initialized with genesis block")
+        self.logger.info(
+            "Blockchain layer initialized with genesis block")
 
     def _create_genesis_block(self):
         """Create the genesis block."""
-        genesis_data = {"type": "genesis", "message": "NaashonSecureIoT Blockchain Started"}
+        genesis_data = {"type": "genesis",
+                        "message": "NaashonSecureIoT Blockchain Started"}
         genesis_block = BlockchainEntry(genesis_data)
         genesis_block.mine_block(self.difficulty)
         self.chain.append(genesis_block)
@@ -94,20 +115,20 @@ class BlockchainLayer:
         anomaly_contract = SmartContract("anomaly_response")
         anomaly_contract.add_condition("high_anomaly", lambda data: data.get("anomaly_score", 0) > 0.85)
         anomaly_contract.add_action("quarantine_device", lambda data: self._quarantine_device(data.get("device_id")))
-        anomaly_contract.add_action("log_threat", lambda data: self.logger.warning(f"Threat logged for device {data.get('device_id')}"))
+        anomaly_contract.add_action("log_threat", lambda data: self.logger.warning(
+            f"Threat logged for device {data.get('device_id')}"))
 
         self.smart_contracts["anomaly_response"] = anomaly_contract
 
-        # Device registration contract
         reg_contract = SmartContract("device_registration")
         reg_contract.add_condition("valid_device", lambda data: bool(data.get("device_id")))
-        reg_contract.add_action("register_device", lambda data: self.logger.info(f"Device {data.get('device_id')} registered via contract"))
+        reg_contract.add_action("register_device", lambda data: self.logger.info(
+            f"Device {data.get('device_id')} registered via contract"))
 
         self.smart_contracts["device_registration"] = reg_contract
 
     def register_device(self, device_id: str, device_type: str) -> bool:
-        """
-        Register device via blockchain.
+        """Register device via blockchain.
 
         Args:
             device_id: Device identifier
@@ -156,8 +177,8 @@ class BlockchainLayer:
         Trigger automated response via smart contracts.
 
         Args:
-            device_id: Device under threat
-            threat_type: Type of threat detected
+            device_id: Device identifier
+            device_type: Type of device
 
         Returns:
             True if response triggered
