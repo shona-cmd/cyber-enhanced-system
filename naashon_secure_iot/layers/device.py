@@ -2,6 +2,7 @@
 Device Layer for NaashonSecureIoT.
 
 Handles IoT device management, encryption, and firmware updates.
+NIST CSF Function: Protect (PR)
 """
 
 import logging
@@ -17,13 +18,14 @@ class DeviceLayer:
         self.config = config
         self.logger = logger
         self.devices: Dict[str, Dict[str, Any]] = {}
-        self.encryption = IoTEncryption(key_size=self.config.key_size)
+        self.encryption = IoTEncryption(key=self.config.encryption_key)
         self.logger.info("Device layer initialized")
 
     def add_device(self, device_id: str, device_type: str):
         """Add a new device to the layer."""
         if len(self.devices) >= self.config.max_devices:
-            raise ValueError(f"Maximum devices ({self.config.max_devices}) reached")
+            raise ValueError(
+                f"Maximum devices ({self.config.max_devices}) reached")
 
         self.devices[device_id] = {
             "type": device_type,
@@ -86,9 +88,11 @@ class DeviceLayer:
         """
         if device_id in self.devices:
             self.devices[device_id]["firmware_version"] = new_version
-            self.logger.info(f"Firmware updated for device {device_id} to {new_version}")
+            self.logger.info(
+                f"Firmware updated for device {device_id} to {new_version}")
         else:
-            self.logger.warning(f"Device {device_id} not found for firmware update")
+            self.logger.warning(
+                f"Device {device_id} not found for firmware update")
 
     def get_device_status(self, device_id: str) -> Dict[str, Any]:
         """Get status of a specific device."""

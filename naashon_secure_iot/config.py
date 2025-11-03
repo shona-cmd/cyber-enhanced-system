@@ -10,7 +10,7 @@ from typing import Dict, Any
 
 
 class Config:
-    """Configuration class for the NaashonSecureIoT framework.""",
+    """Configuration class for the
 
     def __init__(self):
         # MTAC IoT Environment Settings
@@ -19,13 +19,14 @@ class Config:
         self.max_devices = 1000  # Maximum allowed devices
 
         # Security Thresholds
-        self.anomaly_threshold = 0.85  # ML detection threshold (85-88% accuracy)
+        self.anomaly_threshold = 0.85  # ML detection threshold
         self.threat_response_efficiency = 0.95  # 95%+ efficiency target
-        self.access_control_timeout = 300  # 5 minutes for zero trust verification
+        self.access_control_timeout = 300  # 5 minutes for zero trust
 
         # Encryption Settings
         self.encryption_algorithm = "AES-256"
         self.key_size = 32  # 256 bits
+        self.encryption_key = "YOUR_SECURE_KEY_HERE"
 
         # Blockchain Settings (simulated)
         self.blockchain_nodes = 5
@@ -46,9 +47,11 @@ class Config:
 
     def load_from_env(self):
         """Load configuration from environment variables."""
-        self.anomaly_threshold = float(os.getenv("ANOMALY_THRESHOLD", self.anomaly_threshold))
+        self.anomaly_threshold = float(
+            os.getenv("ANOMALY_THRESHOLD", self.anomaly_threshold))
         self.max_devices = int(os.getenv("MAX_DEVICES", self.max_devices))
-        self.zero_trust_enabled = os.getenv("ZERO_TRUST_ENABLED", "true").lower() == "true"
+        self.zero_trust_enabled = os.getenv(
+            "ZERO_TRUST_ENABLED", "true").lower() == "true"
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert config to dictionary for serialization."""

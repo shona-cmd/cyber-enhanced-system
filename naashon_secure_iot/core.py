@@ -2,7 +2,10 @@
 
 Main orchestrator class that manages the multi-layered
 architecture and data flow for IoT cybersecurity
-enhancement at MTAC."""
+enhancement at MTAC.
+
+This framework is designed to align with the NIST Cybersecurity Framework (CSF).
+"""
 import logging
 from typing import Dict, Any
 from .config import Config
@@ -52,18 +55,25 @@ class NaashonSecureIoT:
 
         Returns:
             bool: True if registration successful"""
-        self.logger.info(f"Registering device {device_id} of type {device_type}")
+        self.logger.info(
+            f"Registering device {device_id} of type {device_type}")
+        if not isinstance(device_id, str):
+            self.logger.warning(f"Invalid device_id: {device_id}")
+            return False
         try:
             # Step 1: Zero-trust verification
             if not self.network_layer.verify_device(device_id):
-                self.logger.warning(f"Device {device_id} failed zero-trust verification")
+                self.logger.warning(
+                    f"Device {device_id} failed zero-trust "
+                    f"verification")
                 return False
 
             # Step 2: Register in blockchain
-            if not self.blockchain_layer.register_device(device_id,
-                                                        device_type):
+            if not self.blockchain_layer.register_device(
+                    device_id, device_type):
                 self.logger.warning(
-                    f"Device {device_id} failed blockchain registration")
+                    f"Device {device_id} failed blockchain "
+                    f"registration")
                 return False
 
             # Step 3: Add to device layer
@@ -173,65 +183,63 @@ class NaashonSecureIoT:
         self.edge_layer.shutdown()
         self.network_layer.shutdown()
         self.blockchain_layer.shutdown()
-        self.cloud_layer.shutdown()
         self.logger.info("Framework shutdown complete")
 
+    def main():
+        """CLI entry point for the framework."""
+        import argparse
+        import json
 
-def main():
-    """CLI entry point for the framework."""
-    import argparse
-    import json
+        parser = argparse.ArgumentParser(
+            description="NaashonSecureIoT Framework")
+        parser.add_argument("--config", help="Path to config file")
+        parser.add_argument(
+            "--register_device", nargs=2, metavar=("device_id", "device_type"),
+            help="Register a new device")
+        parser.add_argument(
+            "--process_data", nargs=2, metavar=("device_id", "data_file"),
+            help="Process data from a device")
+        parser.add_argument(
+            "--get_system_status", action="store_true",
+            help="Get system status")
+        parser.add_argument(
+            "--shutdown", action="store_true", help="Shutdown the framework")
 
-    parser = argparse.ArgumentParser(
-        description="NaashonSecureIoT Framework")
-    parser.add_argument("--config", help="Path to config file")
-    parser.add_argument(
-        "--register_device", nargs=2, metavar=("device_id", "device_type"),
-        help="Register a new device")
-    parser.add_argument(
-        "--process_data", nargs=2, metavar=("device_id", "data_file"),
-        help="Process data from a device")
-    parser.add_argument(
-        "--get_system_status", action="store_true",
-        help="Get system status")
-    parser.add_argument(
-        "--shutdown", action="store_true", help="Shutdown the framework")
+        args = parser.parse_args()
 
-    args = parser.parse_args()
+        framework = NaashonSecureIoT()
 
-    framework = NaashonSecureIoT()
+        if args.register_device:
+            device_id, device_type = args.register_device
+            if framework.register_device(device_id, device_type):
+                print(f"Device {device_id} registered successfully")
+            else:
+                print(f"Failed to register device {device_id}")
 
-    if args.register_device:
-        device_id, device_type = args.register_device
-        if framework.register_device(device_id, device_type):
-            print(f"Device {device_id} registered successfully")
+        elif args.process_data:
+            device_id, data_file = args.process_data
+            try:
+                with open(data_file, "r") as f:
+                    data = json.load(f)
+                result = framework.process_data(device_id, data)
+                print(f"Data processing result: {json.dumps(result)}")
+            except FileNotFoundError:
+                print(f"Error: Data file {data_file} not found")
+            except json.JSONDecodeError:
+                print(f"Error: Invalid JSON in data file {data_file}")
+            except Exception as e:
+                print(f"Error processing data: {e}")
+
+        elif args.get_system_status:
+            status = framework.get_system_status()
+            print(f"System Status: {json.dumps(status)}")
+
+        elif args.shutdown:
+            framework.shutdown()
+            print("Framework shut down successfully")
+
         else:
-            print(f"Failed to register device {device_id}")
+            print("No action specified. Use --help for available options.")
 
-    elif args.process_data:
-        device_id, data_file = args.process_data
-        try:
-            with open(data_file, "r") as f:
-                data = json.load(f)
-            result = framework.process_data(device_id, data)
-            print(f"Data processing result: {json.dumps(result)}")
-        except FileNotFoundError:
-            print(f"Error: Data file {data_file} not found")
-        except json.JSONDecodeError:
-            print(f"Error: Invalid JSON in data file {data_file}")
-        except Exception as e:
-            print(f"Error processing data: {e}")
-
-    elif args.get_system_status:
-        status = framework.get_system_status()
-        print(f"System Status: {json.dumps(status)}")
-
-    elif args.shutdown:
-        framework.shutdown()
-        print("Framework shut down successfully")
-
-    else:
-        print("No action specified. Use --help for available options.")
-
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()

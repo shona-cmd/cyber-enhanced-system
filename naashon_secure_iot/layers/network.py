@@ -2,6 +2,7 @@
 Network Layer for NaashonSecureIoT.
 
 Implements zero trust architecture, access controls, and secure network segmentation.
+NIST CSF Function: Identify (ID), Protect (PR)
 """
 
 import logging
