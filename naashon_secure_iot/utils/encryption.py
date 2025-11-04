@@ -37,12 +37,14 @@ class IoTEncryption:
             algorithm=hashes.SHA256(),
             length=self.key_size,
             salt=salt,
-            iterations=100000,
+            iterations=300000,
             backend=default_backend()
         )
-        return kdf.derive(password)
+        key = kdf.derive(password)
+        self.key = key
+        return key
 
-    def encrypt(self, plaintext: bytes) -> Tuple[bytes, bytes]:
+    def encrypt(self, plaintext: bytes) -> Tuple[bytes, bytes, bytes]:
         """
         Encrypt plaintext using AES-256-GCM.
 
@@ -50,15 +52,15 @@ class IoTEncryption:
             plaintext: Data to encrypt
 
         Returns:
-            Tuple of (ciphertext, nonce)
+            Tuple of (ciphertext, nonce, salt)
         """
         nonce = os.urandom(12)  # 96-bit nonce for GCM
         cipher = Cipher(algorithms.AES(self.key), modes.GCM(nonce), backend=default_backend())
         encryptor = cipher.encryptor()
         ciphertext = encryptor.update(plaintext) + encryptor.finalize()
-        return ciphertext, nonce
+        return ciphertext, nonce, self.salt
 
-    def decrypt(self, ciphertext: bytes, nonce: bytes) -> bytes:
+    def decrypt(self, ciphertext: bytes, nonce: bytes, salt: bytes) -> bytes:
         """
         Decrypt ciphertext using AES-256-GCM.
 
@@ -87,13 +89,13 @@ class IoTEncryption:
         import json
 
         plaintext = json.dumps(data).encode('utf-8')
-        ciphertext, nonce = self.encrypt(plaintext)
+        ciphertext, nonce, salt = self.encrypt(plaintext)
 
         return {
             "encrypted": True,
             "ciphertext": ciphertext.hex(),
             "nonce": nonce.hex(),
-            "salt": self.salt.hex()
+            "salt": salt.hex()
         }
 
     def decrypt_dict(self, encrypted_data: dict) -> dict:
@@ -113,6 +115,7 @@ class IoTEncryption:
 
         ciphertext = bytes.fromhex(encrypted_data["ciphertext"])
         nonce = bytes.fromhex(encrypted_data["nonce"])
+        salt = bytes.fromhex(encrypted_data["salt"])
 
-        plaintext = self.decrypt(ciphertext, nonce)
+        plaintext = self.decrypt(ciphertext, nonce, salt)
         return json.loads(plaintext.decode('utf-8'))

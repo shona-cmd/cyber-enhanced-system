@@ -6,11 +6,19 @@ and automated threat responses.
 """
 
 import logging
-import hashlib
 import time
+import blake3
 from typing import Dict, Any, List
 from collections import deque
 from ..config import Config
+
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 class BlockchainEntry:
     """Represents a block in the blockchain."""
@@ -23,14 +31,14 @@ class BlockchainEntry:
         self.hash = self.calculate_hash()
 
     def calculate_hash(self) -> str:
-        """Calculate SHA-256 hash of the block."""
+        """Calculate BLAKE3 hash of the block."""
         data_string = str(self.timestamp) + str(self.data) + self.previous_hash + str(self.nonce)
-        return hashlib.sha256(data_string.encode()).hexdigest()
+        return blake3.blake3(data_string.encode()).hexdigest()
 
     def mine_block(self, difficulty: int = 2):
         """Simple proof-of-work mining."""
-        target = "0" * difficulty
-        while self.hash[:difficulty] != target:
+        target = 2 ** (256 - difficulty)
+        while int(self.hash, 16) > target:
             self.nonce += 1
             self.hash = self.calculate_hash()
 
@@ -94,6 +102,7 @@ class BlockchainLayer:
         self.chain: deque[BlockchainEntry] = deque(maxlen=1000)
         self.smart_contracts: Dict[str, SmartContract] = {}
         self.difficulty = 2
+        self.target_block_time = 10  # Target block creation time in seconds
 
         self._create_genesis_block()
         self._initialize_smart_contracts()
@@ -169,6 +178,8 @@ class BlockchainLayer:
             self.chain.append(new_block)
 
             self.logger.info(f"Event logged to blockchain: {event_data.get('type', 'unknown')}")
+
+            self._adjust_difficulty()
         except Exception as e:
             self.logger.error(f"Blockchain logging failed: {e}")
 
@@ -210,8 +221,27 @@ class BlockchainLayer:
         """Helper method to quarantine device (would integrate with device layer)."""
         self.logger.warning(f"Device {device_id} quarantined via smart contract")
 
+    def _adjust_difficulty(self):
+        """Adjust blockchain difficulty based on block creation time."""
+        if len(self.chain) < 2:
+            return
+
+        # Calculate time taken to create last block
+        last_block = self.chain[-1]
+        second_last_block = self.chain[-2]
+        time_taken = last_block.timestamp - second_last_block.timestamp
+
+        # Adjust difficulty
+        if time_taken < self.target_block_time / 2:
+            self.difficulty += 1
+            self.logger.info(f"Difficulty increased to {self.difficulty}")
+        elif time_taken > self.target_block_time * 2:
+            self.difficulty = max(1, self.difficulty - 1)  # Ensure difficulty > 0
+            self.logger.info(f"Difficulty decreased to {self.difficulty}")
+
     def verify_chain(self) -> bool:
         """Verify the integrity of the blockchain."""
+        self.logger.info("Verifying blockchain integrity...")
         for i in range(1, len(self.chain)):
             current = self.chain[i]
             previous = self.chain[i-1]
@@ -222,16 +252,20 @@ class BlockchainLayer:
 
             # Check chain linkage
             if current.previous_hash != previous.hash:
+                self.logger.error("Blockchain integrity compromised: previous hash mismatch")
                 return False
 
+        self.logger.info("Blockchain integrity verified.")
         return True
 
     def get_entry_count(self) -> int:
         """Get total number of blockchain entries."""
+        self.logger.info("Getting blockchain entry count...")
         return len(self.chain)
 
     def get_recent_entries(self, count: int = 10) -> List[Dict[str, Any]]:
         """Get recent blockchain entries."""
+        self.logger.info(f"Getting recent blockchain entries (count={count})...")
         entries = []
         for block in self.chain[-count:]:
             entries.append({

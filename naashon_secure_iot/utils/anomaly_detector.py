@@ -7,19 +7,29 @@ Based on the proposal's AnomalyDetector model for edge computing.
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Literal
+import logging
+
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 
 class AnomalyDetector(nn.Module):
     """
     Neural network for IoT anomaly detection.
 
-    Lightweight DNN model suitable for edge devices, achieving 85-88% accuracy
-    on datasets like ToN-IoT and CICIDS2017.
+    Lightweight DNN model suitable for edge devices.
     """
 
-    def __init__(self, input_size: int = 10, hidden1: int = 64, hidden2: int = 32):
+    def __init__(self, input_size: int = 10, hidden1: int = 64, hidden2: int = 32,
+                 model_type: Literal["DNN", "RNN"] = "DNN"):
         """
         Initialize the anomaly detection model.
 
@@ -27,12 +37,22 @@ class AnomalyDetector(nn.Module):
             input_size: Number of input features
             hidden1: Size of first hidden layer
             hidden2: Size of second hidden layer
+            model_type: Type of model ("DNN" or "RNN")
         """
         super().__init__()
-        self.fc1 = nn.Linear(input_size, hidden1)
-        self.fc2 = nn.Linear(hidden1, hidden2)
-        self.fc3 = nn.Linear(hidden2, 1)
-        self.dropout = nn.Dropout(0.2)
+        self.model_type = model_type
+
+        if model_type == "DNN":
+            self.fc1 = nn.Linear(input_size, hidden1)
+            self.fc2 = nn.Linear(hidden1, hidden2)
+            self.fc3 = nn.Linear(hidden2, 1)
+            self.dropout = nn.Dropout(0.2)
+        elif model_type == "RNN":
+            self.rnn = nn.LSTM(input_size, hidden1, batch_first=True)
+            self.fc1 = nn.Linear(hidden1, hidden2)
+            self.fc2 = nn.Linear(hidden2, 1)
+        else:
+            raise ValueError(f"Invalid model_type: {model_type}")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -44,11 +64,17 @@ class AnomalyDetector(nn.Module):
         Returns:
             Anomaly score (sigmoid output)
         """
-        x = torch.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = torch.relu(self.fc2(x))
-        x = self.dropout(x)
-        return torch.sigmoid(self.fc3(x))
+        if self.model_type == "DNN":
+            x = torch.relu(self.fc1(x))
+            x = self.dropout(x)
+            x = torch.relu(self.fc2(x))
+            x = self.dropout(x)
+            return torch.sigmoid(self.fc3(x))
+        elif self.model_type == "RNN":
+            # Assuming input is (batch_size, seq_len, input_size)
+            _, (h_n, _) = self.rnn(x)
+            x = torch.relu(self.fc1(h_n[-1]))  # Use last hidden state
+            return torch.sigmoid(self.fc2(x))
 
 
 class IoTAnomalyDetector:
@@ -58,15 +84,16 @@ class IoTAnomalyDetector:
     Handles model training, inference, and integration with the framework.
     """
 
-    def __init__(self, model_path: str = None, threshold: float = 0.85):
+    def __init__(self, model_path: str = None, threshold: float = 0.85, model_type: Literal["DNN", "RNN"] = "DNN"):
         """
         Initialize the anomaly detector.
 
         Args:
             model_path: Path to pre-trained model
             threshold: Anomaly detection threshold
+            model_type: Type of model ("DNN" or "RNN")
         """
-        self.model = AnomalyDetector()
+        self.model = AnomalyDetector(model_type=model_type)
         self.threshold = threshold
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)
@@ -79,12 +106,12 @@ class IoTAnomalyDetector:
     def load_model(self, path: str):
         """Load pre-trained model weights."""
         self.model.load_state_dict(torch.load(path, map_location=self.device))
-        print(f"Model loaded from {path}")
+        logger.info(f"Model loaded from {path}")
 
     def save_model(self, path: str):
         """Save model weights."""
         torch.save(self.model.state_dict(), path)
-        print(f"Model saved to {path}")
+        logger.info(f"Model saved to {path}")
 
     def preprocess_data(self, data: Dict[str, Any]) -> torch.Tensor:
         """
@@ -115,7 +142,13 @@ class IoTAnomalyDetector:
         while len(features) < 10:
             features.append(0)
 
-        return torch.tensor(features[:10], dtype=torch.float32).unsqueeze(0).to(self.device)
+        features_tensor = torch.tensor(features[:10], dtype=torch.float32).to(self.device)
+        if self.model.model_type == "DNN":
+            return features_tensor.unsqueeze(0)
+        elif self.model.model_type == "RNN":
+            return features_tensor.unsqueeze(0).unsqueeze(0)  # Add sequence length dimension
+        else:
+            raise ValueError(f"Invalid model_type: {self.model.model_type}")
 
     def detect_anomaly(self, data: Dict[str, Any]) -> float:
         """
@@ -134,7 +167,7 @@ class IoTAnomalyDetector:
                 score = output.item()
             return score
         except Exception as e:
-            print(f"Error in anomaly detection: {e}")
+            logger.error(f"Error in anomaly detection: {e}")
             return 0.0  # Assume normal if error
 
     def train_model(self, train_data: List[Dict[str, Any]], labels: List[int],
@@ -156,7 +189,10 @@ class IoTAnomalyDetector:
             total_loss = 0
             for i, data in enumerate(train_data):
                 input_tensor = self.preprocess_data(data)
-                label = torch.tensor([labels[i]], dtype=torch.float32).to(self.device)
+                if self.model.model_type == "RNN":
+                    label = torch.tensor([labels[i]], dtype=torch.float32).unsqueeze(0).to(self.device)
+                else:
+                    label = torch.tensor([labels[i]], dtype=torch.float32).to(self.device)
 
                 optimizer.zero_grad()
                 output = self.model(input_tensor)
@@ -166,11 +202,12 @@ class IoTAnomalyDetector:
 
                 total_loss += loss.item()
 
-            print(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_data):.4f}")
+            logger.info(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_data):.4f}")
 
         self.model.eval()
 
     def get_active_threats(self) -> int:
         """Get count of active threats (placeholder for now)."""
+        logger.info("Getting active threat count...")
         # In a real implementation, this would track recent anomalies
         return 0
