@@ -1,45 +1,313 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>NaashonSecureIoT Dashboard</title>
-</head>
-<body>
-    <style>
-        .dashboard-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MTAC NaashonSecureIoT - Secure Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.lordicon.com/lordicon.js"></script>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --dark: #0F172A;
+      --light: #F8FAFC;
+      --gray: #64748B;
+      --border: #334155;
+      --card-bg: #1E293B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #E2E8F0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Login Page */
+    .login-container {
+      background: var(--card-bg);
+      padding: 2.5rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    .logo-login {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .login-title {
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+      color: #60A5FA;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.75rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(15,23,42,0.8);
+      color: white;
+      font-size: 1rem;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #1D4ED8;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Dashboard Layout */
+    .app { display: none; width: 100%; }
+    .header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    .container { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #CBD5E1;
+    }
+
+    .status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #60A5FA;
+      border-bottom-color: #60A5FA;
+    }
+
+    .biometric-grid, .device-grid, .audit-grid, .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .item lord-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 0.75rem;
+    }
+
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .step-number {
+      background: var(--primary);
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .table th {
+      background: rgba(30, 41, 59, 0.6);
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #64748B;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .header { flex-direction: column; gap: 1rem; }
+      .nav { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+  <script>
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`[onclick="showPage('${pageId}')"]`).classList.add('active');
+    }
+
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // Basic authentication (replace with secure authentication)
+      if (username === 'admin@example.com') {
+        showApp('Administrator');
+      } else {
+        alert('Invalid credentials.');
+      }
+    }
+
+    function logout() {
+      loginPage.classList.remove('hidden');
+      app.classList.add('hidden');
+    }
+
+    function showApp(userRole) {
+      loginPage.classList.add('hidden');
+      app.classList.remove('hidden');
+
+      userDisplay.textContent = `Logged in as ${userRole}`;
+
+      let menuItems = `
+        <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
+        <a href="#" onclick="showPage('threat')">Threat Intel</a>
+        <a href="#" onclick="showPage('devices')">Device Manager</a>
+      `;
+
+      navMenu.innerHTML = menuItems;
+
+      // Show all pages
+      showPage('dashboard');
+      document.getElementById('devices').classList.remove('hidden');
+      document.getElementById('threat').classList.remove('hidden');
+    }
+
+    // Initial chart setup (you'd fetch real data here)
+    const threatCtx = document.getElementById('threatChart')?.getContext('2d');
+    if (threatCtx) {
+      new Chart(threatCtx, {
+        type: 'line',
+        data: {
+          labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+          datasets: [{
+            label: 'Threat Events',
+            data: [12, 19, 8, 25, 40, 22],
+            borderColor: '#EF4444',
+            backgroundColor: 'rgba(239,68,68,0.1)',
+            tension: 0.4, fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#E2E8F0' } }
+          },
+          scales: {
+            x: { ticks: { color: '#94A3B8' } },
+            y: { ticks: { color: '#94A3B8' } }
+          }
         }
-        .dashboard-item {
-            margin: 10px;
-            padding: 10px;
-            border: 1px solid black;
-        }
-        .dashboard-image {
-            width: 100px;
-            height: 100px;
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <h1>NaashonSecureIoT Dashboard</h1>
-        <div class="dashboard-item">
-            <img src="static/device.png" alt="Device" class="dashboard-image">
-            <p>Device Count: {{ device_count }}</p>
-        </div>
-        <div class="dashboard-item">
-            <img src="static/alert.png" alt="Alert" class="dashboard-image">
-            <p>Edge Alerts: {{ edge_alerts }}</p>
-        </div>
-        <div class="dashboard-item">
-            <img src="static/network.png" alt="Network" class="dashboard-image">
-            <p>Network Anomalies: {{ network_anomalies }}</p>
-        </div>
-        <div class="dashboard-item">
-            <img src="static/blockchain.png" alt="Blockchain" class="dashboard-image">
-            <p>Blockchain Transactions: {{ blockchain_transactions }}</p>
-        </div>
-    </div>
+      });
+    }
+  </script>
 </body>
 </html>

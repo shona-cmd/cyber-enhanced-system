@@ -166,7 +166,7 @@ class NaashonSecureIoT:
 
     def get_system_status(self) -> Dict[str, Any]:
         """Get overall system status and metrics."""
-        return {
+        status = {
             "mtac_name": self.config.mtac_name,
             "total_devices": len(self.device_layer.devices),
             "active_threats": self.edge_layer.get_active_threats(),
@@ -175,6 +175,12 @@ class NaashonSecureIoT:
             "system_health": "operational"  # Could be enhanced
         }
         self.logger.info("Getting system status")
+        return status
+
+    def get_dashboard_data(self) -> Dict[str, Any]:
+        """Get data for the dashboard."""
+        data = self.get_system_status()
+        return data
 
     def shutdown(self):
         """Gracefully shutdown the framework."""

@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 import os
+from . import core
 
 template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../templates')
 app = Flask(__name__, template_folder=template_dir)
@@ -8,19 +9,17 @@ app = Flask(__name__, template_folder=template_dir)
 @app.route("/")
 def dashboard():
     # Initialize the NaashonSecureIoT framework
-    # framework = core.NaashonSecureIoT()
+    framework = core.NaashonSecureIoT()
 
-    # Get system status and metrics (replace with actual data retrieval)
-    device_count = 10
-    edge_alerts = 5
-    network_anomalies = 2
-    blockchain_transactions = 100
+    # Get system status and metrics
+    dashboard_data = framework.get_dashboard_data()
 
     return render_template("dashboard.html",
-                           device_count=device_count,
-                           edge_alerts=edge_alerts,
-                           network_anomalies=network_anomalies,
-                           blockchain_transactions=blockchain_transactions)
+                           device_count=dashboard_data["total_devices"],
+                           active_threats=dashboard_data["active_threats"],
+                           network_anomalies=dashboard_data["network_anomalies"],
+                           blockchain_entries=dashboard_data["blockchain_entries"],
+                           cloud_predictions=dashboard_data["cloud_predictions"])
 
 
 if __name__ == "__main__":
