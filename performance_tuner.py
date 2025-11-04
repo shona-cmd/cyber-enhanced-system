@@ -16,6 +16,7 @@ from typing import List, Tuple
 
 
 class PerformanceTuner:
+
     def __init__(self):
         self.recommendations = []
         self.critical_issues = []
@@ -39,7 +40,8 @@ class PerformanceTuner:
     def check_gpu(self) -> Tuple[bool, str]:
         if torch.cuda.is_available():
             name = torch.cuda.get_device_name(0)
-            mem = torch.cuda.get_device_properties(0).total_memory / (1024**3)
+            mem = torch.cuda.get_device_properties(0).total_memory / (
+                1024**3)
             return True, f"GPU: {name} ({mem:.1f} GB)"
         return False, "No CUDA GPU detected (fallback to CPU)"
 
@@ -59,8 +61,9 @@ class PerformanceTuner:
     def check_network(self) -> Tuple[bool, str]:
         try:
             result = subprocess.run(
-                ["ping", "-c", "1", "8.8.8.8"], capture_output=True, timeout=3
-            )
+                ["ping", "-c", "1", "8.8.8.8"],
+                capture_output=True,
+                timeout=3)
             if result.returncode == 0:
                 return True, "Internet stable"
             return False, "No internet (required for threat intel)"
@@ -68,14 +71,13 @@ class PerformanceTuner:
             return False, "Network check failed"
 
     def check_iommu(self) -> Tuple[bool, str]:
-        if os.path.exists("/proc/cmdline") and "iommu=pt" in open("/proc/cmdline").read():
+        if os.path.exists("/proc/cmdline") and "iommu=pt" in open(
+                "/proc/cmdline").read():
             return True, "IOMMU passthrough enabled (secure DMA)"
         return False, "IOMMU not enabled (recommend for edge isolation)"
 
     def apply_optimizations(self):
-        """Apply recommended kernel & sysctl tunings"""
-        sysctl_settings = """
-        # NaashonSecureIoT Performance Tuning
+        sysctl_settings = \'\'
         net.core.somaxconn = 65535
         net.core.netdev_max_backlog = 5000
         net.ipv4.tcp_max_syn_backlog = 4096
@@ -84,7 +86,7 @@ class PerformanceTuner:
         vm.swappiness = 1
         vm.overcommit_memory = 1
         fs.file-max = 2097152
-        """
+        \'\';
         with open("/etc/sysctl.d/99-naashon-secure.conf", "w") as f:
             f.write(sysctl_settings)
         subprocess.run(["sysctl", "--load=/etc/sysctl.d/99-naashon-secure.conf"])
@@ -124,7 +126,7 @@ class PerformanceTuner:
         return report
 
     def harden_system(self):
-        """Apply security + performance hardening"""
+        \"\"\"Apply security + performance hardening\"\"\"
         commands = [
             "apt update && apt install -y linux-headers-$(uname -r) build-essential",
             "sysctl -w net.ipv4.conf.all.rp_filter=1",

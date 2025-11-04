@@ -1,4 +1,4 @@
-nafrom flask import Flask, render_template
+from flask import Flask, render_template
 import os
 from naashon_secure_iot import core
 

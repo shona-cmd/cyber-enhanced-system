@@ -10,7 +10,11 @@ from typing import Dict, Any
 
 
 class Config:
-    """Configuration class for the
+    """Configuration class for the NaashonSecureIoT framework.
+
+    Handles MTAC-specific settings for IoT deployments, including thresholds,
+    device configurations, and security policies.
+    """
 
     def __init__(self):
         # MTAC IoT Environment Settings
