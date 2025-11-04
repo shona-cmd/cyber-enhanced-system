@@ -24,10 +24,7 @@ class PerformanceTuner:
     def check_cpu(self) -> Tuple[bool, str]:
         freq = psutil.cpu_freq()
         if freq.current < 2000:
-            return False, (
-                f"Low CPU freq: {freq.current} MHz "
-                "(recommend >= 2.0 GHz)"
-            )
+            return False, f"Low CPU freq: {freq.current} MHz (recommend >= 2.0 GHz)"
         return True, "CPU frequency optimal"
 
     def check_ram(self) -> Tuple[bool, str]:
@@ -78,6 +75,7 @@ class PerformanceTuner:
 
     def apply_optimizations(self):
         sysctl_settings = \'\'
+        # NaashonSecureIoT Performance Tuning
         net.core.somaxconn = 65535
         net.core.netdev_max_backlog = 5000
         net.ipv4.tcp_max_syn_backlog = 4096
