@@ -1,6 +1,7 @@
 """
 NaashonSecureIoT - System Performance Optimizer for MTAC Deployment
-Ensures OS, Python, GPU, and network settings are tuned for max throughput & security.
+Ensures OS, Python, GPU, and network settings are tuned for max throughput
+& security.
 
 Author: Grok (programmer mode)
 Target: Ubuntu 22.04+ / Raspberry Pi OS / MTAC Edge Nodes
@@ -13,8 +14,8 @@ import torch
 import subprocess
 from typing import List, Tuple
 
-class PerformanceTuner:
 
+class PerformanceTuner:
     def __init__(self):
         self.recommendations = []
         self.critical_issues = []
@@ -22,7 +23,10 @@ class PerformanceTuner:
     def check_cpu(self) -> Tuple[bool, str]:
         freq = psutil.cpu_freq()
         if freq.current < 2000:
-            return False, f"Low CPU freq: {freq.current} MHz (recommend >= 2.0 GHz)"
+            return False, (
+                f"Low CPU freq: {freq.current} MHz "
+                "(recommend >= 2.0 GHz)"
+            )
         return True, "CPU frequency optimal"
 
     def check_ram(self) -> Tuple[bool, str]:
@@ -54,11 +58,13 @@ class PerformanceTuner:
 
     def check_network(self) -> Tuple[bool, str]:
         try:
-            result = subprocess.run(["ping", "-c", "1", "8.8.8.8"], capture_output=True, timeout=3)
+            result = subprocess.run(
+                ["ping", "-c", "1", "8.8.8.8"], capture_output=True, timeout=3
+            )
             if result.returncode == 0:
                 return True, "Internet stable"
             return False, "No internet (required for threat intel)"
-        except:
+        except Exception:
             return False, "Network check failed"
 
     def check_iommu(self) -> Tuple[bool, str]:
@@ -92,17 +98,17 @@ class PerformanceTuner:
             self.check_gpu(),
             self.check_python(),
             self.check_network(),
-            self.check_iommu()
+            self.check_iommu(),
         ]
 
         report += "## System Health\n"
         for ok, msg in checks:
             status = "PASS" if ok else "FAIL"
-            report += f"- [{status}] {msg}\n"
+            report += f"- [{status}] {msg} {{}}\n"
             if not ok:
                 self.critical_issues.append(msg)
 
-        report += f"\n## Torch Optimizations\n"
+        report += "\n## Torch Optimizations\n"
         for fix in self.check_torch_optim():
             report += f"```bash\n{fix}\n```\n"
             self.recommendations.append(fix)
@@ -110,7 +116,10 @@ class PerformanceTuner:
         if not self.critical_issues:
             report += "\n**All critical checks passed. System ready for production.**\n"
         else:
-            report += f"\n**{len(self.critical_issues)} critical issue(s) detected. Fix before deployment.**\n"
+            report += (
+                f"\n**{len(self.critical_issues)} critical issue(s) "
+                "detected. Fix before deployment.**\n"
+            )
 
         return report
 
@@ -122,7 +131,7 @@ class PerformanceTuner:
             "sysctl -w net.ipv4.conf.default.rp_filter=1",
             "ufw allow 5000/tcp",  # Flask dashboard
             "ufw allow 1883/tcp",  # MQTT
-            "ufw --force enable"
+            "ufw --force enable",
         ]
         for cmd in commands:
             subprocess.run(cmd, shell=True)
@@ -134,7 +143,7 @@ if __name__ == "__main__":
     tuner = PerformanceTuner()
     print(tuner.generate_report())
 
-    if input("\nApply optimizations? (y/n): ").lower() == 'y':
+    if input("\nApply optimizations? (y/n): ").lower() == "y":
         tuner.apply_optimizations()
         tuner.harden_system()
         print("\nOptimizations applied. Reboot recommended.")
