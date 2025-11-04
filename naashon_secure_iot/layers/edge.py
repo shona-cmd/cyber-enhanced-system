@@ -6,7 +6,6 @@ NIST CSF Function: Detect (DE)
 """
 
 import logging
-import time
 from typing import Dict, Any
 from ..config import Config
 from ..utils.anomaly_detector import IoTAnomalyDetector
@@ -40,7 +39,8 @@ class EdgeLayer:
         try:
             # Train model using federated learning
             self.federated_learning.train_model(data)
-            # If data is encrypted, we assume it's been decrypted by network layer
+            # If data is encrypted, we assume it's been decrypted by
+            # network layer
             # For this implementation, we'll work with raw data
             score = self.detector.detect_anomaly(data)
 
