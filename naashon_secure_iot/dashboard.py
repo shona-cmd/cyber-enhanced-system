@@ -13,6 +13,7 @@ template_dir = os.path.join(
 static_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = os.environ.get('SECRET_KEY', 'naashon_secure_iot_secret_key')  # Use environment variable in production
 
 # OAuth configuration
