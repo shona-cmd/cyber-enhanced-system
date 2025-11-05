@@ -13,7 +13,7 @@ template_dir = os.path.join(
 static_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-app.secret_key = 'naashon_secure_iot_secret_key'  # In production, use environment variable
+app.secret_key = os.environ.get('SECRET_KEY', 'naashon_secure_iot_secret_key')  # Use environment variable in production
 
 # OAuth configuration
 oauth = OAuth(app)
@@ -298,5 +298,52 @@ def authorize_register_facebook():
         return redirect(url_for('register'))
 
 
+@app.route("/api/register_device", methods=['POST'])
+def api_register_device():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = request.get_json()
+    device_id = data.get('device_id')
+    device_type = data.get('device_type', 'unknown')
+    if framework.register_device(device_id, device_type):
+        return {"status": "success", "message": f"Device {device_id} registered"}
+    else:
+        return {"status": "error", "message": f"Failed to register device {device_id}"}, 400
+
+
+@app.route("/api/transmit_data", methods=['POST'])
+def api_transmit_data():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = request.get_json()
+    device_id = data.get('device_id')
+    payload = data.get('data')
+    if isinstance(payload, str):
+        payload = {"message": payload, "timestamp": None}
+    result = framework.process_data(device_id, payload)
+    return result
+
+
+@app.route("/api/metrics")
+def api_metrics():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = framework.get_dashboard_data()
+    return {
+        "status": "secure" if data["active_threats"] < 5 else "warning",
+        "devices": data["total_devices"],
+        "anomaly_rate": 0.0,  # Placeholder
+        "blockchain_blocks": data["blockchain_entries"],
+        "uptime": 0  # Placeholder
+    }
+
+
+@app.route("/api/logs")
+def api_logs():
+    # Simulated logs
+    return "INFO: System initialized\nINFO: Device registered\nWARNING: Anomaly detected"
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)

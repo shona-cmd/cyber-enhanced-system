@@ -37,8 +37,6 @@ class EdgeLayer:
             Anomaly score (0-1)
         """
         try:
-            # Train model using federated learning
-            self.federated_learning.train_model(data)
             # If data is encrypted, we assume it's been decrypted by
             # network layer
             # For this implementation, we'll work with raw data
