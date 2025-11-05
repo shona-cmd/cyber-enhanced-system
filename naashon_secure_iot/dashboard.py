@@ -63,13 +63,17 @@ def dashboard():
         "cloud_predictions": 45
     }
 
+    # Check if user is admin to show additional features
+    is_admin = session['user'].get('role') == 'admin'
+
     return render_template("dashboard.html",
                            device_count=dashboard_data["total_devices"],
                            active_threats=dashboard_data["active_threats"],
                            network_anomalies=dashboard_data["network_anomalies"],
                            blockchain_entries=dashboard_data["blockchain_entries"],
                            cloud_predictions=dashboard_data["cloud_predictions"],
-                           user=session['user'])
+                           user=session['user'],
+                           is_admin=is_admin)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():

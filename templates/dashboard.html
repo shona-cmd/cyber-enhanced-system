@@ -258,7 +258,7 @@
   <div id="app" class="app">
     <header class="header">
       <div class="user-info">
-        <span id="userDisplay">Logged in as Administrator</span>
+        <span id="userDisplay">Logged in as {{ user.get('name', user['email']) }}</span>
       </div>
       <nav class="nav" id="navMenu">
         <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
@@ -278,29 +278,45 @@
               <h3 class="card-title">Total Devices</h3>
               <span class="status" style="background: var(--success); color: white;">Active</span>
             </div>
-            <p>1,234 devices connected</p>
+            <p>{{ device_count }} devices connected</p>
           </div>
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">Threat Alerts</h3>
               <span class="status" style="background: var(--warning); color: white;">Medium</span>
             </div>
-            <p>12 active alerts</p>
+            <p>{{ active_threats }} active alerts</p>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Network Status</h3>
-              <span class="status" style="background: var(--success); color: white;">Secure</span>
+              <h3 class="card-title">Network Anomalies</h3>
+              <span class="status" style="background: var(--danger); color: white;">High</span>
             </div>
-            <p>All systems operational</p>
+            <p>{{ network_anomalies }} anomalies detected</p>
           </div>
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Data Processed</h3>
-              <span class="status" style="background: var(--primary); color: white;">High</span>
+              <h3 class="card-title">Blockchain Entries</h3>
+              <span class="status" style="background: var(--primary); color: white;">Secure</span>
             </div>
-            <p>2.5 TB processed today</p>
+            <p>{{ blockchain_entries }} entries logged</p>
           </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Cloud Predictions</h3>
+              <span class="status" style="background: var(--success); color: white;">Active</span>
+            </div>
+            <p>{{ cloud_predictions }} predictions made</p>
+          </div>
+          {% if is_admin %}
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Admin Panel</h3>
+              <span class="status" style="background: var(--primary); color: white;">Admin</span>
+            </div>
+            <p>Access to advanced controls</p>
+          </div>
+          {% endif %}
         </div>
 
         <div class="chart-container">
