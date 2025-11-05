@@ -43,10 +43,9 @@ class NetworkLayer:
             # - Multi-factor authentication
             return True
 
-        # For demo purposes, auto-add devices to trusted list on first verification
-        self.add_trusted_device(device_id)
-        self.logger.info(f"Device {device_id} added to trusted list during verification")
-        return True
+        # Device not trusted - do not auto-add for security
+        self.logger.warning(f"Device {device_id} not in trusted list")
+        return False
 
     def establish_session(self, device_id: str) -> str:
         """

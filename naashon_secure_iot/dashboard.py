@@ -39,5 +39,51 @@ def register():
     return render_template("register.html")
 
 
+@app.route("/api/register_device", methods=['POST'])
+def api_register_device():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = request.get_json()
+    device_id = data.get('device_id')
+    device_type = data.get('device_type', 'unknown')
+    if framework.register_device(device_id, device_type):
+        return {"status": "success", "message": f"Device {device_id} registered"}
+    else:
+        return {"status": "error", "message": f"Failed to register device {device_id}"}, 400
+
+
+@app.route("/api/transmit_data", methods=['POST'])
+def api_transmit_data():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = request.get_json()
+    device_id = data.get('device_id')
+    payload = data.get('data')
+    if isinstance(payload, str):
+        payload = {"message": payload, "timestamp": None}
+    result = framework.process_data(device_id, payload)
+    return result
+
+
+@app.route("/api/metrics")
+def api_metrics():
+    from naashon_secure_iot import core
+    framework = core.NaashonSecureIoT()
+    data = framework.get_dashboard_data()
+    return {
+        "status": "secure" if data["active_threats"] < 5 else "warning",
+        "devices": data["total_devices"],
+        "anomaly_rate": 0.0,  # Placeholder
+        "blockchain_blocks": data["blockchain_entries"],
+        "uptime": 0  # Placeholder
+    }
+
+
+@app.route("/api/logs")
+def api_logs():
+    # Simulated logs
+    return "INFO: System initialized\nINFO: Device registered\nWARNING: Anomaly detected"
+
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
