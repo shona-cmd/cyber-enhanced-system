@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MTAC NaashonSecureIoT - Secure Login</title>
+  <title>MTAC NaashonSecureIoT - Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.lordicon.com/lordicon.js" onerror="fallbackIcon()"></script> <!-- Error handler added -->
@@ -26,61 +26,10 @@
       background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
       color: #E2E8F0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-
-    /* Login Page */
-    .login-container {
-      background: var(--card-bg);
-      padding: 2.5rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      text-align: center;
-    }
-
-    .logo-login {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .login-title {
-      font-size: 1.6rem;
-      margin-bottom: 1.5rem;
-      color: #60A5FA;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.75rem 0;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: rgba(15,23,42,0.8);
-      color: white;
-      font-size: 1rem;
-    }
-
-    button {
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #1D4ED8;
-    }
-
-    .hidden { display: none !important; }
 
     /* Dashboard Layout */
-    .app { display: none; width: 100%; }
+    .app { width: 100%; }
     .header {
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(12px);
@@ -238,22 +187,6 @@
   </style>
 </head>
 <body>
-  <!-- Login Page -->
-  <div id="loginPage" class="login-container">
-    <div class="logo-login">
-      <div id="logoIcon">
-        <lord-icon id="lordIcon" src="https://cdn.lordicon.com/wxnxiano.json" trigger="loop" colors="primary:#60A5FA" style="width:60px;height:60px;"></lord-icon>
-      </div>
-    </div>
-    <h1 class="login-title">MTAC SecureIoT Login</h1>
-    <input type="text" id="username" placeholder="Username" value="admin@example.com">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <p style="margin-top: 1rem; font-size: 0.9rem; color: #94A3B8;">
-      Don't have an account? <a href="http://localhost:5000/register" style="color: #60A5FA; text-decoration: none;">Register here</a>
-    </p>
-  </div>
-
   <!-- Dashboard App -->
   <div id="app" class="app">
     <header class="header">
@@ -370,12 +303,6 @@
   </div>
 
   <script>
-    // Define global variables for DOM elements
-    const loginPage = document.getElementById('loginPage');
-    const app = document.getElementById('app');
-    const userDisplay = document.getElementById('userDisplay');
-    const navMenu = document.getElementById('navMenu');
-
     function fallbackIcon() {
       // Show fallback if Lordicon fails
       const icon = document.getElementById('lordIcon');
@@ -395,41 +322,8 @@
       document.querySelector(`[onclick="showPage('${pageId}')"]`).classList.add('active');
     }
 
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      // Basic authentication (replace with secure authentication)
-      if (username === 'admin@example.com') {
-        showApp('Administrator');
-      } else {
-        alert('Invalid credentials.');
-      }
-    }
-
     function logout() {
-      loginPage.classList.remove('hidden');
-      app.classList.add('hidden');
-    }
-
-    function showApp(userRole) {
-      loginPage.classList.add('hidden');
-      app.classList.remove('hidden');
-
-      userDisplay.textContent = `Logged in as ${userRole}`;
-
-      let menuItems = `
-        <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
-        <a href="#" onclick="showPage('threat')">Threat Intel</a>
-        <a href="#" onclick="showPage('devices')">Device Manager</a>
-      `;
-
-      navMenu.innerHTML = menuItems;
-
-      // Show all pages
-      showPage('dashboard');
-      document.getElementById('devices').classList.remove('hidden');
-      document.getElementById('threat').classList.remove('hidden');
+      window.location.href = '/logout';
     }
 
     // Initial chart setup (you'd fetch real data here)
