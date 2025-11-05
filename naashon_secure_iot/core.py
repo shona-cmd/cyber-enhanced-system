@@ -180,6 +180,7 @@ class NaashonSecureIoT:
     def get_dashboard_data(self) -> Dict[str, Any]:
         """Get data for the dashboard."""
         data = self.get_system_status()
+        data["network_anomalies"] = self.network_layer.get_anomaly_count()
         return data
 
     def shutdown(self):

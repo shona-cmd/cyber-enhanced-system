@@ -176,6 +176,12 @@ class NetworkLayer:
             "zero_trust_enabled": self.config.zero_trust_enabled
         }
 
+    def get_anomaly_count(self) -> int:
+        """Get count of network anomalies detected."""
+        # For demo purposes, return a simulated count
+        # In a real implementation, this would track actual network anomalies
+        return 0
+
     def shutdown(self):
         """Shutdown the network layer."""
         self.logger.info("Network layer shutting down")
