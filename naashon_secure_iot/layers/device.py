@@ -18,7 +18,7 @@ class DeviceLayer:
         self.config = config
         self.logger = logger
         self.devices: Dict[str, Dict[str, Any]] = {}
-        self.encryption = IoTEncryption(key=self.config.encryption_key)
+        self.encryption = IoTEncryption(password=self.config.encryption_key)
         self.logger.info("Device layer initialized")
 
     def add_device(self, device_id: str, device_type: str):

@@ -175,7 +175,7 @@ class CloudLayer:
         ]
 
         self.predictions = [
-            pred for pred in the self.predictions
+            pred for pred in self.predictions
             if pred["timestamp"] > cutoff_time
         ]
 

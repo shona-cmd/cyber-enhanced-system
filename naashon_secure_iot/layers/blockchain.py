@@ -7,10 +7,18 @@ and automated threat responses.
 
 import logging
 import time
-import blake3
 from typing import Dict, Any, List
 from collections import deque
 from ..config import Config
+
+try:
+    import blake3
+    BLAKE3_AVAILABLE = True
+except ImportError:
+    BLAKE3_AVAILABLE = False
+    import hashlib
+    logger = logging.getLogger(__name__)
+    logger.warning("blake3 not available. Using hashlib.sha256 as fallback.")
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -33,7 +41,10 @@ class BlockchainEntry:
     def calculate_hash(self) -> str:
         """Calculate BLAKE3 hash of the block."""
         data_string = str(self.timestamp) + str(self.data) + self.previous_hash + str(self.nonce)
-        return blake3.blake3(data_string.encode()).hexdigest()
+        if BLAKE3_AVAILABLE:
+            return blake3.blake3(data_string.encode()).hexdigest()
+        else:
+            return hashlib.sha256(data_string.encode()).hexdigest()
 
     def mine_block(self, difficulty: int = 2):
         """Simple proof-of-work mining."""
@@ -267,13 +278,14 @@ class BlockchainLayer:
         """Get recent blockchain entries."""
         self.logger.info(f"Getting recent blockchain entries (count={count})...")
         entries = []
-        for block in self.chain[-count:]:
+        chain_list = list(self.chain)
+        for block in chain_list[-count:]:
             entries.append({
                 "hash": block.hash,
                 "timestamp": block.timestamp,
                 "data": block.data
             })
-        return list(entries)
+        return entries
 
     def shutdown(self):
         """Shutdown the blockchain layer."""

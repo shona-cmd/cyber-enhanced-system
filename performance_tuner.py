@@ -74,7 +74,7 @@ class PerformanceTuner:
         return False, "IOMMU not enabled (recommend for edge isolation)"
 
     def apply_optimizations(self):
-        sysctl_settings = \'\'
+        sysctl_settings = '''
         # NaashonSecureIoT Performance Tuning
         net.core.somaxconn = 65535
         net.core.netdev_max_backlog = 5000
@@ -84,7 +84,7 @@ class PerformanceTuner:
         vm.swappiness = 1
         vm.overcommit_memory = 1
         fs.file-max = 2097152
-        \'\';
+        '''
         with open("/etc/sysctl.d/99-naashon-secure.conf", "w") as f:
             f.write(sysctl_settings)
         subprocess.run(["sysctl", "--load=/etc/sysctl.d/99-naashon-secure.conf"])
@@ -124,7 +124,7 @@ class PerformanceTuner:
         return report
 
     def harden_system(self):
-        \"\"\"Apply security + performance hardening\"\"\"
+        """Apply security + performance hardening"""
         commands = [
             "apt update && apt install -y linux-headers-$(uname -r) build-essential",
             "sysctl -w net.ipv4.conf.all.rp_filter=1",

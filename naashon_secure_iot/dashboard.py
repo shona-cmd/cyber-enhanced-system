@@ -8,8 +8,10 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data_sources import data_sources
 
-template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../templates')
-static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static')
+template_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../templates')
+static_dir = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), '../static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = 'naashon_secure_iot_secret_key'  # In production, use environment variable
 
