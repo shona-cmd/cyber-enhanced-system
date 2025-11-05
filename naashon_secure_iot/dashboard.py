@@ -345,6 +345,11 @@ def api_logs():
     return "INFO: System initialized\nINFO: Device registered\nWARNING: Anomaly detected"
 
 
+@app.route("/apa_guide")
+def apa_guide():
+    return render_template("apa_guide.html")
+
+
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)

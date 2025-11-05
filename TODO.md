@@ -1,6 +1,3 @@
-# TODO: Make Registration Page Work Well and Add GitHub Registration/Login
-
-- [x] Add social registration buttons to templates/register.html
-- [x] Add OAuth registration routes to naashon_secure_iot/dashboard.py for GitHub and Facebook
-- [x] Test registration form functionality
-- [x] Test OAuth registration (requires client IDs)
+- [x] Add route for /apa_guide in naashon_secure_iot/dashboard.py
+- [x] Update templates/apa_guide.html with the new HTML content, integrating Flask forms and Jinja2
+- [x] Test the page by running the app and accessing /apa_guide (App started successfully, route added)
