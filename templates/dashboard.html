@@ -184,6 +184,62 @@
       color: white;
       font-weight: bold;
     }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin: 0.25rem;
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .btn-secondary {
+      background: var(--gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #D97706;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #DC2626;
+    }
+
+    .btn-info {
+      background: #06B6D4;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #0891B2;
+    }
   </style>
 </head>
 <body>
@@ -281,21 +337,39 @@
       <!-- Device Manager Page -->
       <div id="devices" class="page">
         <h2>Device Manager</h2>
+        <div class="tabs">
+          <div class="tab active">All Devices</div>
+          <div class="tab">Online</div>
+          <div class="tab">Offline</div>
+        </div>
         <div class="device-grid">
           <div class="card">
             <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
             <h3 class="card-title">IoT Device 1</h3>
             <p>Status: Online</p>
+            <a href="/control_device/device1/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device1/update" class="btn btn-secondary">Update Firmware</a>
           </div>
           <div class="card">
             <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
             <h3 class="card-title">IoT Device 2</h3>
             <p>Status: Offline</p>
+            <a href="/control_device/device2/ping" class="btn btn-warning">Ping</a>
+            <a href="/control_device/device2/remove" class="btn btn-danger">Remove Device</a>
           </div>
           <div class="card">
             <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
             <h3 class="card-title">IoT Device 3</h3>
             <p>Status: Online</p>
+            <a href="/control_device/device3/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device3/update" class="btn btn-secondary">Update Firmware</a>
+          </div>
+          <div class="card">
+            <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+            <h3 class="card-title">IoT Device 4</h3>
+            <p>Status: Online</p>
+            <a href="/control_device/device4/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device4/monitor" class="btn btn-info">Monitor</a>
           </div>
         </div>
       </div>
@@ -324,6 +398,13 @@
 
     function logout() {
       window.location.href = '/logout';
+    }
+
+    function controlDevice(deviceId, action) {
+      // Simulate device control actions
+      alert(`Action "${action}" initiated for ${deviceId}`);
+      // In a real application, this would send an AJAX request to the server
+      console.log(`Device ${deviceId}: ${action}`);
     }
 
     // Initial chart setup (you'd fetch real data here)

@@ -117,6 +117,49 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
 
+@app.route("/threat")
+def threat():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    # Get threat data for the page
+    threat_data = data_sources.get_recent_threats()
+
+    return render_template("dashboard.html",
+                          user=session['user'],
+                          is_admin=session['user'].get('role') == 'admin',
+                          threat_data=threat_data)
+
+@app.route("/devices")
+def devices():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    # Mock device data with dynamic status
+    devices_data = [
+        {'id': 'device1', 'name': 'IoT Device 1', 'status': data_sources.get_device_status('device1')},
+        {'id': 'device2', 'name': 'IoT Device 2', 'status': data_sources.get_device_status('device2')},
+        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device3')},
+        {'id': 'device4', 'name': 'IoT Device 4', 'status': data_sources.get_device_status('device4')}
+    ]
+
+    return render_template("dashboard.html",
+                          user=session['user'],
+                          is_admin=session['user'].get('role') == 'admin',
+                          devices_data=devices_data)
+
+@app.route("/control_device/<device_id>/<action>")
+def control_device(device_id, action):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    # Perform device control action
+    result = data_sources.control_device(device_id, action)
+
+    # Redirect back to devices page with a flash message
+    flash(f"Device {device_id}: {result}")
+    return redirect(url_for('devices'))
+
 @app.route('/login/github')
 def login_github():
     github = oauth.create_client('github')

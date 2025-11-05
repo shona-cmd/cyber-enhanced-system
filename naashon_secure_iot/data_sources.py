@@ -1,4 +1,4 @@
-import random
+gimport random
 import time
 from datetime import datetime, timedelta
 
@@ -69,6 +69,24 @@ class DataSources:
                 'count': threat_count
             })
         return threat_data
+
+    def get_device_status(self, device_id):
+        """Get status of a specific device"""
+        # Mock device status
+        statuses = ['online', 'offline', 'maintenance']
+        return random.choice(statuses)
+
+    def control_device(self, device_id, action):
+        """Control a device (restart, update, ping, etc.)"""
+        # Mock device control response
+        responses = {
+            'restart': 'Device restarted successfully',
+            'update': 'Firmware update initiated',
+            'ping': 'Device pinged successfully',
+            'remove': 'Device removed from network',
+            'monitor': 'Monitoring enabled'
+        }
+        return responses.get(action, 'Unknown action')
 
 # Global instance
 data_sources = DataSources()
