@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 import os
 from naashon_secure_iot import core
 
@@ -7,6 +7,7 @@ template_dir = os.path.join(
 static_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -17,7 +18,7 @@ def login():
             for line in f:
                 u, p = line.strip().split(':')
                 if username == u and password == p:
-                    return "Login successful!" # Redirect to dashboard later
+                    return redirect("/")
         return "Invalid credentials"
     return render_template("dashboard.html")
 
@@ -40,15 +41,30 @@ def dashboard():
     )
 
 
+import uuid
+import json
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        # Store the data (replace with actual storage logic)
-        with open('users.txt', 'a') as f:
-            f.write(f'{username}:{password}\n')
-        return 'Registration successful!'  # Redirect to login page later
+        try:
+            data = request.get_json()
+            username = data['username']
+            password = data['password']
+            device_id = str(uuid.uuid4())  # Generate a unique device ID
+
+            # Store the data (replace with actual storage logic)
+            with open('users.txt', 'a') as f:
+                f.write(f'{username}:{password}:{device_id}\n')
+
+            return json.dumps({
+                'message': 'Registration successful!',
+                'device_id': device_id
+            }), 200, {'ContentType': 'application/json'}
+        except Exception as e:
+            return json.dumps({
+                'error': str(e)
+            }), 400, {'ContentType': 'application/json'}
     return render_template("register.html")
 
 
@@ -60,9 +76,11 @@ def api_register_device():
     device_id = data.get('device_id')
     device_type = data.get('device_type', 'unknown')
     if framework.register_device(device_id, device_type):
-        return {"status": "success", "message": f"Device {device_id} registered"}
+        message = f"Device {device_id} registered"
+        return {"status": "success", "message": message}
     else:
-        return {"status": "error", "message": f"Failed to register device {device_id}"}, 400
+        message = f"Failed to register device {device_id}"
+        return {"status": "error", "message": message}, 400
 
 
 @app.route("/api/transmit_data", methods=['POST'])
@@ -83,8 +101,9 @@ def api_metrics():
     from naashon_secure_iot import core
     framework = core.NaashonSecureIoT()
     data = framework.get_dashboard_data()
+    status = "secure" if data["active_threats"] < 5 else "warning"
     return {
-        "status": "secure" if data["active_threats"] < 5 else "warning",
+        "status": status,
         "devices": data["total_devices"],
         "anomaly_rate": 0.0,  # Placeholder
         "blockchain_blocks": data["blockchain_entries"],
@@ -95,7 +114,10 @@ def api_metrics():
 @app.route("/api/logs")
 def api_logs():
     # Simulated logs
-    return "INFO: System initialized\nINFO: Device registered\nWARNING: Anomaly detected"
+    log_message = "INFO: System initialized\n"
+    log_message += "INFO: Device registered\n"
+    log_message += "WARNING: Anomaly detected"
+    return log_message
 
 
 if __name__ == "__main__":

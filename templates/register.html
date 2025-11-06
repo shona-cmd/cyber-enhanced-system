@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
+    <title>NaashonSecureIoT - Register</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -26,6 +26,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0;
         }
 
         .register-container {
@@ -39,12 +40,12 @@
         }
 
         .register-title {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 1.5rem;
             color: #60A5FA;
         }
 
-        input, button {
+        input {
             width: 100%;
             padding: 0.75rem;
             margin: 0.75rem 0;
@@ -53,12 +54,19 @@
             background: rgba(15,23,42,0.8);
             color: white;
             font-size: 1rem;
+            box-sizing: border-box;
         }
 
         button {
+            width: 100%;
+            padding: 0.85rem;
+            margin: 1rem 0;
+            border: none;
+            border-radius: 8px;
             background: var(--primary);
             color: white;
             font-weight: 600;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -66,16 +74,67 @@
         button:hover {
             background: #1D4ED8;
         }
+
+        .message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .success { background: rgba(16,185,129,0.2); color: var(--success); }
+        .error   { background: rgba(239,68,68,0.2);   color: var(--danger); }
     </style>
 </head>
 <body>
     <div class="register-container">
-        <h2 class="register-title">Register</h2>
-        <form id="registerForm" action="/register" method="post">
-            <input type="text" id="username" name="username" placeholder="Username" required>
-            <input type="password" id="password" name="password" placeholder="Password" required>
+        <h2 class="register-title">NaashonSecureIoT<br><small>Device / User Registration</small></h2>
+        
+        <form id="registerForm">
+            <input type="text" id="username" name="username" placeholder="Username (e.g. device_001)" required>
+            <input type="password" id="password" name="password" placeholder="Password (min 8 chars)" required minlength="8">
             <button type="submit">Register</button>
         </form>
+
+        <div id="message"></div>
     </div>
+
+    <script>
+        // Pure frontend + Flask backend handler (no page reload)
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = '';
+            messageDiv.className = '';
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.textContent = `Success: ${data.message} | Device ID: ${data.device_id}`;
+                    messageDiv.classList.add('message', 'success');
+                    document.getElementById('registerForm').reset();
+                } else {
+                    messageDiv.textContent = `Error: ${data.error || 'Registration failed'}`;
+                    messageDiv.classList.add('message', 'error');
+                }
+            } catch (err) {
+                messageDiv.textContent = 'Error: Network error – is the Flask server running?';
+                messageDiv.classList.add('message', 'error');
+                console.error(err);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -11,6 +11,7 @@ import blake3
 from typing import Dict, Any, List
 from collections import deque
 from ..config import Config
+import pickle
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -103,36 +104,75 @@ class BlockchainLayer:
         self.smart_contracts: Dict[str, SmartContract] = {}
         self.difficulty = 2
         self.target_block_time = 10  # Target block creation time in seconds
+        self.blockchain_file = "blockchain.dat"  # File to store blockchain
 
-        self._create_genesis_block()
+        self._load_chain()
+        if not self.chain:
+            self._create_genesis_block()
         self._initialize_smart_contracts()
 
-        self.logger.info(
-            "Blockchain layer initialized with genesis block")
+        self.logger.info("Blockchain layer initialized with genesis block")
+
+    def _load_chain(self):
+        """Load blockchain from file."""
+        try:
+            with open(self.blockchain_file, "rb") as f:
+                self.chain = pickle.load(f)
+            self.logger.info("Blockchain loaded from file")
+        except FileNotFoundError:
+            self.logger.info("Blockchain file not found, creating new chain")
+            self.chain = deque(maxlen=1000)
+            # Initialize chain if file not found
+        except Exception as e:
+            self.logger.error(f"Error loading blockchain: {e}")
+            self.chain = deque(maxlen=1000)
+            # Initialize chain on error
+
+    def _save_chain(self):
+        """Save blockchain to file."""
+        try:
+            with open(self.blockchain_file, "wb") as f:
+                pickle.dump(self.chain, f)
+            self.logger.info("Blockchain saved to file")
+        except Exception as e:
+            self.logger.error(f"Error saving blockchain: {e}")
 
     def _create_genesis_block(self):
         """Create the genesis block."""
-        genesis_data = {"type": "genesis",
-                        "message": "NaashonSecureIoT Blockchain Started"}
+        genesis_data = {
+            "type": "genesis",
+            "message": "NaashonSecureIoT Blockchain Started",
+        }
         genesis_block = BlockchainEntry(genesis_data)
         genesis_block.mine_block(self.difficulty)
         self.chain.append(genesis_block)
+        self._save_chain()  # Save genesis block to file
 
     def _initialize_smart_contracts(self):
         """Initialize default smart contracts for threat response."""
         # Anomaly response contract
         anomaly_contract = SmartContract("anomaly_response")
-        anomaly_contract.add_condition("high_anomaly", lambda data: data.get("anomaly_score", 0) > 0.85)
-        anomaly_contract.add_action("quarantine_device", lambda data: self._quarantine_device(data.get("device_id")))
-        anomaly_contract.add_action("log_threat", lambda data: self.logger.warning(
-            f"Threat logged for device {data.get('device_id')}"))
+        anomaly_contract.add_condition(
+            "high_anomaly",
+            lambda data: data.get("anomaly_score", 0) > 0.85)
+        anomaly_contract.add_action(
+            "quarantine_device",
+            lambda data: self._quarantine_device(data.get("device_id")))
+        anomaly_contract.add_action(
+            "log_threat",
+            lambda data: self.logger.warning(
+                f"Threat logged for device {data.get('device_id')}")
+        )
 
         self.smart_contracts["anomaly_response"] = anomaly_contract
 
         reg_contract = SmartContract("device_registration")
-        reg_contract.add_condition("valid_device", lambda data: bool(data.get("device_id")))
-        reg_contract.add_action("register_device", lambda data: self.logger.info(
-            f"Device {data.get('device_id')} registered via contract"))
+        reg_contract.add_condition(
+            "valid_device", lambda data: bool(data.get("device_id")))
+        reg_contract.add_action(
+            "register_device",
+            lambda data: self.logger.info(
+                f"Device {data.get('device_id')} registered via contract"))
 
         self.smart_contracts["device_registration"] = reg_contract
 
@@ -151,14 +191,12 @@ class BlockchainLayer:
                 "type": "device_registration",
                 "device_id": device_id,
                 "device_type": device_type,
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
-
             # Execute registration smart contract
             if self.smart_contracts["device_registration"].execute(reg_data):
                 self.log_event(reg_data)
                 return True
-
             return False
         except Exception as e:
             self.logger.error(f"Device registration failed: {e}")
@@ -176,17 +214,16 @@ class BlockchainLayer:
             new_block = BlockchainEntry(event_data, previous_hash)
             new_block.mine_block(self.difficulty)
             self.chain.append(new_block)
-
-            self.logger.info(f"Event logged to blockchain: {event_data.get('type', 'unknown')}")
-
+            self.logger.info(
+                f"Event logged to blockchain: {event_data.get('type', 'unknown')}")
             self._adjust_difficulty()
+            self._save_chain()  # Save chain after logging event
         except Exception as e:
             self.logger.error(f"Blockchain logging failed: {e}")
 
     def trigger_response(self, device_id: str, threat_type: str) -> bool:
         """
         Trigger automated response via smart contracts.
-
         Args:
             device_id: Device identifier
             device_type: Type of device
@@ -198,20 +235,21 @@ class BlockchainLayer:
             response_data = {
                 "device_id": device_id,
                 "threat_type": threat_type,
-                "timestamp": time.time()
+                "timestamp": time.time(),
             }
-
             if threat_type == "anomaly":
-                return self.smart_contracts["anomaly_response"].execute(response_data)
-
+                return self.smart_contracts["anomaly_response"].execute(
+                    response_data
+                )
             # Log the response attempt
-            self.log_event({
-                "type": "threat_response",
-                "device_id": device_id,
-                "threat_type": threat_type,
-                "response_triggered": True
-            })
-
+            self.log_event(
+                {
+                    "type": "threat_response",
+                    "device_id": device_id,
+                    "threat_type": threat_type,
+                    "response_triggered": True,
+                }
+            )
             return True
         except Exception as e:
             self.logger.error(f"Response trigger failed: {e}")
@@ -219,7 +257,8 @@ class BlockchainLayer:
 
     def _quarantine_device(self, device_id: str):
         """Helper method to quarantine device (would integrate with device layer)."""
-        self.logger.warning(f"Device {device_id} quarantined via smart contract")
+        self.logger.warning(
+            f"Device {device_id} quarantined via smart contract")
 
     def _adjust_difficulty(self):
         """Adjust blockchain difficulty based on block creation time."""
@@ -236,7 +275,8 @@ class BlockchainLayer:
             self.difficulty += 1
             self.logger.info(f"Difficulty increased to {self.difficulty}")
         elif time_taken > self.target_block_time * 2:
-            self.difficulty = max(1, self.difficulty - 1)  # Ensure difficulty > 0
+            self.difficulty = max(1, self.difficulty - 1)
+            # Ensure difficulty > 0
             self.logger.info(f"Difficulty decreased to {self.difficulty}")
 
     def verify_chain(self) -> bool:
@@ -244,7 +284,7 @@ class BlockchainLayer:
         self.logger.info("Verifying blockchain integrity...")
         for i in range(1, len(self.chain)):
             current = self.chain[i]
-            previous = self.chain[i-1]
+            previous = self.chain[i - 1]
 
             # Check hash integrity
             if current.hash != current.calculate_hash():
@@ -252,7 +292,8 @@ class BlockchainLayer:
 
             # Check chain linkage
             if current.previous_hash != previous.hash:
-                self.logger.error("Blockchain integrity compromised: previous hash mismatch")
+                self.logger.error(
+                    "Blockchain integrity compromised: previous hash mismatch")
                 return False
 
         self.logger.info("Blockchain integrity verified.")
@@ -265,18 +306,22 @@ class BlockchainLayer:
 
     def get_recent_entries(self, count: int = 10) -> List[Dict[str, Any]]:
         """Get recent blockchain entries."""
-        self.logger.info(f"Getting recent blockchain entries (count={count})...")
+        self.logger.info(
+            f"Getting recent blockchain entries (count={count})..."
+        )
         entries = []
         for block in self.chain[-count:]:
-            entries.append({
-                "hash": block.hash,
-                "timestamp": block.timestamp,
-                "data": block.data
-            })
+            entries.append(
+                {
+                    "hash": block.hash,
+                    "timestamp": block.timestamp,
+                    "data": block.data,
+                }
+            )
         return list(entries)
 
     def shutdown(self):
         """Shutdown the blockchain layer."""
         self.logger.info("Blockchain layer shutting down")
-        # Could save chain to persistent storage here
+        self._save_chain()  # Save chain on shutdown
         pass
