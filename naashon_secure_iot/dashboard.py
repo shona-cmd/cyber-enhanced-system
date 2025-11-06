@@ -8,6 +8,19 @@ static_dir = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), '../static')
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        with open('users.txt', 'r') as f:
+            for line in f:
+                u, p = line.strip().split(':')
+                if username == u and password == p:
+                    return "Login successful!" # Redirect to dashboard later
+        return "Invalid credentials"
+    return render_template("dashboard.html")
+
 
 @app.route("/")
 def dashboard():
