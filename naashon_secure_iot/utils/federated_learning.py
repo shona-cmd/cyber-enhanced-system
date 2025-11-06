@@ -2,16 +2,28 @@
 Federated Learning utilities for NaashonSecureIoT.
 """
 
-import torch
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning("PyTorch not available. Federated learning disabled.")
 
 class FederatedLearning:
     def __init__(self):
-        pass
+        if not TORCH_AVAILABLE:
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning("Federated learning disabled due to missing PyTorch.")
 
     def aggregate_models(self, models):
         """
         Aggregates models from edge devices using simple averaging.
         """
+        if not TORCH_AVAILABLE:
+            return None
         if not models:
             return None
 
@@ -37,6 +49,8 @@ class FederatedLearning:
         """
         Trains the model on edge devices.
         """
+        if not TORCH_AVAILABLE:
+            return model
         model.train()
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
         criterion = torch.nn.BCELoss()

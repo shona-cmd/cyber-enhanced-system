@@ -1,8 +1,8 @@
 """
 Blockchain Layer for NaashonSecureIoT.
 
-Implements secure logging and smart contract simulation for tamper-proof records
-and automated threat responses.
+Implements secure logging and smart contract simulation for
+tamper-proof records and automated threat responses.
 """
 
 import logging
@@ -146,7 +146,7 @@ class BlockchainLayer:
         genesis_block = BlockchainEntry(genesis_data)
         genesis_block.mine_block(self.difficulty)
         self.chain.append(genesis_block)
-        self._save_chain()  # Save genesis block to file
+        self._save_chain()  # Save chain on shutdown
 
     def _initialize_smart_contracts(self):
         """Initialize default smart contracts for threat response."""
@@ -222,8 +222,7 @@ class BlockchainLayer:
             self.logger.error(f"Blockchain logging failed: {e}")
 
     def trigger_response(self, device_id: str, threat_type: str) -> bool:
-        """
-        Trigger automated response via smart contracts.
+        """Trigger automated response via smart contracts.
         Args:
             device_id: Device identifier
             device_type: Type of device
@@ -233,6 +232,7 @@ class BlockchainLayer:
         """
         try:
             response_data = {
+                "type": "threat_response",
                 "device_id": device_id,
                 "threat_type": threat_type,
                 "timestamp": time.time(),

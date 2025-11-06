@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MTAC NaashonSecureIoT - Secure Login</title>
+  <title>MTAC NaashonSecureIoT - Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.lordicon.com/lordicon.js"></script>
+  <script src="https://cdn.lordicon.com/lordicon.js" onerror="fallbackIcon()"></script> <!-- Error handler added -->
   <style>
     :root {
       --primary: #1E40AF;
@@ -26,61 +26,10 @@
       background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
       color: #E2E8F0;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-
-    /* Login Page */
-    .login-container {
-      background: var(--card-bg);
-      padding: 2.5rem;
-      border-radius: 16px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      text-align: center;
-    }
-
-    .logo-login {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .login-title {
-      font-size: 1.6rem;
-      margin-bottom: 1.5rem;
-      color: #60A5FA;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.75rem 0;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: rgba(15,23,42,0.8);
-      color: white;
-      font-size: 1rem;
-    }
-
-    button {
-      background: var(--primary);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background: #1D4ED8;
-    }
-
-    .hidden { display: none !important; }
 
     /* Dashboard Layout */
-    .app { display: none; width: 100%; }
+    .app { width: 100%; }
     .header {
       background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(12px);
@@ -97,20 +46,48 @@
     .user-info {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 0.9rem;
+      gap: 1rem;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav a.active {
+      color: #60A5FA;
+    }
+
+    .nav a:hover {
+      color: #E2E8F0;
     }
 
     .logout-btn {
       background: var(--danger);
+      color: white;
+      border: none;
       padding: 0.5rem 1rem;
       border-radius: 8px;
-      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
-    .container { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; }
-    .page { display: none; }
-    .page.active { display: block; }
+    .logout-btn:hover {
+      background: #DC2626;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
 
     .grid {
       display: grid;
@@ -121,15 +98,10 @@
 
     .card {
       background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
       padding: 1.5rem;
-      transition: transform 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
     }
 
     .card-header {
@@ -140,103 +112,283 @@
     }
 
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      color: #CBD5E1;
+      color: #E2E8F0;
     }
 
     .status {
       padding: 0.25rem 0.75rem;
-      border-radius: 999px;
+      border-radius: 20px;
       font-size: 0.8rem;
+      font-weight: 500;
     }
 
     .chart-container {
       background: var(--card-bg);
-      border-radius: 16px;
       padding: 1.5rem;
-      margin-bottom: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .chart-container h3 {
+      margin-bottom: 1rem;
+      color: #E2E8F0;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
     }
 
     .tabs {
       display: flex;
       gap: 1rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
     }
 
     .tab {
       padding: 0.75rem 1.5rem;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #94A3B8;
       cursor: pointer;
-      font-weight: 500;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
+      transition: 0.3s;
     }
 
     .tab.active {
-      color: #60A5FA;
-      border-bottom-color: #60A5FA;
-    }
-
-    .biometric-grid, .device-grid, .audit-grid, .course-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-
-    .item lord-icon {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 0.75rem;
-    }
-
-    .install-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .step {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      background: rgba(30, 41, 59, 0.6);
-      border-radius: 12px;
-      border-left: 4px solid var(--primary);
-    }
-
-    .step-number {
       background: var(--primary);
       color: white;
-      width: 36px;
-      height: 36px;
+    }
+
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .logo-fallback {
+      width: 40px;
+      height: 40px;
+      background: #60A5FA;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      color: white;
+      font-weight: bold;
     }
 
-    .table th {
-      background: rgba(30, 41, 59, 0.6);
-      font-weight: 600;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: #64748B;
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
       font-size: 0.9rem;
+      font-weight: 500;
+      margin: 0.25rem;
+      transition: 0.3s;
     }
 
-    @media (max-width: 768px) {
-      .header { flex-direction: column; gap: 1rem; }
-      .nav { flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .btn-secondary {
+      background: var(--gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #D97706;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #DC2626;
+    }
+
+    .btn-info {
+      background: #06B6D4;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #0891B2;
     }
   </style>
+</head>
+<body>
+  <!-- Dashboard App -->
+  <div id="app" class="app">
+    <header class="header">
+      <div class="user-info">
+        <span id="userDisplay">Logged in as {{ user.get('name', user['email']) }}</span>
+      </div>
+      <nav class="nav" id="navMenu">
+        <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
+        <a href="#" onclick="showPage('threat')">Threat Intel</a>
+        <a href="#" onclick="showPage('devices')">Device Manager</a>
+      </nav>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+      <!-- Dashboard Page -->
+      <div id="dashboard" class="page active">
+        <h2>Dashboard Overview</h2>
+        <div class="grid">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Total Devices</h3>
+              <span class="status" style="background: var(--success); color: white;">Active</span>
+            </div>
+            <p>{{ device_count }} devices connected</p>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Threat Alerts</h3>
+              <span class="status" style="background: var(--warning); color: white;">Medium</span>
+            </div>
+            <p>{{ active_threats }} active alerts</p>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Network Anomalies</h3>
+              <span class="status" style="background: var(--danger); color: white;">High</span>
+            </div>
+            <p>{{ network_anomalies }} anomalies detected</p>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Blockchain Entries</h3>
+              <span class="status" style="background: var(--primary); color: white;">Secure</span>
+            </div>
+            <p>{{ blockchain_entries }} entries logged</p>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Cloud Predictions</h3>
+              <span class="status" style="background: var(--success); color: white;">Active</span>
+            </div>
+            <p>{{ cloud_predictions }} predictions made</p>
+          </div>
+          {% if is_admin %}
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Admin Panel</h3>
+              <span class="status" style="background: var(--primary); color: white;">Admin</span>
+            </div>
+            <p>Access to advanced controls</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="chart-container">
+          <h3>Threat Events Over Time</h3>
+          <canvas id="threatChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Threat Intel Page -->
+      <div id="threat" class="page">
+        <h2>Threat Intelligence</h2>
+        <div class="tabs">
+          <div class="tab active">Overview</div>
+          <div class="tab">Alerts</div>
+          <div class="tab">Reports</div>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <h3 class="card-title">Recent Threats</h3>
+            <p>Monitor and analyze security threats in real-time.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Vulnerability Scan</h3>
+            <p>Latest scan results and recommendations.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Device Manager Page -->
+      <div id="devices" class="page">
+        <h2>Device Manager</h2>
+        <div class="tabs">
+          <div class="tab active">All Devices</div>
+          <div class="tab">Online</div>
+          <div class="tab">Offline</div>
+        </div>
+        <div class="device-grid">
+          <div class="card">
+            <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+            <h3 class="card-title">IoT Device 1</h3>
+            <p>Status: Online</p>
+            <a href="/control_device/device1/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device1/update" class="btn btn-secondary">Update Firmware</a>
+          </div>
+          <div class="card">
+            <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+            <h3 class="card-title">IoT Device 2</h3>
+            <p>Status: Offline</p>
+            <a href="/control_device/device2/ping" class="btn btn-warning">Ping</a>
+            <a href="/control_device/device2/remove" class="btn btn-danger">Remove Device</a>
+          </div>
+          <div class="card">
+            <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+            <h3 class="card-title">IoT Device 3</h3>
+            <p>Status: Online</p>
+            <a href="/control_device/device3/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device3/update" class="btn btn-secondary">Update Firmware</a>
+          </div>
+          <div class="card">
+            <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+            <h3 class="card-title">IoT Device 4</h3>
+            <p>Status: Online</p>
+            <a href="/control_device/device4/restart" class="btn btn-primary">Restart</a>
+            <a href="/control_device/device4/monitor" class="btn btn-info">Monitor</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    function fallbackIcon() {
+      // Show fallback if Lordicon fails
+      const icon = document.getElementById('lordIcon');
+      if (icon) {
+        icon.style.display = 'none';
+      }
+      const container = document.getElementById('logoIcon');
+      if (container) {
+        container.innerHTML = '<div class="logo-fallback">MT</div>'; // Simple MTAC fallback
+      }
+    }
+
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
@@ -244,41 +396,15 @@
       document.querySelector(`[onclick="showPage('${pageId}')"]`).classList.add('active');
     }
 
-    function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      // Basic authentication (replace with secure authentication)
-      if (username === 'admin@example.com') {
-        showApp('Administrator');
-      } else {
-        alert('Invalid credentials.');
-      }
-    }
-
     function logout() {
-      loginPage.classList.remove('hidden');
-      app.classList.add('hidden');
+      window.location.href = '/logout';
     }
 
-    function showApp(userRole) {
-      loginPage.classList.add('hidden');
-      app.classList.remove('hidden');
-
-      userDisplay.textContent = `Logged in as ${userRole}`;
-
-      let menuItems = `
-        <a href="#" class="active" onclick="showPage('dashboard')">Dashboard</a>
-        <a href="#" onclick="showPage('threat')">Threat Intel</a>
-        <a href="#" onclick="showPage('devices')">Device Manager</a>
-      `;
-
-      navMenu.innerHTML = menuItems;
-
-      // Show all pages
-      showPage('dashboard');
-      document.getElementById('devices').classList.remove('hidden');
-      document.getElementById('threat').classList.remove('hidden');
+    function controlDevice(deviceId, action) {
+      // Simulate device control actions
+      alert(`Action "${action}" initiated for ${deviceId}`);
+      // In a real application, this would send an AJAX request to the server
+      console.log(`Device ${deviceId}: ${action}`);
     }
 
     // Initial chart setup (you'd fetch real data here)
