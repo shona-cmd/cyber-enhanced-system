@@ -22,6 +22,12 @@ class Config:
         self.iot_devices = []  # List of registered IoT devices
         self.max_devices = 1000  # Maximum allowed devices
 
+        # MTAC Network Configuration
+        self.local_ip = "10.10.0.141"
+        self.subnet_mask = "255.255.252.0"
+        self.default_gateway = "10.10.0.1"
+        self.dns_suffix = "mtac.ac.ug"
+
         # Security Thresholds
         self.anomaly_threshold = 0.85  # ML detection threshold
         self.threat_response_efficiency = 0.95  # 95%+ efficiency target
@@ -37,7 +43,7 @@ class Config:
         self.smart_contract_gas_limit = 2000000
 
         # Network Settings
-        self.mqtt_broker = "localhost"
+        self.mqtt_broker = "10.10.0.1"  # MTAC gateway as MQTT broker
         self.mqtt_port = 8883  # TLS port
         self.zero_trust_enabled = True
 

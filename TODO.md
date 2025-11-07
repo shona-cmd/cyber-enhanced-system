@@ -1,3 +1,4 @@
-- [x] Add route for /apa_guide in naashon_secure_iot/dashboard.py
-- [x] Update templates/apa_guide.html with the new HTML content, integrating Flask forms and Jinja2
-- [x] Test the page by running the app and accessing /apa_guide (App started successfully, route added)
+- [x] Update config.py to add MTAC network fields (local_ip, subnet, gateway, dns) and set mqtt_broker to '10.10.0.1'
+- [ ] Update network.py to use new config fields for network status and connectivity checks
+- [ ] Update dashboard.py to display network information in the dashboard
+- [ ] Test the app accessibility on MTAC network by running and verifying APIs

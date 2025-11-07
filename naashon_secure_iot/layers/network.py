@@ -9,6 +9,9 @@ import logging
 import time
 from typing import Dict, Any, List
 from ..config import Config
+import requests
+import jwt
+import paho.mqtt.client as mqtt
 
 
 class NetworkLayer:
@@ -21,6 +24,12 @@ class NetworkLayer:
         self.trusted_devices: set = set()
         self.network_segments: Dict[str, List[str]] = {}
         self.logger.info("Network layer initialized with zero trust enabled")
+        self.ughub_token_url = self.config.ughub_token_url
+        self.ughub_api_base = self.config.ughub_api_base
+        self.mqtt_broker = self.config.mqtt_broker
+        self.mqtt_port = self.config.mqtt_port
+        self.ughub_client_id = self.config.ughub_client_id
+        self.ughub_client_secret = self.config.ughub_client_secret
 
     def verify_device(self, device_id: str) -> bool:
         """
@@ -172,7 +181,16 @@ class NetworkLayer:
             "active_sessions": len(self.active_sessions),
             "trusted_devices": len(self.trusted_devices),
             "network_segments": len(self.network_segments),
-            "zero_trust_enabled": self.config.zero_trust_enabled
+            "zero_trust_enabled": self.config.zero_trust_enabled,
+            "mtac_network": {
+                "local_ip": self.config.local_ip,
+                "subnet_mask": self.config.subnet_mask,
+                "default_gateway": self.config.default_gateway,
+                "dns_suffix": self.config.dns_suffix,
+                "mqtt_broker": self.config.mqtt_broker,
+                "mqtt_port": self.config.mqtt_port
+            },
+            "connectivity_status": self._check_connectivity()
         }
 
     def get_anomaly_count(self) -> int:
@@ -180,6 +198,23 @@ class NetworkLayer:
         # For demo purposes, return a simulated count
         # In a real implementation, this would track actual network anomalies
         return 0
+
+    def _check_connectivity(self) -> str:
+        """Check connectivity to MTAC network components."""
+        try:
+            import socket
+            # Check if we can reach the gateway
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(1)
+            result = sock.connect_ex((self.config.default_gateway, 80))
+            sock.close()
+            if result == 0:
+                return "connected"
+            else:
+                return "gateway_unreachable"
+        except Exception as e:
+            self.logger.warning(f"Connectivity check failed: {e}")
+            return "check_failed"
 
     def shutdown(self):
         """Shutdown the network layer."""
