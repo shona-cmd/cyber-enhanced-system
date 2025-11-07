@@ -213,8 +213,13 @@ class NetworkLayer:
         return {
             "active_sessions": len(self.active_sessions),
             "trusted_devices": len(self.trusted_devices),
-            "network_segments": len(self.trusted_segments),
-            "zero_trust_enabled": self.config.zero_trust_enabled
+            "network_segments": len(self.network_segments),
+            "zero_trust_enabled": self.config.zero_trust_enabled,
+            "local_ip": self.config.local_ip,
+            "subnet_mask": self.config.subnet_mask,
+            "default_gateway": self.config.default_gateway,
+            "dns_suffix": self.config.dns_suffix,
+            "connectivity_status": self._check_connectivity()
         }
 
     def get_anomaly_count(self) -> int:
