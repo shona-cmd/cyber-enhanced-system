@@ -47,6 +47,12 @@ class Config:
         self.mqtt_port = 8883  # TLS port
         self.zero_trust_enabled = True
 
+        # UGHub Settings
+        self.ughub_token_url = "https://iam.ughub.go.ug/token"
+        self.ughub_api_base = "https://api.ughub.go.ug"
+        self.ughub_client_id = "naashon-secure-iot-app"
+        self.ughub_client_secret = "SUPER_SECRET_FROM_UGHUB"
+
         # AI/ML Settings
         self.ml_model_path = "models/anomaly_detector.pth"
         self.dataset_path = "data/cicids2017_sample.csv"

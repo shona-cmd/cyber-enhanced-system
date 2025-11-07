@@ -1,8 +1,9 @@
 """
 Network Layer for NaashonSecureIoT.
 
-Implements zero trust architecture, access controls, and secure network segmentation.
-NIST CSF Function: Identify (ID), Protect (PR)
+Implements zero trust architecture, access controls, and secure network
+segmentation.
+NIST CSF Function: Identify (ID, Protect (PR)
 """
 
 import logging
@@ -10,8 +11,6 @@ import time
 from typing import Dict, Any, List
 from ..config import Config
 import requests
-import jwt
-import paho.mqtt.client as mqtt
 
 
 class NetworkLayer:
@@ -31,6 +30,26 @@ class NetworkLayer:
         self.ughub_client_id = self.config.ughub_client_id
         self.ughub_client_secret = self.config.ughub_client_secret
 
+    def get_jwt(self) -> str:
+        """
+        Get JWT token from UGHub.
+        Returns:
+            JWT token
+        """
+        payload = {
+            "grant_type": "client_credentials",
+            "client_id": self.ughub_client_id,
+            "client_secret": self.ughub_client_secret
+        }
+        try:
+            r = requests.post(self.ughub_token_url, data=payload)
+            r.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+            return r.json()["access_token"]
+        except requests.exceptions.RequestException as e:
+            self.logger.error(
+                f"Failed to obtain JWT token from UGHub: {e}")
+            raise
+
     def verify_device(self, device_id: str) -> bool:
         """
         Verify device using zero trust principles.
@@ -49,7 +68,6 @@ class NetworkLayer:
             # Additional checks could include:
             # - Behavioral analysis
             # - Certificate validation
-            # - Multi-factor authentication
             return True
 
         # Device not trusted - do not auto-add for security
@@ -82,7 +100,7 @@ class NetworkLayer:
 
     def transmit_data(self, device_id: str, data: Dict[str, Any]) -> bool:
         """
-        Transmit data through secure network channels.
+        Transmit data through secure network channels via UGHub.
 
         Args:
             device_id: Sending device
@@ -99,23 +117,38 @@ class NetworkLayer:
             # Check for active session
             active_session = None
             for session, info in self.active_sessions.items():
-                if info["device_id"] == device_id and self._is_session_valid(session):
+                if (info["device_id"] == device_id and
+                        self._is_session_valid(session)):
                     active_session = session
                     break
 
             if not active_session:
-                self.logger.warning(f"No valid session for device {device_id}")
+                self.logger.warning(
+                    f"No valid session for device {device_id}")
                 return False
 
             # Update session activity
-            self.active_sessions[active_session]["last_activity"] = time.time()
+            if active_session:
+                session = self.active_sessions[session_token]
+                session["last_activity"] = time.time()
 
-            # Simulate MQTT over TLS transmission
-            self.logger.debug(f"Data transmitted for device {device_id} via MQTT/TLS")
+            # Get JWT token
+            token = self.get_jwt()
+            headers = {"Authorization": f"Bearer {token}"}
+
+            # Send data to UGHub API gateway
+            ughub_api_url = f"{self.ughub_api_base}/devices/data"
+            response = requests.post(ughub_api_url, headers=headers,
+                                      json=data)
+            response.raise_for_status()
+
+            self.logger.debug(
+                f"Data transmitted for device {device_id} via UGHub API")
             return True
 
-        except Exception as e:
-            self.logger.error(f"Transmission failed for device {device_id}: {e}")
+        except requests.exceptions.RequestException as e:
+            self.logger.error(
+                f"Transmission failed for device {device_id}: {e}")
             return False
 
     def _assign_segment(self, device_id: str) -> str:
@@ -180,17 +213,8 @@ class NetworkLayer:
         return {
             "active_sessions": len(self.active_sessions),
             "trusted_devices": len(self.trusted_devices),
-            "network_segments": len(self.network_segments),
-            "zero_trust_enabled": self.config.zero_trust_enabled,
-            "mtac_network": {
-                "local_ip": self.config.local_ip,
-                "subnet_mask": self.config.subnet_mask,
-                "default_gateway": self.config.default_gateway,
-                "dns_suffix": self.config.dns_suffix,
-                "mqtt_broker": self.config.mqtt_broker,
-                "mqtt_port": self.config.mqtt_port
-            },
-            "connectivity_status": self._check_connectivity()
+            "network_segments": len(self.trusted_segments),
+            "zero_trust_enabled": self.config.zero_trust_enabled
         }
 
     def get_anomaly_count(self) -> int:
