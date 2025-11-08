@@ -80,8 +80,7 @@ def dashboard():
         "total_devices": data_sources.get_total_devices(),
         "active_threats": data_sources.get_active_threats(),
         "network_anomalies": data_sources.get_network_anomalies(),
-        "blockchain_entries": data_sources.get_blockchain_entries(),
-        "cloud_predictions": data_sources.get_cloud_predictions()
+        "blockchain_entries": data_sources.get_blockchain_entries()
     }
 
     # Check if user is admin to show additional features
@@ -94,7 +93,7 @@ def dashboard():
                            active_threats=dashboard_data["active_threats"],
                            network_anomalies=dashboard_data["network_anomalies"],
                            blockchain_entries=dashboard_data["blockchain_entries"],
-                           cloud_predictions=dashboard_data["cloud_predictions"],
+                           cloud_predictions=data_sources.get_cloud_predictions(),
                            user=session['user'],
                            is_admin=is_admin,
                            local_ip=config.local_ip,
@@ -119,6 +118,7 @@ def login():
     return render_template("login.html")
 
 import uuid
+
 import json
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -171,8 +171,7 @@ def devices():
     devices_data = [
         {'id': 'device1', 'name': 'IoT Device 1', 'status': data_sources.get_device_status('device1')},
         {'id': 'device2', 'name': 'IoT Device 2', 'status': data_sources.get_device_status('device1')},
-        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device1')},
-        {'id': 'device4', 'name': 'IoT Device 4', 'status': data_sources.get_device_status('device1')}
+        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device1')}
     ]
 
     return render_template("dashboard.html",
@@ -251,7 +250,7 @@ def authorize_register_facebook():
     try:
         facebook = oauth.create_client('facebook')
         token = facebook.authorize_access_token()
-        resp = facebook.get('me?fields=id,name,email')
+        resp = resp.get('me?fields=id,name,email')
         profile = resp.json()
 
         email = profile.get('email', '')
@@ -290,13 +289,13 @@ def api_register_device():
     from naashon_secure_iot import core
     framework = core.NaashonSecureIoT()
     data = request.get_json()
-    device_id = data.get('device_id')
+    device_id = data and data.get('device_id')
     device_type = data.get('device_type', 'unknown')
     if framework.register_device(device_id, device_type):
         message = f"Device {device_id} registered"
         return {"status": "success", "message": message}
     else:
-        message = f"Failed to register device {device_id}"
+        message = f"Failed to register device_id"
         return {"status": "error", "message": message}, 400
 
 
@@ -305,7 +304,7 @@ def api_transmit_data():
     from naashon_secure_iot import core
     framework = core.NaashonSecureIoT()
     data = request.get_json()
-    device_id = data.get('device_id')
+    device_id = data and data.get('device_id')
     payload = data.get('data')
     if isinstance(payload, str):
         payload = {"message": payload, "timestamp": None}
@@ -323,7 +322,7 @@ def api_metrics():
         "status": status,
         "devices": data["total_devices"],
         "anomaly_rate": 0.0,  # Placeholder
-        "blockchain_blocks": data["blockchain_entries"],
+        "blockchain_blocks": data["blockchain_blocks"],
         "uptime": 0  # Placeholder
     }
 
@@ -332,7 +331,7 @@ def api_metrics():
 def api_logs():
     # Simulated logs
     log_message = "INFO: System initialized\n"
-    log_message += "INFO: Device registered\n"
+    log_message += "INFO: Device registered"
     log_message += "WARNING: Anomaly detected"
     return log_message
 
