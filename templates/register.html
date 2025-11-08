@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NaashonSecureIoT - Register</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #1E40AF;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --dark: #0F172A;
-            --light: #F8FAFC;
-            --gray: #64748B;
-            --border: #334155;
-            --card-bg: #1E293B;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-            color: #E2E8F0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-=======
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>MTAC NaashonSecureIoT - Register</title>
@@ -57,7 +28,6 @@
       align-items: center;
       justify-content: center;
     }
->>>>>>> 73f59e2d42f33d73959245a5f5e7209a04e78e1f
 
     /* Loading Screen */
     .loading-overlay {
@@ -74,105 +44,6 @@
       transition: opacity 0.5s ease-out;
     }
 
-<<<<<<< HEAD
-        .register-title {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: #60A5FA;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            margin: 0.75rem 0;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: rgba(15,23,42,0.8);
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 0.85rem;
-            margin: 1rem 0;
-            border: none;
-            border-radius: 8px;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            background: #1D4ED8;
-        }
-
-        .message {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            font-weight: 500;
-        }
-
-        .success { background: rgba(16,185,129,0.2); color: var(--success); }
-        .error   { background: rgba(239,68,68,0.2);   color: var(--danger); }
-    </style>
-</head>
-<body>
-    <div class="register-container">
-        <h2 class="register-title">NaashonSecureIoT<br><small>Device / User Registration</small></h2>
-        
-        <form id="registerForm">
-            <input type="text" id="username" name="username" placeholder="Username (e.g. device_001)" required>
-            <input type="password" id="password" name="password" placeholder="Password (min 8 chars)" required minlength="8">
-            <button type="submit">Register</button>
-        </form>
-
-        <div id="message"></div>
-    </div>
-
-    <script>
-        // Pure frontend + Flask backend handler (no page reload)
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = '';
-            messageDiv.className = '';
-
-            try {
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageDiv.textContent = `Success: ${data.message} | Device ID: ${data.device_id}`;
-                    messageDiv.classList.add('message', 'success');
-                    document.getElementById('registerForm').reset();
-                } else {
-                    messageDiv.textContent = `Error: ${data.error || 'Registration failed'}`;
-                    messageDiv.classList.add('message', 'error');
-                }
-            } catch (err) {
-                messageDiv.textContent = 'Error: Network error – is the Flask server running?';
-                messageDiv.classList.add('message', 'error');
-                console.error(err);
-            }
-        });
-    </script>
-=======
     .loading-content {
       text-align: center;
       animation: fadeIn 1s ease-in;
@@ -372,7 +243,7 @@
           </svg>
           Register with GitHub
         </a>
-        <a href="{{ url_for('authorize_register_facebook') }}" class="social-btn facebook-btn">
+        <a href="{{ url_for('register_facebook') }}" class="social-btn facebook-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
           </svg>
@@ -397,6 +268,5 @@
       }, 2000); // Show loading for 2 seconds
     });
   </script>
->>>>>>> 73f59e2d42f33d73959245a5f5e7209a04e78e1f
 </body>
 </html>
