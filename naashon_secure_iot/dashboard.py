@@ -133,7 +133,6 @@ def register():
             # Store the data (replace with actual storage logic)
             with open('users.txt', 'a') as f:
                 f.write(f'{username}:{password}:{device_id}\n')
-
             return json.dumps({
                 'message': 'Registration successful!',
                 'device_id': device_id
