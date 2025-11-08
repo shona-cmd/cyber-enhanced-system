@@ -1,7 +1,5 @@
-l"""
+"""
 Threat Intelligence utilities for NaashonSecureIoT.
-
-
 """
 
 

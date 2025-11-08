@@ -297,6 +297,13 @@
             </div>
             <p>{{ cloud_predictions }} predictions made</p>
           </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Network Status</h3>
+              <span class="status" style="background: var(--primary); color: white;">Info</span>
+            </div>
+            <p>IP: {{ local_ip }}<br>Gateway: {{ default_gateway }}<br>DNS: {{ dns_suffix }}</p>
+          </div>
           {% if is_admin %}
           <div class="card">
             <div class="card-header">

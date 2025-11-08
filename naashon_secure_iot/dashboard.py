@@ -56,20 +56,6 @@ def save_users(users):
         json.dump(users, f)
 
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        with open('users.txt', 'r') as f:
-            for line in f:
-                u, p = line.strip(':')
-                if username == u and password == p:
-                    return redirect("/")
-        return "Invalid credentials"
-    return render_template("login.html")
-
-
 @app.route("/")
 def dashboard():
     if 'user' not in session:
@@ -87,7 +73,13 @@ def dashboard():
     is_admin = session['user'].get('role') == 'admin'
 
     from naashon_secure_iot.config import Config
+    from naashon_secure_iot.layers.network import NetworkLayer
+    import logging
     config = Config()
+    logger = logging.getLogger(__name__)
+    network_layer = NetworkLayer(config, logger)
+    network_status = network_layer.get_network_status()
+
     return render_template("dashboard.html",
                            device_count=dashboard_data["total_devices"],
                            active_threats=dashboard_data["active_threats"],
@@ -100,7 +92,8 @@ def dashboard():
                            subnet_mask=config.subnet_mask,
                            default_gateway=config.default_gateway,
                            dns_suffix=config.dns_suffix,
-                           mqtt_broker=config.mqtt_broker)
+                           mqtt_broker=config.mqtt_broker,
+                           network_status=network_status)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -156,7 +149,7 @@ def threat():
     # Get threat data for the page
     threat_data = data_sources.get_recent_threats()
 
-    return render_template("dashboard.html",
+    return render_template("threat_intel.html",
                           user=session['user'],
                           is_admin=session['user'].get('role') == 'admin',
                           threat_data=threat_data)
@@ -173,7 +166,7 @@ def devices():
         {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device1')}
     ]
 
-    return render_template("dashboard.html",
+    return render_template("device_manager.html",
                           user=session['user'],
                           is_admin=session['user'].get('role') == 'admin',
                           devices_data=devices_data)
@@ -246,6 +239,12 @@ def register_github():
     github = oauth.create_client('github')
     redirect_uri = url_for('authorize_register_github', _external=True)
     return github.authorize_redirect(redirect_uri)
+
+@app.route('/register/facebook')
+def register_facebook():
+    facebook = oauth.create_client('facebook')
+    redirect_uri = url_for('authorize_register_facebook', _external=True)
+    return facebook.authorize_redirect(redirect_uri)
 
 @app.route('/authorize/register/facebook')
 def authorize_register_facebook():
@@ -326,7 +325,7 @@ def api_metrics():
         "status": status,
         "devices": data["total_devices"],
         "anomaly_rate": 0.0,  # Placeholder
-        "blockchain_blocks": data["blockchain_blocks"],
+        "blockchain_blocks": data["blockchain_entries"],
         "uptime": 0  # Placeholder
     }
 
