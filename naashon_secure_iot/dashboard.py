@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
-# from naashon_secure_iot import core  # Commented out for now
-import json
-from authlib.integrations.flask_client import OAuth
 import sys
-import os
+import json
+import uuid
+# from naashon_secure_iot import core  # Commented out for now
+from authlib.integrations.flask_client import OAuth
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from data_sources import data_sources
 
@@ -110,30 +110,30 @@ def login():
 
     return render_template("login.html")
 
-import uuid
 
-import json
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        try:
-            data = request.get_json()
-            username = data['username']
-            password = data['password']
-            device_id = str(uuid.uuid4())  # Generate a unique device ID
+        email = request.form['email']
+        password = request.form['password']
+        role = request.form['role']
 
-            # Store the data (replace with actual storage logic)
-            with open('users.txt', 'a') as f:
-                f.write(f'{username}:{password}:{device_id}\n')
-            return json.dumps({
-                'message': 'Registration successful!',
-                'device_id': device_id
-            }), 200, {'ContentType': 'application/json'}
-        except Exception as e:
-            return json.dumps({
-                'error': str(e)
-            }), 400, {'ContentType': 'application/json'}
+        users = load_users()
+        if email in users:
+            flash('User already exists')
+            return redirect(url_for('register'))
+
+        # Create new user
+        users[email] = {
+            'password': password,
+            'role': role
+        }
+        save_users(users)
+
+        flash('Registration successful! Please log in.')
+        return redirect(url_for('login'))
+
     return render_template("register.html")
 
 @app.route("/logout")
@@ -237,7 +237,7 @@ def authorize_facebook():
 @app.route('/register/github')
 def register_github():
     github = oauth.create_client('github')
-    redirect_uri = url_for('authorize_register_github', _external=True)
+    redirect_uri = url_for('authorize_github', _external=True)
     return github.authorize_redirect(redirect_uri)
 
 @app.route('/register/facebook')
@@ -251,7 +251,7 @@ def authorize_register_facebook():
     try:
         facebook = oauth.create_client('facebook')
         token = facebook.authorize_access_token()
-        resp = resp.get('me?fields=id,name,email')
+        resp = facebook.get('me?fields=id,name,email')
         profile = resp.json()
         try:
             email = profile.get('email', '')
