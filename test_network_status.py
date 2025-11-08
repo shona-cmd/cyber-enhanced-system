@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+c#!/usr/bin/env python3
 
 import logging
 from naashon_secure_iot.config import Config

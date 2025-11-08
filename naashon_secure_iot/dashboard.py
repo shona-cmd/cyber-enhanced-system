@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from flask import Flask, render_template, request, redirect
-=======
 from flask import Flask, render_template, request, redirect, url_for, session, flash
->>>>>>> 73f59e2d42f33d73959245a5f5e7209a04e78e1f
 import os
 # from naashon_secure_iot import core  # Commented out for now
 import json
@@ -25,7 +21,7 @@ oauth = OAuth(app)
 github = oauth.register(
     name='github',
     client_id='your_github_client_id',  # Replace with actual GitHub OAuth app client ID
-    client_secret='your_github_client_secret',  # Replace with actual GitHub OAuth app client secret
+    client_secret='your_github_client_secret', # Replace with actual GitHub OAuth app client secret
     access_token_url='https://github.com/login/oauth/access_token',
     access_token_params=None,
     authorize_url='https://github.com/login/oauth/authorize',
@@ -37,7 +33,7 @@ github = oauth.register(
 facebook = oauth.register(
     name='facebook',
     client_id='your_facebook_app_id',  # Replace with actual Facebook app ID
-    client_secret='your_facebook_app_secret',  # Replace with actual Facebook app secret
+    client_secret='your_facebook_app_secret', # Replace with actual GitHub OAuth app client secret
     access_token_url='https://graph.facebook.com/oauth/access_token',
     access_token_params=None,
     authorize_url='https://www.facebook.com/dialog/oauth',
@@ -71,7 +67,7 @@ def login():
                 if username == u and password == p:
                     return redirect("/")
         return "Invalid credentials"
-    return render_template("dashboard.html")
+    return render_template("login.html")
 
 
 @app.route("/")
@@ -91,6 +87,8 @@ def dashboard():
     # Check if user is admin to show additional features
     is_admin = session['user'].get('role') == 'admin'
 
+    from naashon_secure_iot.config import Config
+    config = Config()
     return render_template("dashboard.html",
                            device_count=dashboard_data["total_devices"],
                            active_threats=dashboard_data["active_threats"],
@@ -98,7 +96,12 @@ def dashboard():
                            blockchain_entries=dashboard_data["blockchain_entries"],
                            cloud_predictions=dashboard_data["cloud_predictions"],
                            user=session['user'],
-                           is_admin=is_admin)
+                           is_admin=is_admin,
+                           local_ip=config.local_ip,
+                           subnet_mask=config.subnet_mask,
+                           default_gateway=config.default_gateway,
+                           dns_suffix=config.dns_suffix,
+                           mqtt_broker=config.mqtt_broker)
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -121,7 +124,6 @@ import json
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-<<<<<<< HEAD
         try:
             data = request.get_json()
             username = data['username']
@@ -140,21 +142,6 @@ def register():
             return json.dumps({
                 'error': str(e)
             }), 400, {'ContentType': 'application/json'}
-=======
-        email = request.form['email']
-        password = request.form['password']
-        role = request.form.get('role', 'user')
-
-        users = load_users()
-        if email in users:
-            flash('User already exists')
-        else:
-            users[email] = {'password': password, 'role': role}
-            save_users(users)
-            flash('Registration successful! Please login.')
-            return redirect(url_for('login'))
-
->>>>>>> 73f59e2d42f33d73959245a5f5e7209a04e78e1f
     return render_template("register.html")
 
 @app.route("/logout")
@@ -183,9 +170,9 @@ def devices():
     # Mock device data with dynamic status
     devices_data = [
         {'id': 'device1', 'name': 'IoT Device 1', 'status': data_sources.get_device_status('device1')},
-        {'id': 'device2', 'name': 'IoT Device 2', 'status': data_sources.get_device_status('device2')},
-        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device3')},
-        {'id': 'device4', 'name': 'IoT Device 4', 'status': data_sources.get_device_status('device4')}
+        {'id': 'device2', 'name': 'IoT Device 2', 'status': data_sources.get_device_status('device1')},
+        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device1')},
+        {'id': 'device4', 'name': 'IoT Device 4', 'status': data_sources.get_device_status('device1')}
     ]
 
     return render_template("dashboard.html",
@@ -246,7 +233,7 @@ def authorize_facebook():
 
     # Create or update user in session
     session['user'] = {
-        'email': profile.get('email', ''),
+        'email': email,
         'name': profile.get('name', ''),
         'role': 'user',
         'provider': 'facebook'
@@ -258,49 +245,6 @@ def register_github():
     github = oauth.create_client('github')
     redirect_uri = url_for('authorize_register_github', _external=True)
     return github.authorize_redirect(redirect_uri)
-
-@app.route('/register/facebook')
-def register_facebook():
-    facebook = oauth.create_client('facebook')
-    redirect_uri = url_for('authorize_register_facebook', _external=True)
-    return facebook.authorize_redirect(redirect_uri)
-
-@app.route('/authorize/register/github')
-def authorize_register_github():
-    try:
-        github = oauth.create_client('github')
-        token = github.authorize_access_token()
-        resp = github.get('user')
-        profile = resp.json()
-        # Get user email
-        email_resp = github.get('user/emails')
-        emails = email_resp.json()
-        primary_email = next((email['email'] for email in emails if email['primary']), profile['email'])
-
-        users = load_users()
-        if primary_email in users:
-            flash('User already exists')
-            return redirect(url_for('register'))
-
-        # Create new user
-        users[primary_email] = {
-            'password': '',  # No password for OAuth users
-            'role': 'user'
-        }
-        save_users(users)
-
-        # Log in the user
-        session['user'] = {
-            'email': primary_email,
-            'name': profile.get('name', ''),
-            'role': 'user',
-            'provider': 'github'
-        }
-        flash('Registration successful!')
-        return redirect(url_for('dashboard'))
-    except Exception as e:
-        flash('GitHub registration failed. Please try again.')
-        return redirect(url_for('register'))
 
 @app.route('/authorize/register/facebook')
 def authorize_register_facebook():
@@ -322,7 +266,7 @@ def authorize_register_facebook():
 
         # Create new user
         users[email] = {
-            'password': '',  # No password for OAuth users
+            'password': '', # No password for OAuth users
             'role': 'user'
         }
         save_users(users)
