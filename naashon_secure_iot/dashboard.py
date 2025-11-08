@@ -63,7 +63,7 @@ def login():
         password = request.form['password']
         with open('users.txt', 'r') as f:
             for line in f:
-                u, p = line.strip().split(':')
+                u, p = line.strip(':')
                 if username == u and password == p:
                     return redirect("/")
         return "Invalid credentials"
@@ -78,7 +78,7 @@ def dashboard():
     # Get real-time dashboard data from data sources
     dashboard_data = {
         "total_devices": data_sources.get_total_devices(),
-        "active_threats": data_sources.get_active_threats(),
+        "active_threats": data_sources.get_recent_threats(),
         "network_anomalies": data_sources.get_network_anomalies(),
         "blockchain_entries": data_sources.get_blockchain_entries()
     }
@@ -229,7 +229,10 @@ def authorize_facebook():
     token = facebook.authorize_access_token()
     resp = facebook.get('me?fields=id,name,email')
     profile = resp.json()
-
+    try:
+        email = profile.get('email', '')
+    except:
+        email = ""
     # Create or update user in session
     session['user'] = {
         'email': email,
@@ -252,8 +255,10 @@ def authorize_register_facebook():
         token = facebook.authorize_access_token()
         resp = resp.get('me?fields=id,name,email')
         profile = resp.json()
-
-        email = profile.get('email', '')
+        try:
+            email = profile.get('email', '')
+        except:
+            email = ""
         if not email:
             flash('Email not provided by Facebook')
             return redirect(url_for('register'))
@@ -292,10 +297,10 @@ def api_register_device():
     device_id = data and data.get('device_id')
     device_type = data.get('device_type', 'unknown')
     if framework.register_device(device_id, device_type):
-        message = f"Device {device_id} registered"
+        message = f"Device with id {device_id} registered"
         return {"status": "success", "message": message}
     else:
-        message = f"Failed to register device_id"
+        message = f"Failed to register device with id {device_id}"
         return {"status": "error", "message": message}, 400
 
 
@@ -307,7 +312,7 @@ def api_transmit_data():
     device_id = data and data.get('device_id')
     payload = data.get('data')
     if isinstance(payload, str):
-        payload = {"message": payload, "timestamp": None}
+        payload = {"message": f"Data received from device with id {device_id}", "timestamp": None}
     result = framework.process_data(device_id, payload)
     return result
 
@@ -325,15 +330,6 @@ def api_metrics():
         "blockchain_blocks": data["blockchain_blocks"],
         "uptime": 0  # Placeholder
     }
-
-
-@app.route("/api/logs")
-def api_logs():
-    # Simulated logs
-    log_message = "INFO: System initialized\n"
-    log_message += "INFO: Device registered"
-    log_message += "WARNING: Anomaly detected"
-    return log_message
 
 
 @app.route("/apa_guide")
