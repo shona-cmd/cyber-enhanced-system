@@ -221,7 +221,10 @@ def launch():
     if not check_access():
         print("[FIX] Starting in debug mode...")
         app = patch_dashboard()
-        app.run(host=HOST, port=PORT, debug=True, use_reloader=False)
+        app.run(
+            host=HOST, port=PORT, debug=True,
+            use_reloader=False
+        )
     else:
         print(f"[OK] Dashboard live at {DASHBOARD_URL}")
         print("   Open in browser: curl -s http://localhost:5000 | head")
