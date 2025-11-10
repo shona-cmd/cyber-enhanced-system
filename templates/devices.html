@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MTAC NaashonSecureIoT - Device Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.lordicon.com/lordicon.js" onerror="fallbackIcon()"></script>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --dark: #0F172A;
+      --light: #F8FAFC;
+      --gray: #64748B;
+      --border: #334155;
+      --card-bg: #1E293B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #E2E8F0;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav a.active {
+      color: #60A5FA;
+    }
+
+    .nav a:hover {
+      color: #E2E8F0;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #DC2626;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #94A3B8;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .card-icon {
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+
+    .device-status {
+      margin-bottom: 1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-online { background: var(--success); color: white; }
+    .status-offline { background: var(--danger); color: white; }
+    .status-maintenance { background: var(--warning); color: white; }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin: 0.25rem;
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .btn-secondary {
+      background: var(--gray);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #D97706;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #DC2626;
+    }
+
+    .btn-info {
+      background: #06B6D4;
+      color: white;
+    }
+
+    .btn-info:hover {
+      background: #0891B2;
+    }
+
+    .logo-fallback {
+      width: 40px;
+      height: 40px;
+      background: #60A5FA;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="user-info">
+      <span>Logged in as Admin</span>
+    </div>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/threat">Threat Intel</a>
+      <a href="/devices" class="active">Device Manager</a>
+    </nav>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <div class="container">
+    <h2>Device Manager</h2>
+    <div class="tabs">
+      <div class="tab active">All Devices</div>
+      <div class="tab">Online</div>
+      <div class="tab">Offline</div>
+    </div>
+    <div class="device-grid">
+      {% for device in devices %}
+      <div class="card">
+        <div class="card-icon">
+          <lord-icon src="https://cdn.lordicon.com/slduhdil.json" trigger="hover"></lord-icon>
+        </div>
+        <h3 class="card-title">{{ device.id }}</h3>
+        <p class="device-status status-{{ device.status }}">{{ device.status.title() }}</p>
+        <a href="/control_device/{{ device.id }}/restart" class="btn btn-primary">Restart</a>
+        <a href="/control_device/{{ device.id }}/update" class="btn btn-secondary">Update Firmware</a>
+        {% if device.status == 'offline' %}
+        <a href="/control_device/{{ device.id }}/ping" class="btn btn-warning">Ping</a>
+        {% endif %}
+        <a href="/control_device/{{ device.id }}/remove" class="btn btn-danger">Remove Device</a>
+        <a href="/control_device/{{ device.id }}/monitor" class="btn btn-info">Monitor</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    function fallbackIcon() {
+      const icons = document.querySelectorAll('lord-icon');
+      icons.forEach(icon => {
+        icon.style.display = 'none';
+        const fallback = document.createElement('div');
+        fallback.className = 'logo-fallback';
+        fallback.textContent = 'IoT';
+        icon.parentNode.insertBefore(fallback, icon);
+      });
+    }
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MTAC NaashonSecureIoT - Threat Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1E40AF;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --dark: #0F172A;
+      --light: #F8FAFC;
+      --gray: #64748B;
+      --border: #334155;
+      --card-bg: #1E293B;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+      color: #E2E8F0;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .nav a.active {
+      color: #60A5FA;
+    }
+
+    .nav a:hover {
+      color: #E2E8F0;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #DC2626;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+
+    .status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .chart-container {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .chart-container h3 {
+      margin-bottom: 1rem;
+      color: #E2E8F0;
+    }
+
+    .threat-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .threat-item {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .threat-item:last-child {
+      border-bottom: none;
+    }
+
+    .threat-level {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .threat-level.low { background: var(--success); color: white; }
+    .threat-level.medium { background: var(--warning); color: white; }
+    .threat-level.high { background: var(--danger); color: white; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="user-info">
+      <span>Logged in as Admin</span>
+    </div>
+    <nav class="nav">
+      <a href="/">Dashboard</a>
+      <a href="/threat" class="active">Threat Intel</a>
+      <a href="/devices">Device Manager</a>
+    </nav>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <div class="container">
+    <h2>Threat Intelligence</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Recent Threats</h3>
+          <span class="status" style="background: var(--danger); color: white;">High</span>
+        </div>
+        <p>Monitor and analyze security threats in real-time.</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Vulnerability Scan</h3>
+          <span class="status" style="background: var(--warning); color: white;">Medium</span>
+        </div>
+        <p>Latest scan results and recommendations.</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Threat Feed</h3>
+          <span class="status" style="background: var(--primary); color: white;">Active</span>
+        </div>
+        <p>External threat intelligence integration.</p>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h3>Threat Events Over Time</h3>
+      <canvas id="threatChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Recent Threat Events</h3>
+      <ul class="threat-list">
+        <li class="threat-item">
+          <div>
+            <strong>Unauthorized Access Attempt</strong>
+            <p>Device MTAC-DEV-001 blocked suspicious login</p>
+          </div>
+          <span class="threat-level high">High</span>
+        </li>
+        <li class="threat-item">
+          <div>
+            <strong>Anomaly Detected</strong>
+            <p>Unusual data pattern from IoT sensor</p>
+          </div>
+          <span class="threat-level medium">Medium</span>
+        </li>
+        <li class="threat-item">
+          <div>
+            <strong>Network Scan</strong>
+            <p>External IP scanning detected</p>
+          </div>
+          <span class="threat-level low">Low</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function logout() {
+      window.location.href = '/logout';
+    }
+
+    // Threat chart
+    const threatCtx = document.getElementById('threatChart')?.getContext('2d');
+    if (threatCtx) {
+      const threatData = {{ threat_data | tojson }};
+      new Chart(threatCtx, {
+        type: 'line',
+        data: {
+          labels: threatData.map(d => d.timestamp),
+          datasets: [{
+            label: 'Threat Events',
+            data: threatData.map(d => d.count),
+            borderColor: '#EF4444',
+            backgroundColor: 'rgba(239,68,68,0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { labels: { color: '#E2E8F0' } }
+          },
+          scales: {
+            x: { ticks: { color: '#94A3B8' } },
+            y: { ticks: { color: '#94A3B8' } }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

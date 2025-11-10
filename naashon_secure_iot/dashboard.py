@@ -11,13 +11,18 @@ import socket
 import threading
 import time
 import subprocess
-from flask import render_template_string, jsonify, request
+from flask import Flask, render_template, jsonify, request
+from flask import redirect, url_for, flash
 from naashon_secure_iot.core import NaashonSecureIoT
+from naashon_secure_iot.data_sources import data_sources
 
 # === 1. PORT & HOST CONFIG ===
-HOST = "0.0.0.0"  # Bind to all interfaces
+HOST = "0.0.0.0"  # Bind to all
+# interfaces
 PORT = 5000
-DASHBOARD_URL = f"http://localhost:{PORT}"
+DASHBOARD_URL = (
+    f"http://localhost:{PORT}"
+)
 
 # === 2. ENHANCED DASHBOARD TEMPLATE ===
 HTML_DASHBOARD = """
@@ -79,11 +84,8 @@ HTML_DASHBOARD = """
 # === 3. FIX CORE DASHBOARD ROUTES ===
 def patch_dashboard():
     framework = NaashonSecureIoT()
-    app = framework.app
-
-    # Clear existing routes if conflicting
-    app.view_functions.clear()
-    app.url_map._rules.clear()
+    app = Flask(__name__)
+    app.secret_key = 'naashon_secure_iot_secret_key'
 
     # Re-add core API
     @app.route('/register_device', methods=['POST'])
@@ -101,7 +103,11 @@ def patch_dashboard():
     def transmit_data():
         payload = request.json
         device_id = payload['device_id']
-        raw_data = payload['data'].encode() if isinstance(payload['data'], str) else payload['data']
+        raw_data = (
+            payload['data'].encode()
+            if isinstance(payload['data'], str)
+            else payload['data']
+        )
 
         encrypted = framework.device.encrypt_data(raw_data)
         if not framework.network.authorize_transmission(device_id):
@@ -121,7 +127,40 @@ def patch_dashboard():
     # === NEW: DASHBOARD & API ===
     @app.route('/')
     def dashboard():
-        return render_template_string(HTML_DASHBOARD)
+        dashboard_data = framework.get_dashboard_data()
+        return render_template(
+            'dashboard.html',
+            device_count=dashboard_data['total_devices'],
+            active_threats=dashboard_data['active_threats'],
+            blockchain_entries=dashboard_data['blockchain_entries'],
+            network_anomalies=dashboard_data['network_anomalies'],
+            cloud_predictions=dashboard_data['cloud_predictions'],
+            mtac_name=dashboard_data['mtac_name']
+        )
+
+    @app.route('/threat')
+    def threat():
+        threat_data = data_sources.get_recent_threats()
+        return render_template('threat.html', threat_data=threat_data)
+
+    @app.route('/devices')
+    def devices():
+        device_list = framework.device_layer.get_all_devices()
+        return render_template('devices.html', devices=device_list)
+
+    @app.route('/control_device/<device_id>/<action>')
+    def control_device(device_id, action):
+        if action not in ['restart', 'update', 'ping', 'remove', 'monitor']:
+            flash('Invalid action', 'error')
+            return redirect(url_for('devices'))
+        result = data_sources.control_device(device_id, action)
+        flash(f'Device {device_id}: {result}', 'success')
+        return redirect(url_for('devices'))
+
+    @app.route('/logout')
+    def logout():
+        flash('Logged out successfully', 'info')
+        return redirect(url_for('dashboard'))
 
     @app.route('/api/metrics')
     def api_metrics():
@@ -131,7 +170,11 @@ def patch_dashboard():
             "devices": len([b for b in framework.blockchain.chain if "REGISTER" in b.data]),
             "anomaly_rate": round(metrics["anomaly_rate"] * 100, 2),
             "blockchain_blocks": len(framework.blockchain.chain),
-            "uptime": int(time.time() - framework.cloud.start_time if hasattr(framework.cloud, 'start_time') else 0)
+            "uptime": int(
+                time.time() - framework.cloud.start_time
+                if hasattr(framework.cloud, 'start_time')
+                else 0
+            )
         })
 
     @app.route('/api/logs')
@@ -160,7 +203,8 @@ def check_access():
         print(f"[OK] Local access: {DASHBOARD_URL}")
         return True
     except:
-        print(f"[FAIL] Cannot connect to {DASHBOARD_URL}")
+        print(f"[FAIL] Cannot connect to"
+              f" {DASHBOARD_URL}")
         return False
     finally:
         s.close()

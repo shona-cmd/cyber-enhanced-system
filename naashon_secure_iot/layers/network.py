@@ -30,11 +30,10 @@ class NetworkLayer:
         self.ughub_client_id = self.config.ughub_client_secret
 
     def get_jwt(self) -> str:
-        """
-        Get JWT token from UGHub.
+        """Get JWT token from UGHub.
+
         Returns:
-            JWT token
-        """
+            JWT token"""
         payload = {
             "grant_type": "client_credentials",
             "client_id": self.ughub_client_id,
@@ -139,16 +138,15 @@ class NetworkLayer:
             ughub_api_url = f"{self.ughub_api_base}/devices/data"
             try:
                 response = requests.post(ughub_api_url, headers=headers,
-                                          json=data)
-                response.raise_for_status()
-                self.logger.debug(
-                    f"Data transmitted for device {device_id} via UGHub API")
-                return True
-            except requests.exceptions.RequestException as e:
-                self.logger.error(
-                    f"Transmission failed for device {device_id}: {e}")
-                return False
-
+            json=data)
+            response.raise_for_status()
+            self.logger.debug(
+                f"Data transmitted for device {device_id} via UGHub API")
+            return True
+        except requests.exceptions.RequestException as e:
+            self.logger.error(
+                f"Transmission failed for device {device_id}: {e}")
+            return False
         except Exception as e:
             self.logger.error(
                 f"Transmission failed for device {device_id}: {e}")
@@ -244,10 +242,21 @@ class NetworkLayer:
         """Check connectivity to MTAC network components."""
         try:
             import socket
-            # Check if we can reach the gateway
+            import subprocess
+
+            # Check if MQTT broker is running
+            try:
+                result = subprocess.run(['netstat', '-an'], capture_output=True, text=True, check=True)
+                if str(self.config.mqtt_port) not in result.stdout:
+                    return "broker_down"
+            except subprocess.CalledProcessError as e:
+                self.logger.warning(f"Error checking MQTT broker status: {e}")
+                return "check_failed"
+
+            # Check if we can reach the MQTT broker
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1)
-            result = sock.connect_ex((self.config.default_gateway, 80))
+            result = sock.connect_ex((self.config.mqtt_broker, self.config.mqtt_port))
             sock.close()
             if result == 0:
                 return "connected"
