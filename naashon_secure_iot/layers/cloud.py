@@ -181,6 +181,20 @@ class CloudLayer:
 
         self.logger.info(f"Cleared old data older than {days} days")
 
+    def get_metrics(self) -> Dict[str, Any]:
+        """Get cloud layer metrics."""
+        total_anomalies = sum(
+            intel["total_anomalies"] for intel in self.threat_intelligence.values()
+        )
+        avg_anomaly_rate = total_anomalies / max(len(self.threat_intelligence), 1)
+
+        return {
+            "anomaly_rate": avg_anomaly_rate,
+            "total_predictions": len(self.predictions),
+            "total_backups": len(self.backup_data),
+            "threat_intelligence_entries": len(self.threat_intelligence)
+        }
+
     def shutdown(self):
         """Shutdown the cloud layer."""
         self.logger.info("Cloud layer shutting down")

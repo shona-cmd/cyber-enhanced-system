@@ -11,18 +11,13 @@ import socket
 import threading
 import time
 import subprocess
-from flask import Flask, render_template, jsonify, request
-from flask import redirect, url_for, flash
+from flask import render_template_string, jsonify, request
 from naashon_secure_iot.core import NaashonSecureIoT
-from naashon_secure_iot.data_sources import data_sources
 
 # === 1. PORT & HOST CONFIG ===
-HOST = "0.0.0.0"  # Bind to all
-# interfaces
+HOST = "0.0.0.0"  # Bind to all interfaces
 PORT = 5000
-DASHBOARD_URL = (
-    f"http://localhost:{PORT}"
-)
+DASHBOARD_URL = f"http://localhost:{PORT}"
 
 # === 2. ENHANCED DASHBOARD TEMPLATE ===
 HTML_DASHBOARD = """
@@ -32,13 +27,33 @@ HTML_DASHBOARD = """
   <title>NaashonSecureIoT - MTAC Dashboard</title>
   <meta http-equiv="refresh" content="5">
   <style>
-    body { font-family: 'Courier New', monospace; background: #0d1117; color: #c9d1d9; padding: 20px; }
-    .container { max-width: 1000px; margin: auto; }
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
     h1 { color: #58a6ff; }
-    .metric { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #58a6ff; }
+    .metric {
+      background: #161b22;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 4px solid #58a6ff;
+    }
     .status-ok { color: #56d364; }
     .status-warn { color: #f85149; }
-    .log { background: #21262d; padding: 10px; height: 200px; overflow-y: auto; font-size: 0.9em; }
+    .log {
+      background: #21262d;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      font-size: 0.9em;
+    }
     pre { margin: 0; }
   </style>
 </head>
@@ -57,11 +72,24 @@ HTML_DASHBOARD = """
         .then(data => {
           const m = document.getElementById('metrics');
           m.innerHTML = `
-            <div class="metric"><strong>Status:</strong> <span class="${data.status === 'secure' ? 'status-ok' : 'status-warn'}">${data.status.toUpperCase()}</span></div>
-            <div class="metric"><strong>Devices Registered:</strong> ${data.devices}</div>
-            <div class="metric"><strong>Anomaly Rate:</strong> ${data.anomaly_rate}%</div>
-            <div class="metric"><strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks</div>
-            <div class="metric"><strong>Uptime:</strong> ${data.uptime}s</div>
+            <div class="metric">
+              <strong>Status:</strong>
+              <span class="${data.status === 'secure' ? 'status-ok' : 'status-warn'}">
+                ${data.status.toUpperCase()}
+              </span>
+            </div>
+            <div class="metric">
+              <strong>Devices Registered:</strong> ${data.devices}
+            </div>
+            <div class="metric">
+              <strong>Anomaly Rate:</strong> ${data.anomaly_rate}%
+            </div>
+            <div class="metric">
+              <strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks
+            </div>
+            <div class="metric">
+              <strong>Uptime:</strong> ${data.uptime}s
+            </div>
           `;
         });
     }
@@ -70,12 +98,19 @@ HTML_DASHBOARD = """
       fetch('/api/logs')
         .then(r => r.text())
         .then(text => {
-          document.getElementById('logs').innerHTML = '<pre>' + text.trim().split('\\n').slice(-20).join('\\n') + '</pre>';
+          document.getElementById('logs').innerHTML =
+            '<pre>' +
+            text.trim().split('\\n').slice(-20).join('\\n') +
+            '</pre>';
         });
     }
 
-    setInterval(() => { fetchMetrics(); fetchLogs(); }, 3000);
-    fetchMetrics(); fetchLogs();
+    setInterval(() => {
+      fetchMetrics();
+      fetchLogs();
+    }, 3000);
+    fetchMetrics();
+    fetchLogs();
   </script>
 </body>
 </html>
@@ -84,8 +119,11 @@ HTML_DASHBOARD = """
 # === 3. FIX CORE DASHBOARD ROUTES ===
 def patch_dashboard():
     framework = NaashonSecureIoT()
-    app = Flask(__name__)
-    app.secret_key = 'naashon_secure_iot_secret_key'
+    app = framework.app
+
+    # Clear existing routes if conflicting
+    app.view_functions.clear()
+    app.url_map._rules.clear()
 
     # Re-add core API
     @app.route('/register_device', methods=['POST'])
@@ -103,11 +141,7 @@ def patch_dashboard():
     def transmit_data():
         payload = request.json
         device_id = payload['device_id']
-        raw_data = (
-            payload['data'].encode()
-            if isinstance(payload['data'], str)
-            else payload['data']
-        )
+        raw_data = payload['data'].encode() if isinstance(payload['data'], str) else payload['data']
 
         encrypted = framework.device.encrypt_data(raw_data)
         if not framework.network.authorize_transmission(device_id):
@@ -124,49 +158,14 @@ def patch_dashboard():
         framework.cloud.store_secure(encrypted, tx)
         return jsonify({"status": "secure", "tx": tx}), 200
 
+    
     # === NEW: DASHBOARD & API ===
+
     @app.route('/')
     def dashboard():
-        dashboard_data = framework.get_dashboard_data()
-        return render_template(
-            'dashboard.html',
-            device_count=dashboard_data['total_devices'],
-            active_threats=dashboard_data['active_threats'],
-            blockchain_entries=dashboard_data['blockchain_entries'],
-            network_anomalies=dashboard_data['network_anomalies'],
-            cloud_predictions=dashboard_data['cloud_predictions'],
-            mtac_name=dashboard_data['mtac_name']
-        )
+        return render_template_string(HTML_DASHBOARD)
 
-    @app.route('/threat')
-    def threat():
-        threat_data = data_sources.get_recent_threats()
-        return render_template(
-            'threat.html', threat_data=threat_data
-        )
 
-    @app.route('/devices')
-    def devices():
-        device_list = framework.device_layer.get_all_devices()
-        return render_template(
-            'devices.html', devices=device_list
-        )
-
-    @app.route('/control_device/<device_id>/<action>')
-    def control_device(device_id, action):
-        if action not in ['restart', 'update', 'ping', 'remove', 'monitor']:
-            flash('Invalid action', 'error')
-            return redirect(url_for('devices'))
-        result = data_sources.control_device(
-            device_id, action
-        )
-        flash(f'Device {device_id}: {result}', 'success')
-        return redirect(url_for('devices'))
-
-    @app.route('/logout')
-    def logout():
-        flash('Logged out successfully', 'info')
-        return redirect(url_for('dashboard'))
 
     @app.route('/api/metrics')
     def api_metrics():
@@ -176,11 +175,7 @@ def patch_dashboard():
             "devices": len([b for b in framework.blockchain.chain if "REGISTER" in b.data]),
             "anomaly_rate": round(metrics["anomaly_rate"] * 100, 2),
             "blockchain_blocks": len(framework.blockchain.chain),
-            "uptime": int(
-                time.time() - framework.cloud.start_time
-                if hasattr(framework.cloud, 'start_time')
-                else 0
-            )
+            "uptime": int(time.time() - framework.cloud.start_time if hasattr(framework.cloud, 'start_time') else 0)
         })
 
     @app.route('/api/logs')
@@ -208,9 +203,8 @@ def check_access():
         s.connect(("127.0.0.1", PORT))
         print(f"[OK] Local access: {DASHBOARD_URL}")
         return True
-    except:
-        print(f"[FAIL] Cannot connect to"
-              f" {DASHBOARD_URL}")
+    except Exception as e:
+        print(f"[FAIL] Cannot connect to {DASHBOARD_URL}: {e}")
         return False
     finally:
         s.close()
@@ -221,10 +215,7 @@ def launch():
     if not check_access():
         print("[FIX] Starting in debug mode...")
         app = patch_dashboard()
-        app.run(
-            host=HOST, port=PORT, debug=True,
-            use_reloader=False
-        )
+        app.run(host=HOST, port=PORT, debug=True, use_reloader=False)
     else:
         print(f"[OK] Dashboard live at {DASHBOARD_URL}")
         print("   Open in browser: curl -s http://localhost:5000 | head")

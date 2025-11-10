@@ -138,14 +138,18 @@ class NetworkLayer:
             try:
                 response = requests.post(ughub_api_url, headers=headers,
             json=data)
-            response.raise_for_status()
-            self.logger.debug(
-                f"Data transmitted for device {device_id} via UGHub API")
-            return True
-        except requests.exceptions.RequestException as e:
-            self.logger.error(
-                f"Transmission failed for device {device_id}: {e}")
-            return False
+                response.raise_for_status()
+                self.logger.debug(
+                    f"Data transmitted for device {device_id} via UGHub API")
+                return True
+            except requests.exceptions.RequestException as e:
+                self.logger.error(
+                    f"Transmission failed for device {device_id}: {e}")
+                return False
+            except Exception as e:
+                self.logger.error(
+                    f"Transmission failed for device {device_id}: {e}")
+                return False
         except Exception as e:
             self.logger.error(
                 f"Transmission failed for device {device_id}: {e}")
