@@ -1,0 +1,5 @@
+- [x] Check and update dependencies in requirements.txt
+- [x] Fix bugs in dashboard.py (duplicate login routes)
+- [x] Update dashboard.py to display network information in the dashboard
+- [x] Test the app accessibility on MTAC network by running and verifying APIs
+- [x] Run tests and verify functionality
