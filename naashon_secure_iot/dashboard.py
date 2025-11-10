@@ -158,14 +158,11 @@ def patch_dashboard():
         framework.cloud.store_secure(encrypted, tx)
         return jsonify({"status": "secure", "tx": tx}), 200
 
-    
     # === NEW: DASHBOARD & API ===
 
     @app.route('/')
     def dashboard():
         return render_template_string(HTML_DASHBOARD)
-
-
 
     @app.route('/api/metrics')
     def api_metrics():
@@ -175,18 +172,25 @@ def patch_dashboard():
             "devices": len([b for b in framework.blockchain.chain if "REGISTER" in b.data]),
             "anomaly_rate": round(metrics["anomaly_rate"] * 100, 2),
             "blockchain_blocks": len(framework.blockchain.chain),
-            "uptime": int(time.time() - framework.cloud.start_time if hasattr(framework.cloud, 'start_time') else 0)
+            "uptime": int(
+                time.time() - framework.cloud.start_time
+                if hasattr(framework.cloud, 'start_time')
+                else 0
+            )
         })
 
     @app.route('/api/logs')
     def api_logs():
         # Capture recent logs (simulated)
-        return "INFO: Device MTAC-DEV-001 registered\\nINFO: Normal data logged\\nWARNING: Anomaly detected on MTAC-DEV-999"
+        return "INFO: Device MTAC-DEV-001 registered\nINFO: Normal data logged\nWARNING: Anomaly detected on MTAC-DEV-999"
 
     return app
 
 # === 4. PORT & FIREWALL FIX ===
+
+
 def open_port():
+
     cmds = [
         "ufw allow 5000/tcp",
         "ufw reload",
@@ -224,7 +228,7 @@ def launch():
 if __name__ == "__main__":
     print("# NaashonSecureIoT Dashboard Fix Script")
     print("# Killing old Flask processes...")
-    os.system("pkill -f 'naashon_secure_iot' || true")
+    os.system("pkill -f 'naashon_secure_iot' or True")
     time.sleep(2)
 
     print("# Starting fixed dashboard...")
