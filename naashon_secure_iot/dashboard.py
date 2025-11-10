@@ -20,8 +20,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'naashon_secure_iot_secret_key')  
 oauth = OAuth(app)
 github = oauth.register(
     name='github',
-    client_id='your_github_client_id',  # Replace with actual GitHub OAuth app client ID
-    client_secret='your_github_client_secret', # Replace with actual GitHub OAuth app client secret
+    client_id='Ov23liX09s77znsNtW2J',  # Replace with actual GitHub OAuth app client ID
+    client_secret='f7953562d1cd665696f2b8f16149ce506d3f71ad', # Replace with actual GitHub OAuth app client secret
     access_token_url='https://github.com/login/oauth/access_token',
     access_token_params=None,
     authorize_url='https://github.com/login/oauth/authorize',
@@ -32,8 +32,8 @@ github = oauth.register(
 
 facebook = oauth.register(
     name='facebook',
-    client_id='your_facebook_app_id',  # Replace with actual Facebook app ID
-    client_secret='your_facebook_app_secret', # Replace with actual GitHub OAuth app client secret
+    client_id='3167326748083',  # Replace with actual Facebook app ID
+    client_secret='8dbfe19e89a88d70e92691e48695e043', # Replace with actual GitHub OAuth app client secret
     access_token_url='https://graph.facebook.com/oauth/access_token',
     access_token_params=None,
     authorize_url='https://www.facebook.com/dialog/oauth',
@@ -337,4 +337,4 @@ def apa_guide():
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
