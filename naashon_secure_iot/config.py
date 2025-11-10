@@ -36,7 +36,7 @@ class Config:
         # Encryption Settings
         self.encryption_algorithm = "AES-256"
         self.key_size = 32  # 256 bits
-        self.encryption_key = "YOUR_SECURE_KEY_HERE"
+        self.encryption_key = os.getenv('ENCRYPTION_KEY', 'oEjkBZoQGZ7qi57R5jsBV-D5Ot122bxk98oXqP5dQmI')
 
         # Blockchain Settings (simulated)
         self.blockchain_nodes = 5
