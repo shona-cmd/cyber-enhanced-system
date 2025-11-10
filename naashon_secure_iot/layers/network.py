@@ -127,8 +127,7 @@ class NetworkLayer:
 
             # Update session activity
             if active_session:
-                session = self.active_sessions[session_token]
-                session["last_activity"] = time.time()
+                self.active_sessions[active_session]["last_activity"] = time.time()
 
             # Get JWT token
             token = self.get_jwt()

@@ -141,19 +141,25 @@ def patch_dashboard():
     @app.route('/threat')
     def threat():
         threat_data = data_sources.get_recent_threats()
-        return render_template('threat.html', threat_data=threat_data)
+        return render_template(
+            'threat.html', threat_data=threat_data
+        )
 
     @app.route('/devices')
     def devices():
         device_list = framework.device_layer.get_all_devices()
-        return render_template('devices.html', devices=device_list)
+        return render_template(
+            'devices.html', devices=device_list
+        )
 
     @app.route('/control_device/<device_id>/<action>')
     def control_device(device_id, action):
         if action not in ['restart', 'update', 'ping', 'remove', 'monitor']:
             flash('Invalid action', 'error')
             return redirect(url_for('devices'))
-        result = data_sources.control_device(device_id, action)
+        result = data_sources.control_device(
+            device_id, action
+        )
         flash(f'Device {device_id}: {result}', 'success')
         return redirect(url_for('devices'))
 
