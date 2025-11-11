@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Details</title>
+</head>
+<body>
+  <h1>Device Details</h1>
+  <div id="deviceInfo"></div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const deviceId = urlParams.get('deviceId');
+    document.getElementById('deviceInfo').textContent = 'Details for device: ' + deviceId;
+  </script>
+</body>
+</html>

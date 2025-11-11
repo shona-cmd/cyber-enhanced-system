@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const deviceTableBody = document.querySelector('#deviceTable tbody');
   const totalCountSpan = document.getElementById('totalCount');
 
-  let devices = [];
+  let devices = JSON.parse(localStorage.getItem('devices')) || [];
 
   // Function to display devices in the table
   function displayDevices() {
@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to delete a device
   function deleteDevice(index) {
     devices.splice(index, 1);
+    localStorage.setItem('devices', JSON.stringify(devices));
     displayDevices();
   }
 
@@ -51,7 +52,11 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     devices.push(newDevice);
+    localStorage.setItem('devices', JSON.stringify(devices));
     displayDevices();
+
+    // Redirect to device details page
+    window.location.href = 'templates/device_details.html?deviceId=' + devId;
 
     // Clear the form
     document.getElementById('devId').value = '';
