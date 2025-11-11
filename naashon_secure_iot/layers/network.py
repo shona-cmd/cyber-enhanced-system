@@ -214,36 +214,6 @@ class NetworkLayer:
             return "check_failed"
 
     def shutdown(self):
-            "subnet_mask": self.config.subnet_mask,
-            "default_gateway": self.config.default_gateway,
-            "dns_suffix": self.config.dns_suffix,
-            "connectivity_status": self._check_connectivity()
-        }
-
-    def get_anomaly_count(self) -> int:
-        """Get count of network anomalies detected."""
-        # For demo purposes, return a simulated count
-        # In a real implementation, this would track actual network anomalies
-        return 0
-
-    def _check_connectivity(self) -> str:
-        """Check connectivity to MTAC network components."""
-        try:
-            import socket
-            # Check if we can reach the gateway
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(1)
-            result = sock.connect_ex((self.config.default_gateway, 80))
-            sock.close()
-            if result == 0:
-                return "connected"
-            else:
-                return "gateway_unreachable"
-        except Exception as e:
-            self.logger.warning(f"Connectivity check failed: {e}")
-            return "check_failed"
-
-    def shutdown(self):
         """Shutdown the network layer."""
         self.logger.info("Network layer shutting down")
         self.active_sessions.clear()

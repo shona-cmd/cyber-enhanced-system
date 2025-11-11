@@ -12,6 +12,8 @@ class Config:
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
 
+    MQTT_BROKER = os.getenv('MQTT_BROKER')
+
     SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
