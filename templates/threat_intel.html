@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Threat Intel</title>
+  <meta charset="UTF-8">
+  <title>Threat Intelligence</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;}
+    .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+    h1{color:#b30000;text-align:center;}
+    .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;}
+    th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
+    th{background:#b30000;color:white;}
+  </style>
 </head>
 <body>
-<h1>Threat Intel</h1>
-<p>This is a placeholder page for Threat Intelligence.</p>
+  <div class="container">
+    <h1>Threat Intelligence Dashboard</h1>
+    <div class="alert">
+      <strong>High-Risk Alert:</strong> CVE-2025-12345 – Remote Code Execution in Flask Apps (CVSS 9.8)
+    </div>
+    <p>Latest indicators from OSINT, dark web, and partner feeds.</p>
+
+    <h2>Active Threats</h2>
+    <table>
+      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th></tr>
+      <tr><td>185.220.101.12</td><td>IP</td><td>AbuseIPDB</td><td>High</td></tr>
+      <tr><td>malware.exe</td><td>File Hash</td><td>VirusTotal</td><td>Medium</td></tr>
+      <tr><td>phish.example.com</td><td>Domain</td><td>PhishTank</td><td>High</td></tr>
+    </table>
+
+    <p><em>Last updated: November 11, 2025 08:00 AM EAT</em></p>
+  </div>
 </body>
 </html>
