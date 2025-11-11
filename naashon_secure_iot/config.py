@@ -1,6 +1,5 @@
 import os
 import logging
-from logging.handlers import RotatingFileHandler
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-change-in-prod')
@@ -23,8 +22,10 @@ class Config:
                     'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET'):
             if not getattr(Config, var):
                 missing.append(var)
-        if missing:
-            raise RuntimeError(f"OAuth config error: Missing: {', '.join(missing)}")
+        if missing and Config.DEBUG:
+            logging.warning(f"OAuth warning: Missing vars: {', '.join(missing)}. Using fallbacks for dev.")
+        elif missing:
+            raise RuntimeError(f"OAuth error: Missing vars: {', '.join(missing)}")
 
 # Setup logging
 def setup_logging(app):
