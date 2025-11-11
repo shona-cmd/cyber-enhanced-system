@@ -2,41 +2,150 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>APA 6th Guide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaashonSecureIoT – APA 6th Guide</title>
   <style>
-    body{margin:0;background:#fff;font-family:Arial,sans-serif;}
-    .cover{display:flex;height:100vh;position:relative;}
-    .red-bar{position:absolute;left:0;top:0;bottom:0;width:120px;background:#b30000;}
-    .content{margin-left:140px;display:flex;flex-direction:column;justify-content:space-between;padding:3rem;}
-    .title{text-align:center;color:#b30000;font-size:2.2rem;font-weight:700;margin-top:6rem;}
-    .title span{display:block;font-size:1.8rem;margin-top:.5rem;}
-    .book{width:180px;align-self:center;margin:2rem 0;}
-    .footer{text-align:center;font-size:.9rem;color:#555;margin-bottom:1rem;}
-    .logo{width:180px;align-self:center;margin-top:1rem;}
+    /* === Reset & Base === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #fff;
+      color: #333;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* === Layout === */
+    .cover {
+      flex: 1;
+      display: flex;
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .red-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      background: #b30000;
+    }
+
+    .content {
+      margin-left: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem;
+      max-width: 100%;
+    }
+
+    /* === Header: System Name === */
+    .system-name {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #b30000;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* === Title === */
+    .title {
+      text-align: center;
+      color: #b30000;
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      font-weight: 700;
+      margin-top: 4rem;
+      line-height: 1.2;
+    }
+    .title span {
+      display: block;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-top: 0.5rem;
+    }
+
+    /* === Book Image === */
+    .book {
+      width: clamp(140px, 25vw, 180px);
+      height: auto;
+      align-self: center;
+      margin: 2rem 0;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+
+    /* === Footer === */
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    /* === Logo === */
+    .logo {
+      width: clamp(160px, 28vw, 200px);
+      height: auto;
+      align-self: center;
+      margin-top: 1rem;
+    }
+
+    /* === Responsive Adjustments === */
+    @media (max-width: 768px) {
+      .red-bar { width: 80px; }
+      .content { margin-left: 100px; padding: 2rem; }
+      .title { margin-top: 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .red-bar { width: 60px; }
+      .content { margin-left: 80px; padding: 1.5rem; }
+      .system-name { font-size: 1rem; }
+    }
   </style>
 </head>
 <body>
   <div class="cover">
-    <div class="red-bar"></div>
+    <!-- Red Sidebar -->
+    <div class="red-bar" aria-hidden="true"></div>
+
+    <!-- Main Content -->
     <div class="content">
+      <!-- System Name -->
+      <div class="system-name">NaashonSecureIoT</div>
+
+      <!-- Title -->
       <h1 class="title">
         A beginner’s guide to the<br>
         <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
       </h1>
 
-      <!-- APA Manual (base64) -->
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAABkCAYAAABiQ6WjAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjarZd3dJNHFfPvj+9tLvr6CbmRpbXRhY2hlZCBJ..." 
-           alt="APA Manual" class="book">
+      <!-- APA Manual Image -->
+      <img 
+        src="{{ url_for('static', filename='img/apa_manual.jpg') }}" 
+        alt="Publication Manual of the American Psychological Association, 6th Edition" 
+        class="book"
+      >
 
+      <!-- Footer Text -->
       <div class="footer">
         The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
         Library and Learning Services<br>
         December 2011
       </div>
 
-      <!-- UCOL Logo (base64) -->
-      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAlgAAADICAYAAAD..." 
-           alt="UCOL" class="logo">
+      <!-- UCOL Logo -->
+      <img 
+        src="{{ url_for('static', filename='img/ucol_logo.png') }}" 
+        alt="UCOL – Universal College of Learning" 
+        class="logo"
+      >
     </div>
   </div>
 </body>

@@ -1,84 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Compliance - NaashonSecureIoT</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-      margin: 0;
-      padding: 2rem;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance - NaashonSecureIoT</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
-    }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
 
-    h1 {
-      color: #b30000;
-      text-align: center;
-    }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
 
-    .badge img {
-      width: 80px;
-      height: 80px;
-      margin: 0.5rem;
-    }
+        .audit-info {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
 
-    .badge a {
-      display: inline-block;
-    }
+        .audit-info p {
+            margin: 10px 0;
+        }
 
-    .audit-info {
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 6px;
-      margin: 1rem 0;
-      font-size: 0.95rem;
-    }
+        .download-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #5cb85c;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 
-    .download-btn {
-      background: #b30000;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 1rem;
-    }
+        .download-btn:hover {
+            background-color: #449d44;
+        }
 
-    .nav-links a {
-      margin-right: 1rem;
-      color: #b30000;
-      text-decoration: none;
-    }
-
-    /* Media query for responsiveness */
-    @media (max-width: 768px) {
-      .container {
-        padding: 1rem;
-      }
-
-      .badge img {
-        width: 60px;
-        height: 60px;
-      }
-
-      .nav-links a {
-        display: block;
-        margin-bottom: 0.5rem;
-      }
-    }
-  </style>
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
   <div class="container">

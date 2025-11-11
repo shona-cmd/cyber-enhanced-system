@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 """
-NaashonSecureIoT - Dashboard Visibility Fix
-Ensures Flask web UI is accessible, ports open, and metrics rendered.
-
-Author: Grok (programmer mode)
-Target: MTAC Edge/Cloud Node
+NaashonSecureIoT – Main Flask Application
+- APA Guide landing page
+- Threat Intel, Device Manager, Health Check
+- Real-time MTAC Dashboard (advanced UI)
 """
 
 import os
@@ -12,302 +10,40 @@ import socket
 import threading
 import time
 import subprocess
-from flask import render_template_string, jsonify, request
-from naashon_secure_iot.core import NaashonSecureIoT
-
-# === 1. PORT & HOST CONFIG ===
-HOST = "0.0.0.0"  # Bind to all interfaces
-PORT = 5000
-DASHBOARD_URL = f"http://localhost:{PORT}"
-
-# === 2. ENHANCED DASHBOARD TEMPLATE ===
-HTML_DASHBOARD = """
-<!DOCTYPE html>
-<html>
-<head>
-  <title>NaashonSecureIoT - MTAC Dashboard</title>
-  <meta http-equiv="refresh" content="5">
-  <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background: #0d1117;
-      color: #c9d1d9;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
-    h1 { color: #58a6ff; }
-    .metric {
-      background: #161b22;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border-left: 4px solid #58a6ff;
-    }
-    .status-ok { color: #56d364; }
-    .status-warn { color: #f85149; }
-    .log {
-      background: #21262d;
-      padding: 10px;
-      height: 200px;
-      overflow-y: auto;
-      font-size: 0.9em;
-    }
-    pre { margin: 0; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>NaashonSecureIoT @ MTAC</h1>
-    <div id="metrics"></div>
-    <h2>Live Logs</h2>
-    <div id="logs" class="log"></div>
-  </div>
-
-  <script>
-    function fetchMetrics() {
-      fetch('/api/metrics')
-        .then(r => r.json())
-        .then(data => {
-          const m = document.getElementById('metrics');
-          m.innerHTML = `
-            <div class="metric">
-              <strong>Status:</strong>
-              <span class="${data.status === 'secure' ? 'status-ok' : 'status-warn'}">
-                ${data.status.toUpperCase()}
-              </span>
-            </div>
-            <div class="metric">
-              <strong>Devices Registered:</strong> ${data.devices}
-            </div>
-            <div class="metric">
-              <strong>Anomaly Rate:</strong> ${data.anomaly_rate}%
-            </div>
-            <div class="metric">
-              <strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks
-            </div>
-            <div class="metric">
-              <strong>Uptime:</strong> ${data.uptime}s
-            </div>
-          `;
-        });
-    }
-
-    function fetchLogs() {
-      fetch('/api/logs')
-        .then(r => r.text())
-        .then(text => {
-          document.getElementById('logs').innerHTML =
-            '<pre>' +
-            text.trim().split('\\n').slice(-20).join('\\n') +
-            '</pre>';
-        });
-    }
-
-    setInterval(() => {
-      fetchMetrics();
-      fetchLogs();
-    }, 3000);
-    fetchMetrics();
-    fetchLogs();
-  </script>
-</body>
-</html>
-"""
-
-# === 3. FIX CORE DASHBOARD ROUTES ===
-def patch_dashboard():
-    framework = NaashonSecureIoT()
-    app = framework.app
-
-    # Clear existing routes if conflicting
-    app.view_functions.clear()
-    app.url_map._rules.clear()
-
-    # Re-add core API
-    @app.route('/register_device', methods=['POST'])
-    def register_device():
-        data = request.json
-        device_id = data.get('device_id')
-        if not device_id:
-            return jsonify({"error": "device_id required"}), 400
-        if not framework.network.verify_identity(device_id):
-            return jsonify({"error": "Identity failed"}), 403
-        tx = framework.blockchain.register_device(device_id)
-        return jsonify({"tx_hash": tx, "status": "registered"}), 200
-
-    @app.route('/transmit_data', methods=['POST'])
-    def transmit_data():
-        payload = request.json
-        device_id = payload['device_id']
-        raw_data = payload['data'].encode() if isinstance(payload['data'], str) else payload['data']
-
-        encrypted = framework.device.encrypt_data(raw_data)
-        if not framework.network.authorize_transmission(device_id):
-            framework.blockchain.log_anomaly(device_id, "Unauthorized")
-            return jsonify({"error": "Access denied"}), 403
-
-        is_anomaly, score = framework.edge.detect_anomaly(encrypted)
-        if is_anomaly:
-            framework.blockchain.trigger_quarantine(device_id)
-            framework.cloud.alert_threat(device_id, score)
-            return jsonify({"status": "anomaly_detected", "score": score}), 200
-
-        tx = framework.blockchain.log_data(device_id, encrypted)
-        framework.cloud.store_secure(encrypted, tx)
-        return jsonify({"status": "secure", "tx": tx}), 200
-
-    # === NEW: DASHBOARD & API ===
-
-    @app.route('/')
-    def dashboard():
-        return render_template_string(HTML_DASHBOARD)
-
-    @app.route('/api/metrics')
-    def api_metrics():
-        metrics = framework.cloud.get_metrics()
-        return jsonify({
-            "status": "secure" if metrics["anomaly_rate"] < 0.1 else "warning",
-            "devices": len([b for b in framework.blockchain.chain if "REGISTER" in b.data]),
-            "anomaly_rate": round(metrics["anomaly_rate"] * 100, 2),
-            "blockchain_blocks": len(framework.blockchain.chain),
-            "uptime": int(
-                time.time() - framework.cloud.start_time
-                if hasattr(framework.cloud, 'start_time')
-                else 0
-            )
-        })
-
-    @app.route('/api/logs')
-    def api_logs():
-        # Capture recent logs (simulated)
-        return "INFO: Device MTAC-DEV-001 registered\nINFO: Normal data logged\nWARNING: Anomaly detected on MTAC-DEV-999"
-
-    return app
-
-# === 4. PORT & FIREWALL FIX ===
-
-def open_port():
-
-    cmds = [
-        "ufw allow 5000/tcp",
-        "ufw reload",
-        "iptables -I INPUT -p tcp --dport 5000 -j ACCEPT",
-        "netstat -tuln | grep 5000 || echo 'Port 5000 not listening'"
-    ]
-    for cmd in cmds:
-        print(f"[RUN] {cmd}")
-        subprocess.run(cmd, shell=True)
-
-def check_access():
-    s = socket.socket()
-    try:
-        s.connect(("127.0.0.1", PORT))
-        print(f"[OK] Local access: {DASHBOARD_URL}")
-        return True
-    except Exception as e:
-        print(f"[FAIL] Cannot connect to {DASHBOARD_URL}: {e}")
-        return False
-    finally:
-        s.close()
-
-# === 5. LAUNCH FIXED DASHBOARD ===
-
-def launch():
-    open_port()
-    if not check_access():
-        print("[FIX] Starting in debug mode...")
-        app = patch_dashboard()
-        app.run(host=HOST, port=PORT, debug=True, use_reloader=False)
-    else:
-        print(f"[OK] Dashboard live at {DASHBOARD_URL}")
-        print("   Open in browser: curl -s http://localhost:5000 | head")
-
-# === RUN ===
-if __name__ == "__main__":
-    print("# NaashonSecureIoT Dashboard Fix Script")
-    print("# Killing old Flask processes...")
-    os.system("pkill -f 'naashon_secure_iot' or True")
-    time.sleep(2)
-
-    print("# Starting fixed dashboard...")
-    launch_thread = threading.Thread(target=launch)
-    launch_thread.daemon = True
-    launch_thread.start()
-
-    print(f"\n[LAUNCH] Dashboard: {DASHBOARD_URL}")
-    print("[TEST] Run: curl http://localhost:5000")
-    print("[SIM] Run: python examples/iot_simulation.py")
-    print("\nWaiting for dashboard to load... Press Ctrl+C to stop.\n")
-    try:
-        while True: time.sleep(1)
-    except KeyboardInterrupt:
-        print("\n[STOP] Dashboard stopped.")
-=======
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, render_template_string
 from .config import Config, setup_logging
 from .models import db, User, ThreatLog, Device
 from datetime import datetime
 
+# --------------------------------------------------------------------------- #
+# 1. Flask App Setup
+# --------------------------------------------------------------------------- #
 app = Flask(__name__, template_folder='../templates')
 app.config.from_object(Config)
 
 db.init_app(app)
 setup_logging(app)
 
+# --------------------------------------------------------------------------- #
+# 2. Database Initialisation & Seed Data
+# --------------------------------------------------------------------------- #
 with app.app_context():
     db.create_all()
     app.logger.info("Database initialized.")
 
-# === LANDING PAGE: APA GUIDE (NO LOGIN) ===
-@app.route('/')
-def index():
-    app.logger.info("Landing page (APA Guide) loaded")
-    return render_template('apa_guide_static.html')
-
-# === THREAT INTEL DASHBOARD ===
-@app.route('/threat_intel')
-def threat_intel():
-    app.logger.info("Threat Intel page accessed")
-    threats = ThreatLog.query.order_by(ThreatLog.timestamp.desc()).limit(10).all()
-    return render_template('threat_intel.html', threats=threats)
-
-# === DEVICE MANAGER ===
-@app.route('/device_manager')
-def device_manager():
-    app.logger.info("Device Manager page accessed")
-    devices = Device.query.order_by(Device.last_seen.desc()).all()
-    return render_template('device_manager.html', devices=devices)
-
-# === HEALTH CHECK ===
-@app.route('/dashboard')
-def dashboard():
-    app.logger.info(f"Health check from {request.remote_addr}")
-    return jsonify({
-        "status": "OK",
-        "users": User.query.count(),
-        "threats": ThreatLog.query.count(),
-        "devices": Device.query.count()
-    })
-
-# === ERROR HANDLERS ===
-@app.errorhandler(404)
-def not_found(e):
-    app.logger.error(f"404: {request.url}")
-    return "Page not found", 404
-
-@app.errorhandler(500)
-def server_error(e):
-    app.logger.error(f"500: {str(e)}")
-    return "Server error", 500
-
-# === SEED DATA ===
-with app.app_context():
+    # Seed ThreatLog (placeholder – replace with real data later)
     if ThreatLog.query.count() == 0:
-        app.logger.info("Seeding threat data")
-        # ... (same as before)
+        app.logger.info("Seeding sample threat data")
+        sample_threats = [
+            ("192.168.1.105", "port_scan", "Malware-C2", "high"),
+            ("10.0.0.42", "brute_force", "SSH-Scanner", "medium"),
+        ]
+        for ioc, typ, src, risk in sample_threats:
+            t = ThreatLog(ioc=ioc, type=typ, source=src, risk=risk)
+            db.session.add(t)
+        db.session.commit()
+
+    # Seed Devices
     if Device.query.count() == 0:
         app.logger.info("Seeding device data")
         sample_devices = [
@@ -320,12 +56,176 @@ with app.app_context():
             db.session.add(d)
         db.session.commit()
 
+# --------------------------------------------------------------------------- #
+# 3. Core Routes (APA Guide, Threat Intel, Device Manager, Health)
+# --------------------------------------------------------------------------- #
+@app.route('/')
+def index():
+    app.logger.info("Landing page (APA Guide) loaded")
+    return render_template('apa_guide_static.html')
+
+@app.route('/threat_intel')
+def threat_intel():
+    app.logger.info("Threat Intel page accessed")
+    threats = ThreatLog.query.order_by(ThreatLog.timestamp.desc()).limit(10).all()
+    return render_template('threat_intel.html', threats=threats)
+
+@app.route('/device_manager')
+def device_manager():
+    app.logger.info("Device Manager page accessed")
+    devices = Device.query.order_by(Device.last_seen.desc()).all()
+    return render_template('device_manager.html', devices=devices, now=datetime.utcnow())
+
+@app.route('/dashboard')
+def dashboard():
+    app.logger.info(f"Health check from {request.remote_addr}")
+    return jsonify({
+        "status": "OK",
+        "users": User.query.count(),
+        "threats": ThreatLog.query.count(),
+        "devices": Device.query.count()
+    })
+
+# --------------------------------------------------------------------------- #
+# 4. Real-time MTAC Dashboard (advanced UI)
+# --------------------------------------------------------------------------- #
+HTML_MTAC_DASHBOARD = """
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NaashonSecureIoT - MTAC Dashboard</title>
+  <meta http-equiv="refresh" content="5">
+  <style>
+    body {font-family: 'Courier New', monospace; background:#0d1117; color:#c9d1d9; padding:20px;}
+    .container {max-width:1000px; margin:auto;}
+    h1 {color:#58a6ff;}
+    .metric {background:#161b22; padding:15px; margin:10px 0; border-radius:8px; border-left:4px solid #58a6ff;}
+    .status-ok {color:#56d364;}
+    .status-warn {color:#f85149;}
+    .log {background:#21262d; padding:10px; height:200px; overflow-y:auto; font-size:0.9em;}
+    pre {margin:0;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>NaashonSecureIoT @ MTAC</h1>
+    <div id="metrics"></div>
+    <h2>Live Logs</h2>
+    <div id="logs" class="log"></div>
+  </div>
+
+  <script>
+    function fetchMetrics() {
+      fetch('/api/mtac_metrics')
+        .then(r => r.json())
+        .then(data => {
+          const m = document.getElementById('metrics');
+          m.innerHTML = `
+            <div class="metric"><strong>Status:</strong> <span class="${data.status==='secure'?'status-ok':'status-warn'}">${data.status.toUpperCase()}</span></div>
+            <div class="metric"><strong>Devices Registered:</strong> ${data.devices}</div>
+            <div class="metric"><strong>Anomaly Rate:</strong> ${data.anomaly_rate}%</div>
+            <div class="metric"><strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks</div>
+            <div class="metric"><strong>Uptime:</strong> ${data.uptime}s</div>
+          `;
+        });
+    }
+    function fetchLogs() {
+      fetch('/api/mtac_logs')
+        .then(r => r.text())
+        .then(text => {
+          const lines = text.trim().split('\\n').slice(-20);
+          document.getElementById('logs').innerHTML = '<pre>' + lines.join('\\n') + '</pre>';
+        });
+    }
+    setInterval(() => { fetchMetrics(); fetchLogs(); }, 3000);
+    fetchMetrics(); fetchLogs();
+  </script>
+</body>
+</html>
+"""
+
+@app.route('/mtac_dashboard')
+def mtac_dashboard():
+    return render_template_string(HTML_MTAC_DASHBOARD)
+
+@app.route('/api/mtac_metrics')
+def api_mtac_metrics():
+    # Simulated metrics – replace with real framework calls later
+    anomaly_rate = 0.05  # 5%
+    return jsonify({
+        "status": "secure" if anomaly_rate < 0.1 else "warning",
+        "devices": Device.query.count(),
+        "anomaly_rate": round(anomaly_rate * 100, 2),
+        "blockchain_blocks": 1247,
+        "uptime": int(time.time() - app.start_time) if hasattr(app, 'start_time') else 0
+    })
+
+@app.route('/api/mtac_logs')
+def api_mtac_logs():
+    # Simulated log lines
+    logs = [
+        "INFO: Device MTAC-DEV-001 registered",
+        "INFO: Normal data logged",
+        "WARNING: Anomaly detected on MTAC-DEV-999",
+        "INFO: Quarantine triggered",
+        "INFO: Cloud alert sent"
+    ]
+    return "\\n".join(logs[-20:])
+
+# --------------------------------------------------------------------------- #
+# 5. Error Handlers
+# --------------------------------------------------------------------------- #
+@app.errorhandler(404)
+def not_found(e):
+    app.logger.error(f"404: {request.url}")
+    return "Page not found", 404
+
+@app.errorhandler(500)
+def server_error(e):
+    app.logger.error(f"500: {str(e)}")
+    return "Server error", 500
+
+# --------------------------------------------------------------------------- #
+# 6. Port & Firewall Helper (run once)
+# --------------------------------------------------------------------------- #
+def open_port():
+    cmds = [
+        "sudo ufw allow 5000/tcp",
+        "sudo ufw reload",
+        "sudo iptables -I INPUT -p tcp --dport 5000 -j ACCEPT"
+    ]
+    for cmd in cmds:
+        print(f"[RUN] {cmd}")
+        subprocess.run(cmd, shell=True, capture_output=True)
+
+def check_access():
+    s = socket.socket()
+    try:
+        s.connect(("127.0.0.1", 5000))
+        return True
+    except Exception:
+        return False
+    finally:
+        s.close()
+
+# --------------------------------------------------------------------------- #
+# 7. Application Entry Point
+# --------------------------------------------------------------------------- #
 if __name__ == '__main__':
+    # Record start time for uptime
+    app.start_time = time.time()
+
     print("\n=== NaashonSecureIoT ===")
     print(" * Landing Page: / (APA Guide)")
     print(" * Threat Intel: /threat_intel")
     print(" * Device Manager: /device_manager")
-    print(" * Health: /dashboard")
+    print(" * MTAC Dashboard: /mtac_dashboard")
+    print(" * Health Check: /dashboard")
     print(" * LOG FILE: logs/app.log\n")
-    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])
->>>>>>> 0be6a386bdf743bca23f23412f15d069d0666896
+
+    # Optional: open firewall (uncomment on first run)
+    # open_port()
+
+    if not check_access():
+        print("[INFO] Starting Flask in debug mode...")
+    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'], use_reloader=False)
