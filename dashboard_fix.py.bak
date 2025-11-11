@@ -27,33 +27,13 @@ HTML_DASHBOARD = """
   <title>NaashonSecureIoT - MTAC Dashboard</title>
   <meta http-equiv="refresh" content="5">
   <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background: #0d1117;
-      color: #c9d1d9;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+    body { font-family: 'Courier New', monospace; background: #0d1117; color: #c9d1d9; padding: 20px; }
+    .container { max-width: 1000px; margin: auto; }
     h1 { color: #58a6ff; }
-    .metric {
-      background: #161b22;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border-left: 4px solid #58a6ff;
-    }
+    .metric { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #58a6ff; }
     .status-ok { color: #56d364; }
     .status-warn { color: #f85149; }
-    .log {
-      background: #21262d;
-      padding: 10px;
-      height: 200px;
-      overflow-y: auto;
-      font-size: 0.9em;
-    }
+    .log { background: #21262d; padding: 10px; height: 200px; overflow-y: auto; font-size: 0.9em; }
     pre { margin: 0; }
   </style>
 </head>
@@ -72,24 +52,11 @@ HTML_DASHBOARD = """
         .then(data => {
           const m = document.getElementById('metrics');
           m.innerHTML = `
-            <div class="metric">
-              <strong>Status:</strong>
-              <span class="${data.status === 'secure' ? 'status-ok' : 'status-warn'}">
-                ${data.status.toUpperCase()}
-              </span>
-            </div>
-            <div class="metric">
-              <strong>Devices Registered:</strong> ${data.devices}
-            </div>
-            <div class="metric">
-              <strong>Anomaly Rate:</strong> ${data.anomaly_rate}%
-            </div>
-            <div class="metric">
-              <strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks
-            </div>
-            <div class="metric">
-              <strong>Uptime:</strong> ${data.uptime}s
-            </div>
+            <div class="metric"><strong>Status:</strong> <span class="${data.status === 'secure' ? 'status-ok' : 'status-warn'}">${data.status.toUpperCase()}</span></div>
+            <div class="metric"><strong>Devices Registered:</strong> ${data.devices}</div>
+            <div class="metric"><strong>Anomaly Rate:</strong> ${data.anomaly_rate}%</div>
+            <div class="metric"><strong>Blockchain Size:</strong> ${data.blockchain_blocks} blocks</div>
+            <div class="metric"><strong>Uptime:</strong> ${data.uptime}s</div>
           `;
         });
     }
@@ -98,19 +65,12 @@ HTML_DASHBOARD = """
       fetch('/api/logs')
         .then(r => r.text())
         .then(text => {
-          document.getElementById('logs').innerHTML =
-            '<pre>' +
-            text.trim().split('\\n').slice(-20).join('\\n') +
-            '</pre>';
+          document.getElementById('logs').innerHTML = '<pre>' + text.trim().split('\\n').slice(-20).join('\\n') + '</pre>';
         });
     }
 
-    setInterval(() => {
-      fetchMetrics();
-      fetchLogs();
-    }, 3000);
-    fetchMetrics();
-    fetchLogs();
+    setInterval(() => { fetchMetrics(); fetchLogs(); }, 3000);
+    fetchMetrics(); fetchLogs();
   </script>
 </body>
 </html>
@@ -159,7 +119,6 @@ def patch_dashboard():
         return jsonify({"status": "secure", "tx": tx}), 200
 
     # === NEW: DASHBOARD & API ===
-
     @app.route('/')
     def dashboard():
         return render_template_string(HTML_DASHBOARD)
@@ -172,24 +131,18 @@ def patch_dashboard():
             "devices": len([b for b in framework.blockchain.chain if "REGISTER" in b.data]),
             "anomaly_rate": round(metrics["anomaly_rate"] * 100, 2),
             "blockchain_blocks": len(framework.blockchain.chain),
-            "uptime": int(
-                time.time() - framework.cloud.start_time
-                if hasattr(framework.cloud, 'start_time')
-                else 0
-            )
+            "uptime": int(time.time() - framework.cloud.start_time if hasattr(framework.cloud, 'start_time') else 0)
         })
 
     @app.route('/api/logs')
     def api_logs():
         # Capture recent logs (simulated)
-        return "INFO: Device MTAC-DEV-001 registered\nINFO: Normal data logged\nWARNING: Anomaly detected on MTAC-DEV-999"
+        return "INFO: Device MTAC-DEV-001 registered\\nINFO: Normal data logged\\nWARNING: Anomaly detected on MTAC-DEV-999"
 
     return app
 
 # === 4. PORT & FIREWALL FIX ===
-
 def open_port():
-
     cmds = [
         "ufw allow 5000/tcp",
         "ufw reload",
@@ -206,14 +159,13 @@ def check_access():
         s.connect(("127.0.0.1", PORT))
         print(f"[OK] Local access: {DASHBOARD_URL}")
         return True
-    except Exception as e:
-        print(f"[FAIL] Cannot connect to {DASHBOARD_URL}: {e}")
+    except:
+        print(f"[FAIL] Cannot connect to {DASHBOARD_URL}")
         return False
     finally:
         s.close()
 
 # === 5. LAUNCH FIXED DASHBOARD ===
-
 def launch():
     open_port()
     if not check_access():
@@ -228,7 +180,7 @@ def launch():
 if __name__ == "__main__":
     print("# NaashonSecureIoT Dashboard Fix Script")
     print("# Killing old Flask processes...")
-    os.system("pkill -f 'naashon_secure_iot' or True")
+    os.system("pkill -f 'naashon_secure_iot' || true")
     time.sleep(2)
 
     print("# Starting fixed dashboard...")

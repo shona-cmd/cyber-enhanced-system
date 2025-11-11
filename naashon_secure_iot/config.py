@@ -61,6 +61,18 @@ class Config:
         self.log_level = "INFO"
         self.log_file = "logs/naashon_secure_iot.log"
 
+        # Flask Settings
+        self.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-prod')
+        self.debug = os.getenv('FLASK_ENV', 'development') == 'development'
+
+        # GitHub OAuth
+        self.github_client_id = os.getenv('GITHUB_CLIENT_ID')
+        self.github_client_secret = os.getenv('GITHUB_CLIENT_SECRET')
+
+        # Facebook OAuth
+        self.facebook_client_id = os.getenv('FACEBOOK_CLIENT_ID')
+        self.facebook_client_secret = os.getenv('FACEBOOK_CLIENT_SECRET')
+
     def load_from_env(self):
         """Load configuration from environment variables."""
         self.anomaly_threshold = float(
@@ -81,3 +93,18 @@ class Config:
             "mqtt_broker": self.mqtt_broker,
             "mqtt_port": self.mqtt_port,
         }
+
+    @staticmethod
+    def validate():
+        """Validate required environment variables."""
+        missing = []
+        for name in ('GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET',
+                     'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET'):
+            if not getattr(Config, name, None):
+                missing.append(name)
+        if missing:
+            print(f"Warning: Missing env vars: {', '.join(missing)}. Using defaults for development.")
+
+
+# Run validation when the module is imported
+Config.validate()
