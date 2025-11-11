@@ -73,7 +73,7 @@
 
             # Update session activity
             if active_session:
-                session = self.active_sessions[session_token]
+                session = self.active_sessions[active_session]
                 session["last_activity"] = time.time()
 
             self.logger.debug(
