@@ -6,6 +6,7 @@ device configurations, and security policies.
 """
 
 import os
+<<<<<<< HEAD
 from typing import Dict, Any
 
 
@@ -94,17 +95,55 @@ class Config:
             "mqtt_port": self.mqtt_port,
         }
 
+=======
+import logging
+from logging.handlers import RotatingFileHandler
+
+class Config:
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-change-in-prod')
+    DEBUG = os.getenv('FLASK_ENV', 'development') == 'development'
+
+    ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY', 'oEjkBZoQGZ7qi57R5jsBV-D5Ot122bxk98oXqP5dQmI')
+
+    GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+    GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
+    FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')
+    FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
+
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+>>>>>>> 0be6a386bdf743bca23f23412f15d069d0666896
     @staticmethod
     def validate():
         """Validate required environment variables."""
         missing = []
+<<<<<<< HEAD
         for name in ('GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET',
                      'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET'):
             if not getattr(Config, name, None):
                 missing.append(name)
+=======
+        for var in ('GITHUB_CLIENT_ID', 'GITHUB_CLIENT_SECRET',
+                    'FACEBOOK_CLIENT_ID', 'FACEBOOK_CLIENT_SECRET'):
+            if not getattr(Config, var):
+                missing.append(var)
+>>>>>>> 0be6a386bdf743bca23f23412f15d069d0666896
         if missing:
-            print(f"Warning: Missing env vars: {', '.join(missing)}. Using defaults for development.")
+            raise RuntimeError(f"OAuth config error: Missing: {', '.join(missing)}")
 
+# Setup logging
+def setup_logging(app):
+    os.makedirs('logs', exist_ok=True)
+    handler = RotatingFileHandler('logs/app.log', maxBytes=10000, backupCount=3)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+
+<<<<<<< HEAD
 
 # Run validation when the module is imported
+=======
+>>>>>>> 0be6a386bdf743bca23f23412f15d069d0666896
 Config.validate()
