@@ -1,10 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Compliance</title>
+  <meta charset="UTF-8">
+  <title>Compliance - NaashonSecureIoT</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+    }
+
+    h1 {
+      color: #b30000;
+      text-align: center;
+    }
+
+    .badge img {
+      width: 80px;
+      height: 80px;
+      margin: 0.5rem;
+    }
+
+    .badge a {
+      display: inline-block;
+    }
+
+    .audit-info {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    .download-btn {
+      background: #b30000;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+    }
+
+    .nav-links a {
+      margin-right: 1rem;
+      color: #b30000;
+      text-decoration: none;
+    }
+
+    /* Media query for responsiveness */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .badge img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .nav-links a {
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<h1>Compliance</h1>
-<p>This is a placeholder page for Compliance.</p>
+  <div class="container">
+    <h1>Compliance & Certifications</h1>
+    <div class="nav-links">
+      <a href="/">APA Guide</a> |
+      <a href="/threat_intel">Threat Intel</a> |
+      <a href="/device_manager">Device Manager</a>
+    </div>
+
+    <h2>Certified Standards</h2>
+    <div class="badge">
+      <a href="https://gdpr.eu" target="_blank"><img src="{{ url_for('static', filename='img/certificates/gdpr.png') }}" alt="GDPR"></a>
+      <a href="https://iso.org" target="_blank"><img src="{{ url_for('static', filename='img/certificates/iso27001.png') }}" alt="ISO 27001"></a>
+      <a href="https://nist.gov" target="_blank"><img src="{{ url_for('static', filename='img/certificates/nist.png') }}" alt="NIST CSF"></a>
+    </div>
+
+    <h2>Audit Status</h2>
+    <div class="audit-info">
+      <p><strong>Last External Audit:</strong> {{ last_audit }}</p>
+      <p><strong>Next Scheduled Audit:</strong> {{ next_audit }}</p>
+      <p><strong>Compliance Officer:</strong> {{ officer }} (<a href="mailto:{{ email }}">{{ email }}</a>)</p>
+    </div>
+
+    <h2>Download Full Report</h2>
+    <a href="{{ url_for('static', filename='reports/compliance_report_nov2025.pdf') }}" class="download-btn">Download Compliance Report (PDF)</a>
+
+    <p style="margin-top:2rem;font-size:0.9rem;color:#666;">
+      <em>Last updated: November 11, 2025 02:44 PM EAT</em>
+    </p>
+  </div>
 </body>
 </html>
