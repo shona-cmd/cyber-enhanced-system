@@ -247,8 +247,8 @@ if __name__ == "__main__":
         print("\n[STOP] Dashboard stopped.")
 =======
 from flask import Flask, render_template, jsonify, request
-from config import Config, setup_logging
-from models import db, User, ThreatLog, Device
+from .config import Config, setup_logging
+from .models import db, User, ThreatLog, Device
 from datetime import datetime
 
 app = Flask(__name__, template_folder='../templates')

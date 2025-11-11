@@ -18,3 +18,11 @@ class ThreatLog(db.Model):
     source = db.Column(db.String(100), nullable=False)
     risk = db.Column(db.String(20), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Device(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    ip = db.Column(db.String(15), nullable=False)
+    mac = db.Column(db.String(17), nullable=False)
+    status = db.Column(db.String(20), nullable=False)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)

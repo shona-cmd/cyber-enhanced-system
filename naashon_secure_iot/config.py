@@ -97,6 +97,7 @@ class Config:
 
 =======
 import logging
+from logging.handlers import RotatingFileHandler
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-change-in-prod')
@@ -108,8 +109,6 @@ class Config:
     GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET')
     FACEBOOK_CLIENT_ID = os.getenv('FACEBOOK_CLIENT_ID')
     FACEBOOK_CLIENT_SECRET = os.getenv('FACEBOOK_CLIENT_SECRET')
-
-    MQTT_BROKER = os.getenv('MQTT_BROKER')
 
     SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
