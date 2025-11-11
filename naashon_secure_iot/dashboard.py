@@ -188,9 +188,8 @@ def patch_dashboard():
 
 # === 4. PORT & FIREWALL FIX ===
 
-
 def open_port():
-
+    
     cmds = [
         "ufw allow 5000/tcp",
         "ufw reload",
@@ -214,6 +213,7 @@ def check_access():
         s.close()
 
 # === 5. LAUNCH FIXED DASHBOARD ===
+
 def launch():
     open_port()
     if not check_access():
