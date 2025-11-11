@@ -17,19 +17,23 @@
   <div class="container">
     <h1>Threat Intelligence Dashboard</h1>
     <div class="alert">
-      <strong>High-Risk Alert:</strong> CVE-2025-12345 – Remote Code Execution in Flask Apps (CVSS 9.8)
+      <strong>High-Risk Alert:</strong> CVE-2025-12345 – RCE in Flask (CVSS 9.8)
     </div>
-    <p>Latest indicators from OSINT, dark web, and partner feeds.</p>
+    <p><a href="/">Back to APA Guide</a></p>
 
-    <h2>Active Threats</h2>
+    <h2>Active Threats ({{ threats|length }})</h2>
     <table>
-      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th></tr>
-      <tr><td>185.220.101.12</td><td>IP</td><td>AbuseIPDB</td><td>High</td></tr>
-      <tr><td>malware.exe</td><td>File Hash</td><td>VirusTotal</td><td>Medium</td></tr>
-      <tr><td>phish.example.com</td><td>Domain</td><td>PhishTank</td><td>High</td></tr>
+      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th><th>Time</th></tr>
+      {% for t in threats %}
+      <tr>
+        <td>{{ t.ioc }}</td>
+        <td>{{ t.type }}</td>
+        <td>{{ t.source }}</td>
+        <td>{{ t.risk }}</td>
+        <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
     </table>
-
-    <p><em>Last updated: November 11, 2025 08:00 AM EAT</em></p>
   </div>
 </body>
 </html>

@@ -1,352 +1,82 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-import os
-import sys
-import json
-import uuid
-# from naashon_secure_iot import core  # Commented out for now
-from authlib.integrations.flask_client import OAuth
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from data_sources import data_sources
-from naashon_secure_iot.config import Config
+from flask import Flask, render_template, jsonify, request
+from config import Config, setup_logging
+from models import db, User, ThreatLog, Device
+from datetime import datetime
 
-template_dir = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../templates')
-static_dir = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), '../static')
-app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.secret_key = os.environ.get('SECRET_KEY', 'naashon_secure_iot_secret_key')  # Use environment variable in production
+app = Flask(__name__, template_folder='../templates')
+app.config.from_object(Config)
 
-try:
-    app.config.from_object(Config)
-except RuntimeError as e:
-    print(f"Configuration error: {e}")
-    # Handle the configuration error appropriately, e.g., by exiting the application
-    exit(1)
+db.init_app(app)
+setup_logging(app)
 
-# OAuth configuration
-oauth = OAuth(app)
-github = oauth.register(
-    name='github',
-    client_id='Ov23liX09s77znsNtW2J',  # Replace with actual GitHub OAuth app client ID
-    client_secret='f7953562d1cd665696f2b8f16149ce506d3f71ad', # Replace with actual GitHub OAuth app client secret
-    access_token_url='https://github.com/login/oauth/access_token',
-    access_token_params=None,
-    authorize_url='https://github.com/login/oauth/authorize',
-    authorize_params=None,
-    api_base_url='https://api.github.com/',
-    client_kwargs={'scope': 'user:email'},
-)
+with app.app_context():
+    db.create_all()
+    app.logger.info("Database initialized.")
 
-facebook = oauth.register(
-    name='facebook',
-    client_id='3167326748083',  # Replace with actual Facebook app ID
-    client_secret='8dbfe19e89a88d70e92691e48695e043', # Replace with actual GitHub OAuth app client secret
-    access_token_url='https://graph.facebook.com/oauth/access_token',
-    access_token_params=None,
-    authorize_url='https://www.facebook.com/dialog/oauth',
-    authorize_params=None,
-    api_base_url='https://graph.facebook.com/',
-    client_kwargs={'scope': 'email'},
-)
+# === LANDING PAGE: APA GUIDE (NO LOGIN) ===
+@app.route('/')
+def index():
+    app.logger.info("Landing page (APA Guide) loaded")
+    return render_template('apa_guide_static.html')
 
-# Simple user storage (in production, use database)
-USERS_FILE = os.path.join(os.path.dirname(__file__), 'users.json')
+# === THREAT INTEL DASHBOARD ===
+@app.route('/threat_intel')
+def threat_intel():
+    app.logger.info("Threat Intel page accessed")
+    threats = ThreatLog.query.order_by(ThreatLog.timestamp.desc()).limit(10).all()
+    return render_template('threat_intel.html', threats=threats)
 
-def load_users():
-    if os.path.exists(USERS_FILE):
-        with open(USERS_FILE, 'r') as f:
-            return json.load(f)
-    return {'admin@example.com': {'password': 'admin123', 'role': 'admin'}}
+# === DEVICE MANAGER ===
+@app.route('/device_manager')
+def device_manager():
+    app.logger.info("Device Manager page accessed")
+    devices = Device.query.order_by(Device.last_seen.desc()).all()
+    return render_template('device_manager.html', devices=devices)
 
-def save_users(users):
-    with open(USERS_FILE, 'w') as f:
-        json.dump(users, f)
-
-
-@app.route("/")
+# === HEALTH CHECK ===
+@app.route('/dashboard')
 def dashboard():
-    if 'user' not in session:
-        return redirect(url_for('login'))
+    app.logger.info(f"Health check from {request.remote_addr}")
+    return jsonify({
+        "status": "OK",
+        "users": User.query.count(),
+        "threats": ThreatLog.query.count(),
+        "devices": Device.query.count()
+    })
 
-    # Get real-time dashboard data from data sources
-    dashboard_data = {
-        "total_devices": data_sources.get_total_devices(),
-        "active_threats": data_sources.get_recent_threats(),
-        "network_anomalies": data_sources.get_network_anomalies(),
-        "blockchain_entries": data_sources.get_blockchain_entries()
-    }
+# === ERROR HANDLERS ===
+@app.errorhandler(404)
+def not_found(e):
+    app.logger.error(f"404: {request.url}")
+    return "Page not found", 404
 
-    # Check if user is admin to show additional features
-    is_admin = session['user'].get('role') == 'admin'
+@app.errorhandler(500)
+def server_error(e):
+    app.logger.error(f"500: {str(e)}")
+    return "Server error", 500
 
-    from naashon_secure_iot.config import Config
-    from naashon_secure_iot.layers.network import NetworkLayer
-    import logging
-    config = Config()
-    logger = logging.getLogger(__name__)
-    network_layer = NetworkLayer(config, logger)
-    network_status = network_layer.get_network_status()
+# === SEED DATA ===
+with app.app_context():
+    if ThreatLog.query.count() == 0:
+        app.logger.info("Seeding threat data")
+        # ... (same as before)
+    if Device.query.count() == 0:
+        app.logger.info("Seeding device data")
+        sample_devices = [
+            ("Router-01", "192.168.1.1", "00:1A:2B:3C:4D:5E", "online"),
+            ("Camera-02", "192.168.1.102", "AA:BB:CC:DD:EE:FF", "offline"),
+            ("Sensor-03", "192.168.1.103", "11:22:33:44:55:66", "online")
+        ]
+        for name, ip, mac, status in sample_devices:
+            d = Device(name=name, ip=ip, mac=mac, status=status)
+            db.session.add(d)
+        db.session.commit()
 
-    return render_template("dashboard.html",
-                           device_count=dashboard_data["total_devices"],
-                           active_threats=dashboard_data["active_threats"],
-                           network_anomalies=dashboard_data["network_anomalies"],
-                           blockchain_entries=dashboard_data["blockchain_entries"],
-                           cloud_predictions=data_sources.get_cloud_predictions(),
-                           user=session['user'],
-                           is_admin=is_admin,
-                           local_ip=config.local_ip,
-                           subnet_mask=config.subnet_mask,
-                           default_gateway=config.default_gateway,
-                           dns_suffix=config.dns_suffix,
-                           mqtt_broker=config.mqtt_broker,
-                           network_status=network_status)
-
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        users = load_users()
-        if email in users and users[email]['password'] == password:
-            session['user'] = {'email': email, 'role': users[email]['role']}
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid credentials')
-
-    return render_template("login.html")
-
-
-
-@app.route("/register", methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        role = request.form['role']
-
-        users = load_users()
-        if email in users:
-            flash('User already exists')
-            return redirect(url_for('register'))
-
-        # Create new user
-        users[email] = {
-            'password': password,
-            'role': role
-        }
-        save_users(users)
-
-        flash('Registration successful! Please log in.')
-        return redirect(url_for('login'))
-
-    return render_template("register.html")
-
-@app.route("/logout")
-def logout():
-    session.pop('user', None)
-    return redirect(url_for('login'))
-
-@app.route("/threat")
-def threat():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
-    # Get threat data for the page
-    threat_data = data_sources.get_recent_threats()
-
-    return render_template("threat_intel.html",
-                          user=session['user'],
-                          is_admin=session['user'].get('role') == 'admin',
-                          threat_data=threat_data)
-
-@app.route("/devices")
-def devices():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
-    # Mock device data with dynamic status
-    devices_data = [
-        {'id': 'device1', 'name': 'IoT Device 1', 'status': data_sources.get_device_status('device1')},
-        {'id': 'device2', 'name': 'IoT Device 2', 'status': data_sources.get_device_status('device1')},
-        {'id': 'device3', 'name': 'IoT Device 3', 'status': data_sources.get_device_status('device1')}
-    ]
-
-    return render_template("device_manager.html",
-                          user=session['user'],
-                          is_admin=session['user'].get('role') == 'admin',
-                          devices_data=devices_data)
-
-@app.route("/control_device/<device_id>/<action>")
-def control_device(device_id, action):
-    if 'user' not in session:
-        return redirect(url_for('login'))
-
-    # Perform device control action
-    result = data_sources.control_device(device_id, action)
-
-    # Redirect back to devices page with a flash message
-    flash(f"Device {device_id}: {result}")
-    return redirect(url_for('devices'))
-
-@app.route('/login/github')
-def login_github():
-    github = oauth.create_client('github')
-    redirect_uri = url_for('authorize_github', _external=True)
-    return github.authorize_redirect(redirect_uri)
-
-@app.route('/login/facebook')
-def login_facebook():
-    facebook = oauth.create_client('facebook')
-    redirect_uri = url_for('authorize_facebook', _external=True)
-    return facebook.authorize_redirect(redirect_uri)
-
-@app.route('/authorize/github')
-def authorize_github():
-    github = oauth.create_client('github')
-    token = github.authorize_access_token()
-    resp = github.get('user')
-    profile = resp.json()
-    # Get user email
-    email_resp = github.get('user/emails')
-    emails = email_resp.json()
-    primary_email = next((email['email'] for email in emails if email['primary']), profile['email'])
-
-    # Create or update user in session
-    session['user'] = {
-        'email': primary_email,
-        'name': profile.get('name', ''),
-        'role': 'user',
-        'provider': 'github'
-    }
-    return redirect(url_for('dashboard'))
-
-@app.route('/authorize/facebook')
-def authorize_facebook():
-    facebook = oauth.create_client('facebook')
-    token = facebook.authorize_access_token()
-    resp = facebook.get('me?fields=id,name,email')
-    profile = resp.json()
-    try:
-        email = profile.get('email', '')
-    except:
-        email = ""
-    # Create or update user in session
-    session['user'] = {
-        'email': email,
-        'name': profile.get('name', ''),
-        'role': 'user',
-        'provider': 'facebook'
-    }
-    return redirect(url_for('dashboard'))
-
-@app.route('/register/github')
-def register_github():
-    github = oauth.create_client('github')
-    redirect_uri = url_for('authorize_github', _external=True)
-    return github.authorize_redirect(redirect_uri)
-
-@app.route('/register/facebook')
-def register_facebook():
-    facebook = oauth.create_client('facebook')
-    redirect_uri = url_for('authorize_register_facebook', _external=True)
-    return facebook.authorize_redirect(redirect_uri)
-
-@app.route('/authorize/register/facebook')
-def authorize_register_facebook():
-    try:
-        facebook = oauth.create_client('facebook')
-        token = facebook.authorize_access_token()
-        resp = facebook.get('me?fields=id,name,email')
-        profile = resp.json()
-        try:
-            email = profile.get('email', '')
-        except:
-            email = ""
-        if not email:
-            flash('Email not provided by Facebook')
-            return redirect(url_for('register'))
-
-        users = load_users()
-        if email in users:
-            flash('User already exists')
-            return redirect(url_for('register'))
-
-        # Create new user
-        users[email] = {
-            'password': '', # No password for OAuth users
-            'role': 'user'
-        }
-        save_users(users)
-
-        # Log in the user
-        session['user'] = {
-            'email': email,
-            'name': profile.get('name', ''),
-            'role': 'user',
-            'provider': 'facebook'
-        }
-        flash('Registration successful!')
-        return redirect(url_for('dashboard'))
-    except Exception as e:
-        flash('Facebook registration failed. Please try again.')
-        return redirect(url_for('register'))
-
-
-@app.route("/api/register_device", methods=['POST'])
-def api_register_device():
-    from naashon_secure_iot import core
-    framework = core.NaashonSecureIoT()
-    data = request.get_json()
-    device_id = data and data.get('device_id')
-    device_type = data.get('device_type', 'unknown')
-    if framework.register_device(device_id, device_type):
-        message = f"Device with id {device_id} registered"
-        return {"status": "success", "message": message}
-    else:
-        message = f"Failed to register device with id {device_id}"
-        return {"status": "error", "message": message}, 400
-
-
-@app.route("/api/transmit_data", methods=['POST'])
-def api_transmit_data():
-    from naashon_secure_iot import core
-    framework = core.NaashonSecureIoT()
-    data = request.get_json()
-    device_id = data and data.get('device_id')
-    payload = data.get('data')
-    if isinstance(payload, str):
-        payload = {"message": f"Data received from device with id {device_id}", "timestamp": None}
-    result = framework.process_data(device_id, payload)
-    return result
-
-
-@app.route("/api/metrics")
-def api_metrics():
-    from naashon_secure_iot import core
-    framework = core.NaashonSecureIoT()
-    data = framework.get_dashboard_data()
-    status = "secure" if data["active_threats"] < 5 else "warning"
-    return {
-        "status": status,
-        "devices": data["total_devices"],
-        "anomaly_rate": 0.0,  # Placeholder
-        "blockchain_blocks": data["blockchain_entries"],
-        "uptime": 0  # Placeholder
-    }
-
-
-@app.route("/apa_guide")
-def apa_guide():
-    return render_template("apa_guide.html")
-
-@app.route("/apa_guide_static")
-def apa_guide_static():
-    return render_template("apa_guide_static.html")
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+if __name__ == '__main__':
+    print("\n=== NaashonSecureIoT ===")
+    print(" * Landing Page: / (APA Guide)")
+    print(" * Threat Intel: /threat_intel")
+    print(" * Device Manager: /device_manager")
+    print(" * Health: /dashboard")
+    print(" * LOG FILE: logs/app.log\n")
+    app.run(host='0.0.0.0', port=5000, debug=app.config['DEBUG'])

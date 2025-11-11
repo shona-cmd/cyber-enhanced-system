@@ -1,1 +1,1 @@
-web: python -m naashon_secure_iot.dashboard
+web: gunicorn dashboard:app

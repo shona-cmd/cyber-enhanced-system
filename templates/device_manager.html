@@ -1,10 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Device Manager</title>
+  <meta charset="UTF-8">
+  <title>Device Manager</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;}
+    .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+    h1{color:#b30000;text-align:center;}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;}
+    th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
+    th{background:#b30000;color:white;}
+    .status-online{color:green;font-weight:bold;}
+    .status-offline{color:red;font-weight:bold;}
+    .nav-links{margin-bottom:1rem;}
+    .nav-links a{margin-right:1rem;color:#b30000;text-decoration:none;}
+  </style>
 </head>
 <body>
-<h1>Device Manager</h1>
-<p>This is a placeholder page for Device Manager.</p>
+  <div class="container">
+    <h1>Device Manager</h1>
+    <div class="nav-links">
+      <a href="/">APA Guide</a> |
+      <a href="/threat_intel">Threat Intel</a>
+    </div>
+
+    <h2>Registered Devices ({{ devices|length }})</h2>
+    <table>
+      <tr><th>Name</th><th>IP Address</th><th>MAC Address</th><th>Status</th><th>Last Seen</th></tr>
+      {% for d in devices %}
+      <tr>
+        <td>{{ d.name }}</td>
+        <td>{{ d.ip }}</td>
+        <td>{{ d.mac }}</td>
+        <td class="status-{{ d.status }}">{{ d.status|title }}</td>
+        <td>{{ d.last_seen.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <p><em>Last updated: {{ "now" | strftime("%B %d, %Y %I:%M %p EAT") }}</em></p>
+  </div>
 </body>
 </html>
