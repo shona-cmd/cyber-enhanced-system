@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – APA 6th Guide</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --red: #b30000;
+      --dark: #1a1a1a;
+      --light: #f8f9fa;
+      --shadow: 0 8px 25px rgba(0,0,0,0.15);
+      --transition: all 0.3s ease;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #fff;
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* === HEADER (Appears on all pages) === */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--red);
+    }
+    .brand strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+    }
+    .nav-links a {
+      margin-left: 1.5rem;
+      color: #555;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .nav-links a:hover {
+      color: var(--red);
+    }
+
+    /* === COVER LAYOUT === */
+    .cover {
+      flex: 1;
+      display: flex;
+      position: relative;
+      min-height: 100vh;
+      padding: 8rem 3rem 3rem;
+    }
+    .red-bar {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 120px;
+      background: var(--red);
+    }
+    .content {
+      margin-left: 140px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: 100%;
+    }
+
+    .cover-title {
+      text-align: center;
+      color: var(--red);
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      line-height: 1.2;
+    }
+    .cover-title span {
+      display: block;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-top: 0.5rem;
+    }
+
+    .apa-book {
+      width: clamp(140px, 25vw, 180px);
+      height: auto;
+      align-self: center;
+      margin: 2rem 0;
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .apa-book:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .cover-footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .ucol-logo {
+      width: clamp(160px, 28vw, 200px);
+      height: auto;
+      align-self: center;
+      margin-top: 1rem;
+    }
+
+    /* === FOOTER (Appears on all pages) === */
+    .site-footer {
+      background: var(--dark);
+      color: #ccc;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+    }
+    .site-footer .brand {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .red-bar { width: 80px; }
+      .content { margin-left: 100px; padding: 7rem 2rem 2rem; }
+      .site-header { padding: 0.75rem 1rem; font-size: 0.9rem; }
+      .nav-links a { margin-left: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .red-bar { width: 60px; }
+      .content { margin-left: 80px; padding: 6rem 1.5rem 1.5rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER: Naashon + MTAC -->
+  <header class="site-header">
+    <div class="brand">
+      <strong>Naashon</strong> × MTAC Cybersecurity
+    </div>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="/threat_intel">Threat Intel</a>
+      <a href="/device_manager">Devices</a>
+      <a href="/compliance">Compliance</a>
+    </nav>
+  </header>
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div class="red-bar" aria-hidden="true"></div>
+
+    <div class="content">
+      <h1 class="cover-title">
+        A beginner’s guide to the<br>
+        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+      </h1>
+
+      <img 
+        src="{{ url_for('static', filename='img/apa_manual.jpg') }}" 
+        alt="APA 6th Edition Manual" 
+        class="apa-book"
+      >
+
+      <div class="cover-footer">
+        The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+        Library and Learning Services<br>
+        December 2011
+      </div>
+
+      <img 
+        src="{{ url_for('static', filename='img/ucol_logo.png') }}" 
+        alt="UCOL" 
+        class="ucol-logo"
+      >
+    </div>
+  </div>
+
+  <!-- FOOTER: Naashon + MTAC -->
+  <footer class="site-footer">
+    <div class="brand">Naashon × MTAC Cybersecurity Framework</div>
+    <div>© 2025 | Management Training and Advisory Centre (MTAC), Kampala, Uganda</div>
+  </footer>
+
+</body>
+</html>
