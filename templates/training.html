@@ -1,46 +1,155 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Training</title>
-<style>
-  body {
-    cursor: none;
-  }
-  #custom-cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9999;
-    transition: none;
-  }
-  #custom-cursor img {
-    width: 32px;
-    height: 32px;
-  }
-</style>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const cursor = document.createElement('div');
-    cursor.id = 'custom-cursor';
-    cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
-    document.body.appendChild(cursor);
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MTAC | Cyber Cursor Training</title>
 
-    document.addEventListener('mousemove', function(e) {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
-    });
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
-    document.addEventListener('click', function() {
-      const img = document.getElementById('cursor-img');
-      const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-      img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
-    });
-  });
-</script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0e17;
+      color: #00ffcc;
+      cursor: none !important;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #001f3f, #003366);
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 3px solid #00ffcc;
+      box-shadow: 0 4px 20px rgba(0, 255, 204, 0.3);
+    }
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 12px #00ffcc;
+    }
+    .tagline {
+      font-size: 1.1rem;
+      color: #a0f7ff;
+      font-style: italic;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: rgba(10, 20, 40, 0.8);
+      border: 1px solid #00ffcc;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+      text-align: center;
+    }
+
+    .alert-box {
+      background: rgba(255, 50, 50, 0.15);
+      border: 1px solid #ff3366;
+      color: #ff99aa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 2rem 0;
+      font-weight: bold;
+    }
+
+    /* CUSTOM CURSOR - GUARANTEED TO SHOW & MOVE */
+    #mtac-cursor {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: filter 0.2s ease;
+      left: 0;
+      top: 0;
+    }
+
+    #mtac-cursor img {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    .instructions {
+      margin-top: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #a0f7ff;
+    }
+    .highlight { color: #00ffcc; font-weight: bold; }
+  </style>
 </head>
 <body>
-<h1>Training</h1>
-<p>This is a placeholder page for Training.</p>
+
+  <header>
+    <h1>MTAC CYBER TRAINING</h1>
+    <p class="tagline">Precision. Control. Security.</p>
+  </header>
+
+  <!-- CURSOR ELEMENT -->
+  <div id="mtac-cursor">
+    <img id="cursor-icon" src="" alt="MTAC Cursor">
+  </div>
+
+  <div class="container">
+    <h2>Cursor Control Module</h2>
+    <div class="alert-box">
+      CURSOR: <span class="highlight">ACTIVE</span> | Click to change color
+    </div>
+    <p>The <span class="highlight">cyber shield icon</span> follows your mouse.</p>
+    <p><strong>Click anywhere</strong> → cursor changes to a random secure color.</p>
+
+    <div class="instructions">
+      <p><strong>Training Goal:</strong> Master precision under pressure.</p>
+      <p><strong>Status:</strong> <span class="highlight">FULLY OPERATIONAL</span></p>
+    </div>
+  </div>
+  <script>
+    'use strict';
+    document.addEventListener('DOMContentLoaded', () => {
+      const cursor = document.getElementById('mtac-cursor');
+      const icon = document.getElementById('cursor-icon');
+
+      // CYBERSECURITY ICON (EMBEDDED SVG - ALWAYS WORKS)
+      const cyberIconSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor">
+          <path d="M32 2C20 2 10 12 10 24V40C10 48 16 54 24 56V62H40V56C48 54 54 48 54 40V24C54 12 44 2 32 2Z"/>
+          <path d="M22 32L28 38L42 24" stroke="black" stroke-width="3" fill="none"/>
+          <circle cx="32" cy="32" r="8" fill="black"/>
+        </svg>`;
+
+      // SET ICON
+      icon.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(cyberIconSVG);
+
+      // FOLLOW MOUSE
+      document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      // CLICK → CHANGE COLOR
+      const colors = ['#00ffcc', '#00ccff', '#ff00cc', '#ccff00', '#ff6600', '#ff3366', '#33ff99'];
+      let colorIndex = 0;
+
+      document.addEventListener('click', () => {
+        colorIndex = (colorIndex + 1) % colors.length;
+        const newColor = colors[colorIndex];
+        cursor.style.color = newColor;
+        cursor.style.filter = `drop-shadow(0 0 12px ${newColor})`;
+      });
+
+      // Initial position
+      cursor.style.left = '50%';
+      cursor.style.top = '50%';
+    });
+  </script>
 </body>
 </html>

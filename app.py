@@ -5,21 +5,9 @@ import os
 app = Flask(__name__, static_url_path='/static')
 app.secret_key = 'naashonhq_mtac_secure_2025'
 
-@app.route('/')
-def home():
-    return render_template('apa_cover.html')
-
 @app.route('/quote')
 def quote():
     return render_template('quote.html')
-
-@app.route('/download_report')
-def download_report():
-    return send_from_directory(
-        'static/reports',
-        'compliance_report_nov2025.pdf',
-        as_attachment=True
-    )
 
 # === USER DATABASE (In real app: use SQLite) ===
 users = {
@@ -97,13 +85,9 @@ def device_manager():
 def admin_panel():
     return render_template('admin_panel.html')
 
-@app.route('/download_report')
-def download_report():
-    return send_from_directory(os.path.join(app.root_path, 'static/reports'), 'compliance_report_nov2025.pdf', as_attachment=True)
-
 @app.route('/training')
 def training():
-    return render_template('training.html')
+    return send_from_directory('.', 'templates/training.html')
 
 @app.route('/hello/<name>')
 def hello(name):
