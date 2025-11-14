@@ -101,6 +101,10 @@ def admin_panel():
 def download_report():
     return send_from_directory(os.path.join(app.root_path, 'static/reports'), 'compliance_report_nov2025.pdf', as_attachment=True)
 
+@app.route('/training')
+def training():
+    return render_template('training.html')
+
 @app.route('/hello/<name>')
 def hello(name):
     return f"Hello, {name}!"

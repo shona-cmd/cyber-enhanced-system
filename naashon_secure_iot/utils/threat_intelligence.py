@@ -1,8 +1,8 @@
 """
 Threat Intelligence utilities for NaashonSecureIoT.
+
+Implements threat feeds integration, IOC management, and automated response.
 """
-
-
 class ThreatIntelligence:
     def __init__(self):
         pass
