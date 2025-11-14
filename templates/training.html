@@ -127,7 +127,7 @@
         </svg>`;
 
       // SET ICON
-      icon.src = '/static/cyber-security.png';
+      icon.src = 'data:image/svg+xml;base64,' + btoa(cyberIconSVG);
 
       // FOLLOW MOUSE
       document.addEventListener('mousemove', (e) => {

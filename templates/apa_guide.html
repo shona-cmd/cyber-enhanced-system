@@ -26,7 +26,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       const cursor = document.createElement('div');
       cursor.id = 'custom-cursor';
-      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      cursor.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" width="32" height="32"><path d="M32 2C20 2 10 12 10 24V40C10 48 16 54 24 56V62H40V56C48 54 54 48 54 40V24C54 12 44 2 32 2Z"/><path d="M22 32L28 38L42 24" stroke="black" stroke-width="3" fill="none"/><circle cx="32" cy="32" r="8" fill="black"/></svg>';
       document.body.appendChild(cursor);
 
       document.addEventListener('mousemove', function(e) {
@@ -35,9 +35,9 @@
       });
 
       document.addEventListener('click', function() {
-        const img = document.getElementById('cursor-img');
         const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+        cursor.style.color = randomColor;
+        cursor.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
       });
     });
   </script>
