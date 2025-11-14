@@ -6,7 +6,22 @@
   <title>NaashonSecureIoT – APA 6th Guide</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Times New Roman', serif; background: #fff; color: #000; }
+    body {
+      cursor: none;
+      font-family: 'Times New Roman', serif; background: #fff; color: #000;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
     .cover { display: flex; min-height: 100vh; position: relative; }
     .red-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 120px; background: #b30000; }
     .content { margin-left: 140px; padding: 3rem; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
@@ -22,6 +37,25 @@
       .title span { font-size: 1.5rem; }
     }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="cover">

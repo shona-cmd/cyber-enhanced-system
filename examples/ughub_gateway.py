@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import requests
 import jwt
 import paho.mqtt.client as mqtt
+import os
 
 app = Flask(__name__)
 
@@ -15,7 +16,7 @@ def get_jwt():
     payload = {
         "grant_type": "client_credentials",
         "client_id": "naashon-secure-iot-app",
-        "client_secret": "SUPER_SECRET_FROM_UGHUB"
+        "client_secret": os.environ.get("UGHUB_CLIENT_SECRET")
     }
     r = requests.post(UGUB_TOKEN_URL, data=payload)
     return r.json()["access_token"]

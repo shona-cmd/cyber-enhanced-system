@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTAC NaashonSecureIoT - Admin Panel</title>
+  <style>
+    body {
+      cursor: none;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+    .header {
+      background: #343a40;
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 0.25rem;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
+</head>
+<body>
+  <header class="header">
+    <h1>Admin Panel - MTAC NaashonSecureIoT</h1>
+  </header>
+  <div class="container">
+    <div class="card">
+      <h2>System Overview</h2>
+      <p>Manage users, devices, and security settings.</p>
+      <button class="btn">View Logs</button>
+      <button class="btn">Manage Users</button>
+    </div>
+    <div class="card">
+      <h2>Threat Intelligence</h2>
+      <p>Monitor and respond to security threats.</p>
+      <button class="btn">View Alerts</button>
+      <button class="btn">Run Scan</button>
+    </div>
+    <div class="card">
+      <h2>Compliance</h2>
+      <p>Ensure regulatory compliance.</p>
+      <button class="btn">Generate Report</button>
+      <button class="btn">Audit Logs</button>
+    </div>
+  </div>
+</body>
+</html>

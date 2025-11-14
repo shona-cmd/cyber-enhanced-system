@@ -4,14 +4,48 @@
   <meta charset="UTF-8">
   <title>MTAC NaashonSecureIoT - Threat Intelligence</title>
   <style>
-    body{font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;}
-    .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
-    h1{color:#b30000;text-align:center;}
-    .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
-    table{width:100%;border-collapse:collapse;margin-top:1rem;}
-    th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
-    th{background:#b30000;color:white;}
+        body{
+          cursor: none;
+          font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;
+        }
+        #custom-cursor {
+          position: fixed;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 9999;
+          transition: none;
+        }
+        #custom-cursor img {
+          width: 32px;
+          height: 32px;
+        }
+        .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+        h1{color:#b30000;text-align:center;}
+        .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
+        table{width:100%;border-collapse:collapse;margin-top:1rem;}
+        th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
+        th{background:#b30000;color:white;}
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="container">
