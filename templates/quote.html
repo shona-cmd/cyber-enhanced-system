@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaashonHQ – Get a Quote</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --secondary: #06d6a0;
+      --dark: #0f172a;
+      --light: #f8fafc;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:var(--light); color:#334155; line-height:1.6; }
+    .header { background:var(--dark); color:white; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--shadow); position:sticky; top:0; z-index:1000; }
+    .logo { font-size:1.5rem; font-weight:bold; color:var(--secondary); }
+    .nav a { color:white; margin-left:1.5rem; text-decoration:none; transition:all 0.3s; }
+    .nav a:hover { color:var(--secondary); }
+    .hero { padding:4rem 2rem; text-align:center; background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white; }
+    .hero h1 { font-size:2.5rem; margin-bottom:1rem; }
+    .form-container { max-width:600px; margin:2rem auto; background:white; padding:2rem; border-radius:12px; box-shadow:var(--shadow); }
+    input, select, textarea { width:100%; padding:1rem; margin:0.5rem 0; border:1px solid #ccc; border-radius:8px; font-size:1rem; transition:border 0.3s; }
+    input:focus, select:focus, textarea:focus { outline:none; border-color:var(--primary); }
+    .btn { background:var(--primary); color:white; padding:1rem 2rem; border:none; border-radius:8px; font-weight:bold; cursor:pointer; width:100%; margin-top:1rem; transition:all 0.3s; }
+    .btn:hover { background:#1d4ed8; transform:translateY(-2px); box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+    .footer { background:var(--dark); color:white; text-align:center; padding:2rem; font-size:0.9rem; }
+    .footer a { color:var(--secondary); text-decoration:none; margin:0 0.5rem; }
+    @media (max-width:768px) {
+      .hero h1 { font-size:2rem; }
+      .form-container { margin:1rem; padding:1.5rem; }
+      .header { flex-direction:column; gap:1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">NaashonHQ FRAMEWORK FOR MTAC</div>
+    <nav class="nav">
+      <a href="/">Home</a>
+      <a href="/quote">Quote</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Get a Custom Quote</h1>
+    <p>Secure your network with NaashonHQ. Fast response in 24 hours.</p>
+  </section>
+
+  <div class="form-container">
+    <form action="/submit-quote" method="POST">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Business Email" required>
+      <input type="text" name="company" placeholder="Company Name" required>
+      <input type="tel" name="phone" placeholder="Phone Number">
+      <select name="product" required>
+        <option value="">Select Product</option>
+        <option>DNS Filtering</option>
+        <option>Spam Protection</option>
+        <option>Full Bundle</option>
+      </select>
+      <textarea name="message" rows="5" placeholder="Tell us about your needs..."></textarea>
+      <button type="submit" class="btn">Submit Quote Request</button>
+    </form>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 NaashonHQ FRAMEWORK FOR MTAC</p>
+    <div>
+      <a href="/">Home</a> |
+      <a href="/quote">Quote</a> |
+      <a href="/download_report">Report</a>
+    </div>
+  </footer>
+
+</body>
+</html>
