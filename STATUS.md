@@ -1,1 +1,1 @@
-https://example.com/status
+http://localhost:3000/support.html
