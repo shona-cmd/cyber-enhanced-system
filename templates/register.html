@@ -1,294 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>MTAC NaashonSecureIoT - Register</title>
-  <style>
-    body {
-      cursor: none;
-    }
-    #custom-cursor {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 9999;
-      transition: none;
-    }
-    #custom-cursor img {
-      width: 32px;
-      height: 32px;
-    }
-  </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const cursor = document.createElement('div');
-      cursor.id = 'custom-cursor';
-      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
-      document.body.appendChild(cursor);
-
-      document.addEventListener('mousemove', function(e) {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-      });
-
-      document.addEventListener('click', function() {
-        const img = document.getElementById('cursor-img');
-        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
-      });
-    });
-  </script>
-
-  <!-- Bootstrap 5 + Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-  <style>
-    :root {
-      --primary: #0d6efd;
-      --success: #198754;
-      --danger: #dc3545;
-      --dark: #212529;
-    }
-    body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .register-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    .register-card {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-      overflow: hidden;
-      max-width: 420px;
-      width: 100%;
-    }
-    .card-header {
-      background: var(--primary);
-      color: white;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .card-header h3 {
-      margin: 0;
-      font-weight: 600;
-    }
-    .card-body {
-      padding: 2rem;
-    }
-    .form-control {
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-    }
-    .btn-oauth {
-      border-radius: 12px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-    .divider {
-      text-align: center;
-      margin: 1.5rem 0;
-      position: relative;
-      color: #6c757d;
-    }
-    .divider::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #dee2e6;
-    }
-    .divider span {
-      background: white;
-      padding: 0 1rem;
-    }
-    .flag {
-      width: 20px;
-      height: 14px;
-      vertical-align: middle;
-    }
-    .toast-container {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      z-index: 9999;
-    }
-    .error-alert {
-      border-left: 5px solid var(--danger);
-      background: #f8d7da;
-      color: #721c24;
-    }
-    .success-alert {
-      border-left: 5px solid var(--success);
-      background: #d4edda;
-      color: #155724;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
-
-<!-- Toast Notifications -->
-<div class="toast-container" id="toastContainer"></div>
-
-<div class="register-container">
-  <div class="register-card">
-    <!-- Header -->
-    <div class="card-header">
-      <h3><i class="bi bi-shield-lock"></i> NaashonSecureIoT</h3>
-      <p class="mb-0 small">Register for Secure IoT Intelligence</p>
-      <p class="mb-0 small mt-2">
-        <img src="https://flagcdn.com/ug.svg" class="flag" alt="UG"> 
-        <span id="currentTime"></span> EAT
-      </p>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Register
+                    </div>
+                    <div class="card-body">
+                        <form action="/register" method="post">
+                            <div class="form-group">
+                                <label for="username">Username:</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </form>
+                        {% if error %}
+                            <div class="alert alert-danger mt-3">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Body -->
-    <div class="card-body">
-      <!-- Flash Messages (Auto-clear after 5s) -->
-      <div id="flashMessages"></div>
-
-      <!-- Registration Form -->
-      <form id="registerForm" novalidate>
-        <div class="mb-3">
-          <label class="form-label">Full Name</label>
-          <input type="text" class="form-control" id="name" required placeholder="e.g., Alex Kamoga">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Email Address</label>
-          <input type="email" class="form-control" id="email" required placeholder="you@naashon.io">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" id="password" required minlength="8" placeholder="Min. 8 characters">
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Confirm Password</label>
-          <input type="password" class="form-control" id="confirmPassword" required placeholder="Retype password">
-        </div>
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="terms" required>
-          <label class="form-check-label small" for="terms">
-            I agree to the <a href="#" class="text-decoration-underline">Terms of Service</a> and <a href="#" class="text-decoration-underline">Privacy Policy</a>
-          </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 btn-lg">
-          <i class="bi bi-person-add"></i> Register Now
-        </button>
-      </form>
-
-      <!-- Divider -->
-      <div class="divider"><span>Or register with</span></div>
-
-      <!-- OAuth Buttons -->
-      <div class="d-grid gap-2">
-        <button class="btn btn-dark btn-oauth" onclick="oauthLogin('github')">
-          <i class="bi bi-github"></i> Continue with GitHub
-        </button>
-        <button class="btn btn-primary btn-oauth" onclick="oauthLogin('facebook')">
-          <i class="bi bi-facebook"></i> Continue with Facebook
-        </button>
-      </div>
-
-      <!-- Login Link -->
-      <p class="text-center mt-4 mb-0">
-        Already have an account? 
-        <a href="login.html" class="fw-bold text-primary">Login here</a>
-      </p>
-    </div>
-  </div>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  // === Uganda Time (EAT) ===
-  function updateTime() {
-    const now = new Date();
-    const options = { timeZone: 'Africa/Kampala', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-    document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-GB', options);
-  }
-  setInterval(updateTime, 1000);
-  updateTime();
-
-  // === Toast Notification System ===
-  function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast align-items-center text-bg-${type === 'error' ? 'danger' : type} border-0`;
-    toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">${message}</div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>`;
-    document.getElementById('toastContainer').appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    setTimeout(() => toast.remove(), 6000);
-  }
-
-  // === Clear All Errors (Flash Messages) ===
-  function clearAllErrors() {
-    const flash = document.getElementById('flashMessages');
-    flash.innerHTML = '';
-    // Simulate clearing server-side flashed messages
-    localStorage.removeItem('flashMessages');
-  }
-
-  // === Simulate Flash Messages (from backend) ===
-  function loadFlashMessages() {
-    const saved = localStorage.getItem('flashMessages');
-    if (saved) {
-      const messages = JSON.parse(saved);
-      messages.forEach(msg => {
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${msg.type === 'success' ? 'success' : 'danger'} alert-dismissible fade show error-alert`;
-        alert.innerHTML = `
-          ${msg.text}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-        document.getElementById('flashMessages').appendChild(alert);
-      });
-
-      // Auto-clear after 5 seconds
-      setTimeout(clearAllErrors, 5000);
-    }
-  }
-
-  // === Form Validation & Submission ===
-  document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    clearAllErrors();
-
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
-    const terms = document.getElementById('terms').checked;
-
-    if (password !== confirmPassword) {
-      showToast('Passwords do not match', 'error');
-      return;
-    }
-
-    // Simulate successful registration
-    showToast('Registration successful!', 'success');
-    // You would typically send the data to a server here
-    console.log('Registration data:', { name, email, password, terms });
-  });
-
-</script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

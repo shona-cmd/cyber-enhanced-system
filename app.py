@@ -51,11 +51,11 @@ def home():
 
 @app.route('/login')
 def login():
-    return send_from_directory('.', 'templates/login.html')
+    return render_template('login.html')
 
 @app.route('/register')
 def register():
-    return send_from_directory('.', 'templates/register.html')
+    return render_template('register.html')
 
 @app.route('/logout')
 def logout():
@@ -87,7 +87,7 @@ def admin_panel():
 
 @app.route('/training')
 def training():
-    return send_from_directory('.', 'templates/training.html')
+    return render_template('training.html')
 
 @app.route('/hello/<name>')
 def hello(name):

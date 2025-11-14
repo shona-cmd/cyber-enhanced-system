@@ -31,7 +31,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       const cursor = document.createElement('div');
       cursor.id = 'custom-cursor';
-      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" id="cursor-img">';
       document.body.appendChild(cursor);
 
       document.addEventListener('mousemove', function(e) {
@@ -42,7 +42,7 @@
       document.addEventListener('click', function() {
         const img = document.getElementById('cursor-img');
         const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+        img.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
       });
     });
   </script>
