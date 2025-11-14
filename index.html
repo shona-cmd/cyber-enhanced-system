@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NaashonHQ FRAMEWORK FOR MTAC – Pricing</title>
+<<<<<<< HEAD
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MTAC NaashonSecureIoT - Home</title>
+
+  <!-- Bootstrap 5 + Icons + Chart.js + jsPDF + html2canvas -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+=======
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MTAC NaashonSecureIoT - Home</title>
+
+  <!-- Bootstrap 5 + Icons + Chart.js + jsPDF + html2canvas -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+>>>>>>> 6c620fbea01c854d9afbc50009a866608d08783f
   <style>
     :root {
       --primary: #1e40af;
@@ -135,6 +156,7 @@
     </div>
   </section>
 
+<<<<<<< HEAD
   <!-- FEATURE TABLE -->
   <section class="section">
     <h2>Product Feature Table</h2>
@@ -164,3 +186,345 @@
             <td>Backup & Recovery for Microsoft 365 and Entra ID</td>
             <td>—</td>
             <td>
+=======
+  <!-- Live Alerts -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center collapse-btn" data-bs-toggle="collapse" data-bs-target="#alertsSection">
+      <h5 class="mb-0"><i class="bi bi-bell"></i> Live Threat Alerts</h5>
+      <i class="bi bi-chevron-down"></i>
+    </div>
+    <div class="collapse show" id="alertsSection">
+      <div class="card-body p-0">
+        <div class="p-3 border-bottom">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="alertSearch" class="form-control" placeholder="Search alerts...">
+            <button class="btn btn-outline-secondary" id="filterCritical">Critical Only</button>
+          </div>
+        </div>
+        <div id="alertsFeed" class="list-group list-group-flush"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white collapse-btn" data-bs-toggle="collapse" data-bs-target="#chartSection">
+          <h5 class="mb-0">IoT Attack Trends 2025</h5>
+        </div>
+        <div class="collapse show" id="chartSection">
+          <div class="card-body">
+            <canvas id="trendsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="mb-0">Sector Risk Heatmap</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="heatmapChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Toolkit -->
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header bg-success text-white collapse-btn" data-bs-toggle="collapse" data-bs-target="#toolkitSection">
+      <h5 class="mb-0"><i class="bi bi-tools"></i> Mitigation Toolkit</h5>
+    </div>
+    <div class="collapse show" id="toolkitSection">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <h6>Compliance Checker</h6>
+            <select id="complianceCheck" class="form-select form-select-sm">
+              <option>NIST IoT Framework</option>
+              <option>EU Cyber Resilience Act</option>
+              <option>UK PSTI Act</option>
+            </select>
+            <button class="btn btn-sm btn-outline-success mt-2 w-100" onclick="checkCompliance()">
+              <i class="bi bi-check2-all"></i> Run Check
+            </button>
+            <div id="complianceResult" class="mt-2 small"></div>
+          </div>
+          <div class="col-md-4">
+            <h6>Device Scanner</h6>
+            <div class="input-group input-group-sm">
+              <input type="text" id="deviceIP" class="form-control" placeholder="192.168.1.100">
+              <button class="btn btn-outline-primary" onclick="scanDevice()">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+            <div id="scanResult" class="mt-2"></div>
+          </div>
+          <div class="col-md-4">
+            <h6>Quick Actions</h6>
+            <div class="d-grid gap-1">
+              <button class="btn btn-sm btn-outline-info action-btn" onclick="showToast('Generating report...')">
+                <i class="bi bi-file-earmark-text"></i> Generate Report
+              </button>
+              <button class="btn btn-sm btn-outline-secondary action-btn" onclick="shareDashboard()">
+                <i class="bi bi-share"></i> Share
+              </button>
+              <button class="btn btn-sm btn-outline-dark action-btn" onclick="clearAlerts()">
+                <i class="bi bi-trash"></i> Clear Resolved
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // === DATA MODEL ===
+  const threatsData = {
+    alerts: [
+      { id: 1, type: 'Ransomware', desc: '46% surge in OT attacks targeting factories', severity: 'High', timestamp: new Date(), status: 'new' },
+      { id: 2, type: 'Botnet', desc: 'BadBox 2.0 infects 1M+ smart TVs', severity: 'Critical', timestamp: new Date(Date.now() - 3600000), status: 'new' },
+      { id: 3, type: 'Supply Chain', desc: 'Compromised firmware in 20% of sensors', severity: 'Medium', timestamp: new Date(Date.now() - 7200000), status: 'new' },
+      { id: 4, type: 'Vuln Exploit', desc: 'CVE-2025-5678 exploited in routers', severity: 'High', timestamp: new Date(Date.now() - 10800000), status: 'investigating' },
+      { id: 5, type: 'Data Breach', desc: 'IoMT devices expose patient data', severity: 'Critical', timestamp: new Date(Date.now() - 14400000), status: 'resolved' }
+    ],
+    trends: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'], data: [120,250,450,620,710,780,820,890,950,980,1010] },
+    sectors: { labels: ['Manufacturing','Healthcare','Energy','Finance','Education'], risks: [9.5,8.2,7.8,6.9,6.5] }
+  };
+
+  let charts = {};
+
+  // === UTILS ===
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast align-items-center text-bg-${type} border-0`;
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">${message}</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>`;
+    document.getElementById('toastContainer').appendChild(toast);
+    new bootstrap.Toast(toast).show();
+    setTimeout(() => toast.remove(), 5000);
+  }
+
+  function updateTime() {
+    const now = new Date();
+    const options = { timeZone: 'Africa/Kampala', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-GB', options) + ' EAT';
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+
+  // === RENDER ===
+  function renderAlerts(filter = '') {
+    const feed = document.getElementById('alertsFeed');
+    const filtered = threatsData.alerts.filter(a => 
+      a.desc.toLowerCase().includes(filter.toLowerCase()) || 
+      a.type.toLowerCase().includes(filter.toLowerCase())
+    );
+    feed.innerHTML = filtered.map(alert => `
+      <div class="list-group-item d-flex justify-content-between align-items-start ${alert.status === 'resolved' ? 'text-muted' : ''}">
+        <div class="ms-2 me-auto">
+          <div class="fw-bold"><i class="bi bi-exclamation-octagon text-${alert.severity.toLowerCase()}"></i> ${alert.type}</div>
+          ${alert.desc}
+          <br><small>${alert.timestamp.toLocaleString()}</small>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-outline-secondary dropdown-toggle action-btn" data-bs-toggle="dropdown">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" onclick="markStatus(${alert.id}, 'investigating')"><i class="bi bi-eye"></i> Investigate</a></li>
+            <li><a class="dropdown-item" href="#" onclick="markStatus(${alert.id}, 'resolved')"><i class="bi bi-check2"></i> Resolved</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="removeAlert(${alert.id})"><i class="bi bi-trash"></i> Delete</a></li>
+          </ul>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderCharts() {
+    if (charts.trends) charts.trends.destroy();
+    if (charts.heatmap) charts.heatmap.destroy();
+
+    const ctx1 = document.getElementById('trendsChart').getContext('2d');
+    charts.trends = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: threatsData.trends.labels,
+        datasets: [{
+          label: 'Attacks (K)',
+          data: threatsData.trends.data,
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220,53,69,0.1)',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    const ctx2 = document.getElementById('heatmapChart').getContext('2d');
+    charts.heatmap = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: threatsData.sectors.labels,
+        datasets: [{
+          label: 'Risk',
+          data: threatsData.sectors.risks,
+          backgroundColor: ['#dc3545','#fd7e14','#ffc107','#198754','#0d6efd']
+        }]
+      },
+      options: { responsive: true, indexAxis: 'y', scales: { x: { max: 10 } } }
+    });
+  }
+
+  // === ACTIONS ===
+  function checkCompliance() {
+    const framework = document.getElementById('complianceCheck').value;
+    const score = Math.floor(Math.random() * 25) + 75;
+    document.getElementById('complianceResult').innerHTML = `
+      <span class="badge bg-${score > 90 ? 'success' : 'warning'}">Score: ${score}%</span><br>
+      <small>${score > 85 ? 'Good!' : 'Improve OTA & segmentation.'}</small>`;
+    showToast(`Compliance check completed for ${framework}`, 'success');
+  }
+
+  function scanDevice() {
+    const ip = document.getElementById('deviceIP').value.trim();
+    if (!ip) return showToast('Enter IP address', 'warning');
+    const risks = ['Default credentials', 'CVE-2025-1234', 'Open port 23'];
+    document.getElementById('scanResult').innerHTML = `
+      <div class="alert alert-warning alert-dismissible fade show">
+        <strong>${ip}</strong>: ${risks.length} issues found
+        <ul class="mb-0 mt-1">${risks.map(r => `<li>${r}</li>`).join('')}</ul>
+        <button class="btn btn-sm btn-danger mt-2" onclick="showToast('Mitigation applied')">Fix Now</button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>`;
+    showToast(`Scan complete for ${ip}`, 'info');
+  }
+
+  function markStatus(id, status) {
+    const alert = threatsData.alerts.find(a => a.id === id);
+    if (alert) {
+      alert.status = status;
+      renderAlerts(document.getElementById('alertSearch').value);
+      showToast(`Alert marked as ${status}`, 'info');
+    }
+  }
+
+  function removeAlert(id) {
+    threatsData.alerts = threatsData.alerts.filter(a => a.id !== id);
+    renderAlerts(document.getElementById('alertSearch').value);
+    showToast('Alert removed', 'success');
+  }
+
+  function clearAlerts() {
+    threatsData.alerts = threatsData.alerts.filter(a => a.status !== 'resolved');
+    renderAlerts();
+    showToast('Resolved alerts cleared', 'info');
+  }
+
+  function shareDashboard() {
+    if (navigator.share) {
+      navigator.share({ title: 'Naashon Threat Intel', url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      showToast('Link copied to clipboard!', 'success');
+    }
+  }
+
+  // Export PDF
+  document.getElementById('exportPdfBtn').addEventListener('click', () => {
+    showToast('Generating PDF...', 'info');
+    const { jsPDF } = window.jspdf;
+    html2canvas(document.body).then(canvas => {
+      const img = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const width = pdf.internal.pageSize.getWidth();
+      const height = (canvas.height * width) / canvas.width;
+      pdf.addImage(img, 'PNG', 0, 0, width, height);
+      pdf.save('Naashon_Threat_Intel_Report.pdf');
+      showToast('PDF exported!', 'success');
+    });
+  });
+
+  // Export CSV
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const rows = [['Type','Description','Severity','Status','Time']];
+    threatsData.alerts.forEach(a => rows.push([a.type, a.desc, a.severity, a.status, a.timestamp.toLocaleString()]));
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'threat_alerts.csv'; a.click();
+    showToast('CSV exported!', 'success');
+  });
+
+  // Refresh
+  document.getElementById('refreshBtn').addEventListener('click', () => {
+    showToast('Refreshing data...', 'info');
+    setTimeout(() => {
+      renderAlerts();
+      renderCharts();
+      showToast('Data refreshed!', 'success');
+    }, 800);
+  });
+
+  // Search
+  document.getElementById('alertSearch').addEventListener('input', (e) => {
+    renderAlerts(e.target.value);
+  });
+
+  // Filter Critical
+  document.getElementById('filterCritical').addEventListener('click', () => {
+    renderAlerts('critical');
+  });
+
+  // Dark Mode
+  document.getElementById('darkModeToggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.querySelectorAll('.card, .navbar, .table').forEach(el => el.classList.toggle('dark-mode'));
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    document.querySelector('#darkModeToggle i').className = isDark ? 'bi bi-sun' : 'bi bi-moon';
+    console.log('Dark mode toggled: ' + isDark);
+  });
+
+  // === INIT ===
+  window.addEventListener('load', () => {
+    renderAlerts();
+    renderCharts();
+    if (localStorage.getItem('darkMode') === 'true') document.getElementById('darkModeToggle').click();
+
+    // Simulate new alert every 45s
+    setInterval(() => {
+      const types = ['DDoS', 'Malware', 'Zero-Day'];
+      const newAlert = {
+        id: Date.now(),
+        type: types[Math.floor(Math.random() * types.length)],
+        desc: 'New emerging threat in your sector',
+        severity: Math.random() > 0.5 ? 'Critical' : 'High',
+        timestamp: new Date(),
+        status: 'new'
+      };
+      threatsData.alerts.unshift(newAlert);
+      if (threatsData.alerts.length > 10) threatsData.alerts.pop();
+      renderAlerts(document.getElementById('alertSearch').value);
+      showToast(`New ${newAlert.severity} alert!`, 'danger');
+    }, 45000);
+  });
+</script>
+</body>
+</html>
+>>>>>>> 6c620fbea01c854d9afbc50009a866608d08783f

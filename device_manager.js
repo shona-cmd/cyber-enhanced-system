@@ -6,29 +6,28 @@ document.addEventListener('DOMContentLoaded', function() {
   let devices = JSON.parse(localStorage.getItem('devices')) || [];
 
   // Function to display devices in the table
-  function displayDevices() {
-    deviceTableBody.innerHTML = '';
-    devices.forEach((device, index) => {
-      const row = deviceTableBody.insertRow();
-      row.insertCell().textContent = index + 1;
-      row.insertCell().textContent = device.devId;
-      row.insertCell().textContent = device.devType;
-      row.insertCell().textContent = device.devDesc || '-';
-      row.insertCell().innerHTML = '<span class="status-online">Online</span> <span class="heartbeat">❤️</span>';
-      row.insertCell().textContent = 'Just now';
-      row.insertCell().innerHTML = '<button class="btn btn-danger btn-sm delete-btn" data-index="' + index + '">Delete</button>';
+function displayDevices() {
+  deviceTableBody.innerHTML = '';
+  devices.forEach((device, index) => {
+    const row = deviceTableBody.insertRow();
+    row.insertCell().textContent = index + 1;
+    row.insertCell().textContent = device.devId;
+    row.insertCell().textContent = device.devType;
+    row.insertCell().textContent = device.devDesc || '-';
+    row.insertCell().innerHTML = '<span class="status-online">Online</span> <span class="heartbeat">❤️</span>';
+    row.insertCell().textContent = 'Just now';
+    const deleteButton = document.createElement('button');
+    deleteButton.classList.add('btn', 'btn-danger', 'btn-sm', 'delete-btn');
+    deleteButton.dataset.index = index;
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', function() {
+      const index = parseInt(this.dataset.index);
+      deleteDevice(index);
     });
-    totalCountSpan.textContent = devices.length;
-
-    // Add event listeners to delete buttons
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const index = parseInt(this.dataset.index);
-        deleteDevice(index);
-      });
-    });
-  }
+    row.insertCell().appendChild(deleteButton);
+  });
+  totalCountSpan.textContent = devices.length;
+}
 
   // Function to delete a device
   function deleteDevice(index) {
@@ -54,9 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
     devices.push(newDevice);
     localStorage.setItem('devices', JSON.stringify(devices));
     displayDevices();
-
-    // Redirect to device details page
-    window.location.href = 'templates/device_details.html?deviceId=' + devId;
 
     // Clear the form
     document.getElementById('devId').value = '';
