@@ -1,11 +1,14 @@
-import { useAuth } from './context/AuthContext';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import AppRouter from './routes/AppRouter';
-import MTACLogin from './MTACLogin';
+import Navbar from './Navbar'; // Adjust path if Navbar is in a subfolder
 
-export default function App() {
-  const { user } = useAuth();
-
-  return <MTACLogin />;
+function App() {
+  return (
+    <div>
+      <Navbar />
+      <main> {/* Add some test content here */}
+        <h2>Hello, NaashonSecureIoT!</h2>
+      </main>
+    </div>
+  );
 }
+
+export default App;

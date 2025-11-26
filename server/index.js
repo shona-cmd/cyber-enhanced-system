@@ -42,25 +42,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// ==== Simple Auth System (for demo - replace with real users later) ====
-const users = [
-  { id: 1, username: 'mtac-admin', password: '', role: 'admin' } // password: Mtac2025!
-];
+// ==== User Management and Authentication ====
 
-// Login route
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username);
-  if (!user || !await bcrypt.compare(password, user.password)) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-  const token = jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: '8h' }
-  );
-  res.json({ token, role: user.role });
-});
+// In-memory user store replacement with hashed passwords (for demo purposes only)
+const users = [
 
 // Protected route middleware
 const authenticate = (req, res, next) => {
