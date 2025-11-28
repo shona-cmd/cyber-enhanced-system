@@ -1,13 +1,560 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NaashonSecureIoT</title> <!-- Customize as needed -->
-  </head>
-  <body>
-    <div id="root"></div> <!-- This MUST exist and match main.jsx -->
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #b30000;
+      --primary-dark: #8a0000;
+      --dark: #1a1a1a;
+      --light: #f8f9fa;
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --text-light: #666666;
+      --success: #28a745;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+      --shadow: 0 8px 25px rgba(0,0,0,0.15);
+      --shadow-light: 0 4px 12px rgba(0,0,0,0.08);
+      --transition: all 0.3s ease;
+      --border-radius: 12px;
+    }
+
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* === HEADER === */
+    .site-header {
+      background: var(--card-bg);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-light);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .logo-icon {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+    
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--dark);
+    }
+    
+    .user-info {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .nav-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+    }
+    
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      background-color: rgba(179, 0, 0, 0.05);
+    }
+    
+    .nav-links a i {
+      margin-right: 0.5rem;
+    }
+
+    /* === MAIN CONTENT === */
+    .main {
+      flex: 1;
+      padding: 2rem;
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    /* === CARDS === */
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      transition: var(--transition);
+      border-left: 4px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+    }
+    
+    .devices .card-icon { background: var(--primary); }
+    .threats .card-icon { background: var(--danger); }
+    .anomalies .card-icon { background: var(--warning); }
+    .blockchain .card-icon { background: var(--info); }
+    .predictions .card-icon { background: var(--success); }
+    .network .card-icon { background: #6c757d; }
+    .admin .card-icon { background: #6f42c1; }
+    
+    .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0.5rem 0;
+    }
+    
+    .card-status {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: auto;
+      align-self: flex-start;
+    }
+    
+    .status-active { background: #d4edda; color: #155724; }
+    .status-medium { background: #fff3cd; color: #856404; }
+    .status-high { background: #f8d7da; color: #721c24; }
+    .status-secure { background: #d1ecf1; color: #0c5460; }
+    .status-info { background: #d6d8db; color: #383d41; }
+
+    /* === NETWORK STATUS === */
+    .network-info {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+    }
+
+    /* === APA GUIDE CARD === */
+    .apa-card {
+      grid-column: 1 / -1;
+      display: flex;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--primary);
+    }
+    
+    .apa-red-bar {
+      width: 100px;
+      background: var(--primary);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+    }
+    
+    .apa-content {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .apa-title {
+      text-align: center;
+      color: var(--primary);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+    }
+    
+    .apa-title span {
+      display: block;
+      font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+      margin-top: 0.5rem;
+    }
+    
+    .apa-book {
+      width: clamp(120px, 22vw, 160px);
+      height: auto;
+      align-self: center;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .apa-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      line-height: 1.5;
+      margin-top: 1rem;
+    }
+    
+    .ucol-logo {
+      width: clamp(140px, 25vw, 180px);
+      height: auto;
+      align-self: center;
+      margin-top: 1rem;
+    }
+
+    /* === FOOTER === */
+    .site-footer {
+      background: var(--dark);
+      color: #ccc;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+    }
+    
+    .site-footer .brand {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 1024px) {
+      .main {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .site-header { 
+        padding: 1rem; 
+        flex-direction: column; 
+        gap: 1rem; 
+      }
+      
+      .nav-links { 
+        gap: 1rem; 
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .main { 
+        padding: 1.5rem; 
+        gap: 1rem; 
+      }
+      
+      .apa-red-bar { 
+        width: 80px; 
+        font-size: 1.5rem;
+      }
+      
+      .apa-content { 
+        padding: 1.5rem; 
+      }
+      
+      .card {
+        padding: 1.25rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .apa-card {
+        flex-direction: column;
+      }
+      
+      .apa-red-bar {
+        width: 100%;
+        height: 60px;
+      }
+      
+      .nav-links a span {
+        display: none;
+      }
+      
+      .nav-links a i {
+        margin-right: 0;
+        font-size: 1.2rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .main {
+        grid-template-columns: 1fr;
+      }
+      
+      .apa-content { 
+        padding: 1rem; 
+      }
+      
+      .card-value {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">
+      <i class="fas fa-shield-alt logo-icon"></i>
+      <span class="logo-text">NaashonSecureIoT</span>
+    </div>
+    
+    <div class="user-info">
+      <i class="fas fa-user-circle"></i> 
+      Logged in as <strong>{{ user.get('name', user.get('email', 'User')) }}</strong>
+    </div>
+    
+    <nav class="nav-links">
+      <a href="/dashboard" class="active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="/threat_intel">
+        <i class="fas fa-radar-dish"></i>
+        <span>Threat Intel</span>
+      </a>
+      <a href="/device_manager">
+        <i class="fas fa-microchip"></i>
+        <span>Device Manager</span>
+      </a>
+      <a href="/compliance">
+        <i class="fas fa-file-contract"></i>
+        <span>Compliance</span>
+      </a>
+      <a href="/logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- Total Devices -->
+    <div class="card devices">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-microchip"></i>
+          Total Devices
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-server"></i>
+        </div>
+      </div>
+      <div class="card-value">{{ device_count }}</div>
+      <p>devices connected</p>
+      <div class="card-status status-active">Active</div>
+    </div>
+
+    <!-- Threat Alerts -->
+    <div class="card threats">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-exclamation-triangle"></i>
+          Threat Alerts
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+      </div>
+      <div class="card-value">{{ active_threats }}</div>
+      <p>active alerts</p>
+      <div class="card-status status-medium">Medium</div>
+    </div>
+
+    <!-- Network Anomalies -->
+    <div class="card anomalies">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-chart-line"></i>
+          Network Anomalies
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-bug"></i>
+        </div>
+      </div>
+      <div class="card-value">{{ network_anomalies }}</div>
+      <p>anomalies detected</p>
+      <div class="card-status status-high">High</div>
+    </div>
+
+    <!-- Blockchain Entries -->
+    <div class="card blockchain">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-link"></i>
+          Blockchain Entries
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-cube"></i>
+        </div>
+      </div>
+      <div class="card-value">{{ blockchain_entries }}</div>
+      <p>entries logged</p>
+      <div class="card-status status-secure">Secure</div>
+    </div>
+
+    <!-- Cloud Predictions -->
+    <div class="card predictions">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-cloud"></i>
+          Cloud Predictions
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-brain"></i>
+        </div>
+      </div>
+      <div class="card-value">{{ cloud_predictions }}</div>
+      <p>predictions made</p>
+      <div class="card-status status-active">Active</div>
+    </div>
+
+    <!-- Network Status -->
+    <div class="card network">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-network-wired"></i>
+          Network Status
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-wifi"></i>
+        </div>
+      </div>
+      <div class="card-status status-info">Info</div>
+      <div class="network-info">
+        IP: {{ local_ip }}<br>
+        Gateway: {{ default_gateway }}<br>
+        DNS: {{ dns_suffix }}
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    {% if is_admin %}
+    <div class="card admin">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fas fa-user-shield"></i>
+          Admin Panel
+        </div>
+        <div class="card-icon">
+          <i class="fas fa-cogs"></i>
+        </div>
+      </div>
+      <p>Access to advanced controls</p>
+      <div class="card-status" style="background:#e2d4f8; color:#5a32a3;">Admin</div>
+    </div>
+    {% endif %}
+
+    <!-- APA 6th Guide -->
+    <div class="apa-card">
+      <div class="apa-red-bar">
+        <i class="fas fa-book"></i>
+      </div>
+      <div class="apa-content">
+        <h1 class="apa-title">
+          A beginner's guide to the<br>
+          <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+        </h1>
+
+        <img 
+          src="{{ url_for('static', filename='img/apa_manual.jpg') }}" 
+          alt="APA 6th Edition Manual" 
+          class="apa-book"
+        >
+
+        <div class="apa-footer">
+          The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+          Library and Learning Services<br>
+          December 2011
+        </div>
+
+        <img 
+          src="{{ url_for('static', filename='img/ucol_logo.png') }}" 
+          alt="UCOL" 
+          class="ucol-logo"
+        >
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="brand">Naashon × MTAC Cybersecurity Framework</div>
+    <div>© 2025 | Management Training and Advisory Centre (MTAC), Kampala, Uganda</div>
+  </footer>
+
+</body>
 </html>

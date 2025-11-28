@@ -1,11 +1,14 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard.jsx';
 import Settings from '../pages/Settings.jsx';
 import NotFound from '../pages/NotFound.jsx';
 import MTACLogin from '../MTACLogin.jsx';
+import { useAuth } from '../context/AuthContext';
 
 function AppRouter() {
+  const { token } = useAuth();
+
   return (
     <BrowserRouter>
       <div>
@@ -21,9 +24,15 @@ function AppRouter() {
           </ul>
         </nav>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/"
+            element={token ? <Dashboard /> : <Navigate to="/mtac-login" />}
+          />
           <Route path="/mtac-login" element={<MTACLogin />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route
+            path="/settings"
+            element={token ? <Settings /> : <Navigate to="/mtac-login" />}
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
