@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Device Details</title>
+  <style>
+    body {
+      cursor: none;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Device Details</h1>
+  <div id="deviceInfo"></div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const deviceId = urlParams.get('deviceId');
+    document.getElementById('deviceInfo').textContent = 'Details for device: ' + deviceId;
+  </script>
+</body>
+</html>

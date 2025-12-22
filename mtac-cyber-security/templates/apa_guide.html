@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – APA 6th Guide</title>
+  <style>
+    body {
+      cursor: none;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+=======
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – APA 6th Guide</title>
+  <style>
+    body {
+      cursor: none;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+=======
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – APA 6th Guide</title>
+  <style>
+    body {
+      cursor: none;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="../static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.src = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='${randomColor}' /></svg>`;
+      });
+    });
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+>>>>>>> 1a790d005d0ac9774aad4be6e55b2c20f7bf7129
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:"Times New Roman",serif; background:#fff; color:#000; display:flex; min-height:100vh; }
+    .page { width:100%; max-width:800px; margin:auto; position:relative; padding:2rem; display:flex; }
+    .red-bar { width:100px; background:#b30000; position:absolute; left:0; top:0; bottom:0; }
+    .content { margin-left:120px; padding:3rem 2rem; display:flex; flex-direction:column; justify-content:space-between; }
+    .title { text-align:center; color:#b30000; font-size:2.2rem; line-height:1.3; margin-top:3rem; }
+    .title span { display:block; font-size:1.9rem; margin-top:0.5rem; }
+    .book { width:180px; align-self:center; margin:2rem 0; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+    .footer { text-align:center; font-size:0.95rem; color:#555; line-height:1.6; margin-bottom:1rem; }
+    .logo { width:200px; align-self:center; margin-top:1rem; }
+    .btn-group { display:flex; gap:1rem; justify-content:center; margin:2rem 0; flex-wrap:wrap; }
+    .btn { 
+      padding:0.8rem 1.8rem; border-radius:8px; font-weight:bold; text-decoration:none; 
+      transition:all 0.3s ease; display:inline-block; font-size:1rem;
+      box-shadow:0 4px 6px rgba(0,0,0,0.1);
+    }
+    .btn-primary { background:#1e40af; color:white; }
+    .btn-secondary { background:#06d6a0; color:#0f172a; }
+    .btn:hover { transform:translateY(-3px); box-shadow:0 8px 15px rgba(0,0,0,0.2); }
+    @media (max-width:768px) {
+      .red-bar { width:60px; }
+      .content { margin-left:80px; padding:2rem 1rem; }
+      .title { font-size:1.8rem; margin-top:2rem; }
+      .title span { font-size:1.5rem; }
+      .btn-group { flex-direction:column; align-items:center; }
+      .btn { width:80%; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="red-bar"></div>
+    <div class="content">
+      <div class="title">
+        A beginner’s guide to the<br>
+        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+      </div>
+
+      <img src="{{ url_for('static', filename='img/apa_manual.jpg') }}" alt="APA Manual" class="book">
+
+      <div class="footer">
+        The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+        Library and Learning Services<br>
+        December 2011
+      </div>
+
+      <img src="{{ url_for('static', filename='img/ucol_logo.png') }}" alt="UCOL" class="logo">
+
+      <!-- FUNCTIONAL, ATTRACTIVE BUTTONS -->
+      <div class="btn-group">
+        <a href="quote.html" class="btn btn-primary">Get a Quote</a>
+        <a href="static/reports/compliance_report_nov2025.pdf" class="btn btn-secondary">Download Report</a>
+      </div>
+    <div class="logo">NaashonHQ FRAMEWORK FOR MTAC</div>
+      <a href="index.html">Home</a>
+    <div class="footer">
+    <p>© 2025 NaashonHQ FRAMEWORK FOR MTAC</p>
+    <div>
+      <a href="index.html">Home</a> |
+      <a href="quote.html">Quote</a> |
+      <a href="static/reports/compliance_report_nov2025.pdf">Report</a>
+    </div>
+  </div>
+    </div>
+  </div>
+</body>
+</html>

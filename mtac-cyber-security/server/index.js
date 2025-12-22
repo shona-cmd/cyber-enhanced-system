@@ -42,25 +42,10 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-// ==== Simple Auth System (for demo - replace with real users later) ====
-const users = [
-  { id: 1, username: 'mtac-admin', password: '', role: 'admin' } // password: Mtac2025!
-];
+// ==== User Management and Authentication ====
 
-// Login route
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = users.find(u => u.username === username);
-  if (!user || !await bcrypt.compare(password, user.password)) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-  const token = jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: '8h' }
-  );
-  res.json({ token, role: user.role });
-});
+// In-memory user store replacement with hashed passwords (for demo purposes only)
+const users = [
 
 // Protected route middleware
 const authenticate = (req, res, next) => {
@@ -99,9 +84,15 @@ const httpsOptions = {
 };
 
 https.createServer(httpsOptions, app).listen(3000, () => {
-  console.log('NaashonSecureIoT Secure Backend Running');
-  console.log('HTTPS: https://localhost:3000:3000:3000 (accept self-signed cert in browser)');
+  console.log('NaashonSecureIoT Secure Backend Running on HTTPS port 3000');
+  console.log('HTTPS: https://localhost:3000 (accept self-signed cert in browser)');
   console.log('Login: mtac-admin / Mtac2025!');
+});
+
+// Add HTTP server for local testing (non-SSL)
+import http from 'http';
+http.createServer(app).listen(3001, () => {
+  console.log('NaashonSecureIoT Backend Running on HTTP port 3001 for local testing without SSL');
 });
 
 console.log('MTAC-Compliant Secure Server Starting...');

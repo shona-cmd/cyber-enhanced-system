@@ -3,17 +3,19 @@ from functools import wraps
 import os
 
 app = Flask(__name__, static_url_path='/static')
-app.secret_key = 'naashonhq_mtac_secure_2025'
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-prod')
 
 @app.route('/quote')
 def quote():
     return render_template('quote.html')
 
 # === USER DATABASE (In real app: use SQLite) ===
+# NOTE: In production, use proper database with hashed passwords
+# These are demo credentials - change in production!
 users = {
-    'admin': {'password': 'admin123', 'role': 'admin'},
-    'hod': {'password': 'hod123', 'role': 'hod'},
-    'user': {'password': 'user123', 'role': 'user'}
+    'admin': {'password': os.getenv('ADMIN_PASSWORD', 'change_me_in_prod'), 'role': 'admin'},
+    'hod': {'password': os.getenv('HOD_PASSWORD', 'change_me_in_prod'), 'role': 'hod'},
+    'user': {'password': os.getenv('USER_PASSWORD', 'change_me_in_prod'), 'role': 'user'}
 }
 
 # === LOGIN REQUIRED DECORATOR ===

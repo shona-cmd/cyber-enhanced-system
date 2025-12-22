@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>NaashonSecureIoT – Dashboard</title>
+  <p>Hello, World!</p>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --red: #b30000;
+      --dark: #1a1a1a;
+      --light: #f8f9fa;
+      --shadow: 0 8px 25px rgba(0,0,0,0.15);
+      --transition: all 0.3s ease;
+      --bg: #f4f6f9;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      cursor: none;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
+      });
+    });
+  </script>
+  <style>
+
+    /* === HEADER === */
+    .site-header {
+      background: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .user-info {
+      font-weight: 600;
+      color: var(--red);
+    }
+    .nav-links a {
+      margin-left: 1.5rem;
+      color: #555;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .nav-links a:hover {
+      color: var(--red);
+    }
+
+    /* === MAIN CONTENT === */
+    .main {
+      flex: 1;
+      padding: 2rem;
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--red);
+    }
+    .card-status {
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+    .status-active { background: #d4edda; color: #155724; }
+    .status-medium { background: #fff3cd; color: #856404; }
+    .status-high { background: #f8d7da; color: #721c24; }
+    .status-secure { background: #d1ecf1; color: #0c5460; }
+    .status-info { background: #d6d8db; color: #383d41; }
+
+    /* === NETWORK STATUS === */
+    .network-info {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    /* === APA GUIDE CARD === */
+    .apa-card {
+      grid-column: 1 / -1;
+      display: flex;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .apa-red-bar {
+      width: 120px;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+    .apa-content {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .apa-title {
+      text-align: center;
+      color: var(--red);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      font-family: 'Playfair Display', serif;
+      line-height: 1.2;
+    }
+    .apa-title span {
+      display: block;
+      font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+      margin-top: 0.5rem;
+    }
+    .apa-book {
+      width: clamp(120px, 22vw, 160px);
+      height: auto;
+      align-self: center;
+      margin: 1.5rem 0;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .apa-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #555;
+      line-height: 1.5;
+    }
+    .ucol-logo {
+      width: clamp(140px, 25vw, 180px);
+      height: auto;
+      align-self: center;
+      margin-top: 1rem;
+    }
+
+    /* === FOOTER === */
+    .site-footer {
+      background: var(--dark);
+      color: #ccc;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+    }
+    .site-footer .brand {
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .site-header { padding: 1rem; flex-direction: column; gap: 0.5rem; }
+      .nav-links a { margin: 0 0.75rem; }
+      .main { padding: 1.5rem; gap: 1rem; }
+      .apa-red-bar { width: 80px; }
+      .apa-content { padding: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      .apa-red-bar { width: 60px; }
+      .apa-content { padding: 1rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="user-info">
+      Logged in as <strong>{{ user.get('name', user.get('email', 'User')) }}</strong>
+    </div>
+    <nav class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/threat_intel">Threat Intel</a>
+      <a href="/device_manager">Device Manager</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- Total Devices -->
+    <div class="card">
+      <div class="card-title">Total Devices</div>
+      <div class="card-value">{{ device_count }}</div>
+      <div class="card-status status-active">Active</div>
+      <p>devices connected</p>
+    </div>
+
+    <!-- Threat Alerts -->
+    <div class="card">
+      <div class="card-title">Threat Alerts</div>
+      <div class="card-value">{{ active_threats }}</div>
+      <div class="card-status status-medium">Medium</div>
+      <p>active alerts</p>
+    </div>
+
+    <!-- Network Anomalies -->
+    <div class="card">
+      <div class="card-title">Network Anomalies</div>
+      <div class="card-value">{{ network_anomalies }}</div>
+      <div class="card-status status-high">High</div>
+      <p>anomalies detected</p>
+    </div>
+
+    <!-- Blockchain Entries -->
+    <div class="card">
+      <div class="card-title">Blockchain Entries</div>
+      <div class="card-value">{{ blockchain_entries }}</div>
+      <div class="card-status status-secure">Secure</div>
+      <p>entries logged</p>
+    </div>
+
+    <!-- Cloud Predictions -->
+    <div class="card">
+      <div class="card-title">Cloud Predictions</div>
+      <div class="card-value">{{ cloud_predictions }}</div>
+      <div class="card-status status-active">Active</div>
+      <p>predictions made</p>
+    </div>
+
+    <!-- Network Status -->
+    <div class="card">
+      <div class="card-title">Network Status</div>
+      <div class="card-status status-info">Info</div>
+      <div class="network-info">
+        IP: {{ local_ip }}<br>
+        Gateway: {{ default_gateway }}<br>
+        DNS: {{ dns_suffix }}
+      </div>
+    </div>
+
+    <!-- Admin Panel -->
+    {% if is_admin %}
+    <div class="card">
+      <div class="card-title">Admin Panel</div>
+      <div class="card-status" style="background:#e2d4f8; color:#5a32a3;">Admin</div>
+      <p>Access to advanced controls</p>
+    </div>
+    {% endif %}
+
+    <!-- APA 6th Guide -->
+    <div class="apa-card">
+      <div class="apa-red-bar"></div>
+      <div class="apa-content">
+        <h1 class="apa-title">
+          A beginner’s guide to the<br>
+          <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+        </h1>
+
+        <img 
+          src="/static/img/apa_manual.jpg"
+          alt="APA 6th Edition Manual"
+          class="apa-book"
+        >
+
+        <div class="apa-footer">
+          The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+          Library and Learning Services<br>
+          December 2011
+        </div>
+
+        <img
+          src="/static/img/ucol_logo.png"
+          alt="UCOL"
+          class="ucol-logo"
+        >
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="brand">Naashon × MTAC Cybersecurity Framework</div>
+    <div>© 2025 | Management Training and Advisory Centre (MTAC), Kampala, Uganda</div>
+  </footer>
+
+</body>
+</html>

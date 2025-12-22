@@ -3,15 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NaashonSecureIoT – APA 6th Guide</title>
+  <title>NaashonSecureIoT – APA 6th Guide for MTAC</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       cursor: none;
       font-family: 'Times New Roman', serif; 
-      background: #fff; 
+      background: #f5f5f5; 
       color: #000;
       overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark-mode {
+      background: #1a1a1a;
+      color: #e0e0e0;
+    }
+    body.dark-mode .cover {
+      background: #1a1a1a;
+    }
+    body.dark-mode .content-section {
+      background: #2a2a2a;
+      color: #e0e0e0;
+    }
+    body.dark-mode .footer {
+      color: #aaa;
     }
     #custom-cursor {
       position: fixed;
@@ -25,10 +40,114 @@
     #custom-cursor.clicking {
       transform: translate(-50%, -50%) scale(0.9);
     }
+    .toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #b30000;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .logo-text {
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .toolbar-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .tool-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    .tool-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    .search-box {
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      width: 200px;
+      font-size: 0.9rem;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 70px;
+      bottom: 0;
+      width: 250px;
+      background: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      padding: 1.5rem;
+      z-index: 999;
+      transition: background 0.3s;
+    }
+    body.dark-mode .sidebar {
+      background: #2a2a2a;
+      color: #e0e0e0;
+    }
+    .sidebar h3 {
+      color: #b30000;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .nav-item {
+      padding: 0.7rem;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background 0.3s;
+      font-size: 0.9rem;
+    }
+    .nav-item:hover {
+      background: rgba(179,0,0,0.1);
+    }
+    .nav-item.active {
+      background: rgba(179,0,0,0.2);
+      font-weight: bold;
+    }
+    .nav-item.completed::after {
+      content: ' ✓';
+      color: #00aa00;
+      float: right;
+    }
+    .main-content {
+      margin-left: 250px;
+      margin-top: 70px;
+      padding: 2rem;
+      min-height: calc(100vh - 70px);
+    }
     .cover { 
       display: flex; 
-      min-height: 100vh; 
-      position: relative; 
+      min-height: 80vh; 
+      position: relative;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      overflow: hidden;
     }
     .red-bar { 
       position: absolute; 
@@ -52,7 +171,7 @@
       color: #b30000; 
       font-size: 2.2rem; 
       font-weight: 700; 
-      margin-top: 6rem; 
+      margin-top: 4rem; 
       line-height: 1.2;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
@@ -61,6 +180,13 @@
       font-size: 1.8rem; 
       margin-top: 0.5rem; 
     }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      font-style: italic;
+    }
     .footer { 
       text-align: center; 
       font-size: 0.9rem; 
@@ -68,35 +194,196 @@
       line-height: 1.6; 
       margin-bottom: 1rem; 
     }
-    .security-badge {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(179, 0, 0, 0.1);
-      padding: 10px 20px;
-      border-radius: 20px;
-      border: 2px solid #b30000;
-      font-size: 0.85rem;
+    .content-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      display: none;
+    }
+    .content-section.active {
+      display: block;
+    }
+    .content-section h2 {
       color: #b30000;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #b30000;
+      padding-bottom: 0.5rem;
+    }
+    .example-box {
+      background: #f9f9f9;
+      border-left: 4px solid #b30000;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 5px;
+    }
+    body.dark-mode .example-box {
+      background: #333;
+    }
+    .correct {
+      border-left-color: #00aa00;
+    }
+    .incorrect {
+      border-left-color: #dc143c;
+    }
+    .citation-generator {
+      background: #f0f0f0;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+    body.dark-mode .citation-generator {
+      background: #333;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
       font-weight: bold;
+      color: #b30000;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+    .generate-btn {
+      background: #b30000;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+    .generate-btn:hover {
+      background: #8b0000;
+    }
+    .citation-output {
+      background: white;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-top: 1rem;
+      border: 2px solid #b30000;
+      font-family: 'Times New Roman', serif;
+      min-height: 60px;
+    }
+    body.dark-mode .citation-output {
+      background: #2a2a2a;
+      color: #e0e0e0;
+    }
+    .quiz-container {
+      margin-top: 1rem;
+    }
+    .quiz-question {
+      background: #f9f9f9;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    body.dark-mode .quiz-question {
+      background: #333;
+    }
+    .quiz-option {
+      padding: 0.7rem;
+      margin: 0.5rem 0;
+      background: white;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    body.dark-mode .quiz-option {
+      background: #2a2a2a;
+      border-color: #555;
+    }
+    .quiz-option:hover {
+      border-color: #b30000;
+    }
+    .quiz-option.correct {
+      border-color: #00aa00;
+      background: #e8f5e9;
+    }
+    .quiz-option.incorrect {
+      border-color: #dc143c;
+      background: #ffebee;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #b30000, #dc143c);
+      width: 0%;
+      transition: width 0.5s;
+    }
+    .quick-ref-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    body.dark-mode .quick-ref-card {
+      background: #2a2a2a;
+    }
+    .quick-ref-card:hover {
+      transform: translateY(-5px);
+    }
+    .security-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 0.5rem;
+      color: white;
+      font-size: 0.85rem;
     }
     .security-badge::before {
       content: '🔒';
-      font-size: 1rem;
+    }
+    .bookmark-btn {
+      float: right;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #ccc;
+      transition: color 0.3s;
+    }
+    .bookmark-btn.active {
+      color: #ffd700;
     }
     @media (max-width: 768px) {
-      .red-bar { width: 80px; }
-      .content { margin-left: 100px; padding: 2rem; }
-      .title { font-size: 1.8rem; margin-top: 4rem; }
-      .title span { font-size: 1.5rem; }
-      .security-badge {
-        top: 10px;
-        right: 10px;
-        padding: 8px 15px;
-        font-size: 0.75rem;
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .toolbar {
+        padding: 0.7rem 1rem;
+      }
+      .search-box {
+        width: 120px;
+      }
+      .logo-text {
+        font-size: 1rem;
       }
     }
   </style>
@@ -104,18 +391,15 @@
 <body>
   <div id="custom-cursor">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-      <!-- Shield outline -->
       <path d="M16 2 L6 6 L6 14 Q6 22 16 30 Q26 22 26 14 L26 6 Z" 
             fill="#b30000" 
             stroke="#fff" 
             stroke-width="1.5"/>
-      <!-- Lock symbol -->
       <rect x="12" y="14" width="8" height="6" fill="#fff" rx="1"/>
       <path d="M13 14 L13 11 Q13 9 16 9 Q19 9 19 11 L19 14" 
             stroke="#fff" 
             stroke-width="2" 
             fill="none"/>
-      <!-- Shine effect -->
       <path d="M10 8 Q12 10 14 8" 
             stroke="#fff" 
             stroke-width="1.5" 
@@ -124,50 +408,603 @@
     </svg>
   </div>
 
-  <div class="security-badge">NaashonSecureIoT</div>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="logo-text">
+        🔐 NaashonSecureIoT
+      </div>
+      <input type="text" class="search-box" id="searchBox" placeholder="Search guide...">
+    </div>
+    <div class="toolbar-right">
+      <div class="security-badge">Secure Session</div>
+      <button class="tool-btn" id="fontSizeBtn">A+</button>
+      <button class="tool-btn" id="darkModeBtn">🌙</button>
+      <button class="tool-btn" id="printBtn">Print</button>
+    </div>
+  </div>
 
-  <div class="cover">
-    <div class="red-bar"></div>
-    <div class="content">
-      <h1 class="title">
-        A beginner's guide to the<br>
-        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
-      </h1>
-      <div class="footer">
-        The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
-        Library and Learning Services<br>
-        December 2011
+  <div class="sidebar" id="sidebar">
+    <h3>Table of Contents</h3>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="nav-item active" data-section="home">📖 Home</div>
+    <div class="nav-item" data-section="basics">📝 APA Basics</div>
+    <div class="nav-item" data-section="intext">📌 In-Text Citations</div>
+    <div class="nav-item" data-section="references">📚 Reference List</div>
+    <div class="nav-item" data-section="generator">⚙️ Citation Generator</div>
+    <div class="nav-item" data-section="examples">✨ Examples</div>
+    <div class="nav-item" data-section="quiz">🎯 Test Your Knowledge</div>
+    <div class="nav-item" data-section="bookmarks">⭐ My Bookmarks</div>
+  </div>
+
+  <div class="main-content">
+    <!-- Home Section -->
+    <div class="content-section active" id="home">
+      <div class="cover">
+        <div class="red-bar"></div>
+        <div class="content">
+          <h1 class="title">
+            A beginner's guide to the<br>
+            <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+          </h1>
+          <div class="subtitle">For MTAC Students & Faculty</div>
+          <div class="footer">
+            The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+            Library and Learning Services | Enhanced for Makerere University Technology and Computing<br>
+            December 2011 | Updated 2025
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APA Basics Section -->
+    <div class="content-section" id="basics">
+      <button class="bookmark-btn" data-section="basics">★</button>
+      <h2>APA Style Basics</h2>
+      <p>APA (American Psychological Association) style is widely used for citing sources in academic writing, particularly in the social sciences, technology, and computing fields.</p>
+      
+      <h3 style="color: #b30000; margin-top: 2rem;">Key Principles:</h3>
+      <ul style="line-height: 2; margin-left: 2rem;">
+        <li><strong>Author-Date Format:</strong> Citations include author's last name and year of publication</li>
+        <li><strong>Consistency:</strong> Maintain the same format throughout your document</li>
+        <li><strong>Accuracy:</strong> Ensure all details are correct and complete</li>
+        <li><strong>Alphabetical Order:</strong> Reference lists are arranged alphabetically by author's surname</li>
+      </ul>
+
+      <h3 style="color: #b30000; margin-top: 2rem;">Why APA at MTAC?</h3>
+      <p>MTAC students use APA style for research papers, theses, and technical documentation. It's the standard for:</p>
+      <ul style="line-height: 2; margin-left: 2rem;">
+        <li>Computer Science research papers</li>
+        <li>Information Technology projects</li>
+        <li>Engineering documentation</li>
+        <li>Research proposals and reports</li>
+      </ul>
+    </div>
+
+    <!-- In-Text Citations Section -->
+    <div class="content-section" id="intext">
+      <button class="bookmark-btn" data-section="intext">★</button>
+      <h2>In-Text Citations</h2>
+      <p>In-text citations acknowledge sources within your paper. They appear in parentheses at the end of the sentence or integrated into the text.</p>
+
+      <div class="example-box correct">
+        <strong>✓ Correct - Parenthetical Citation:</strong><br>
+        Cloud computing has revolutionized data storage solutions (Smith, 2023).
+      </div>
+
+      <div class="example-box correct">
+        <strong>✓ Correct - Narrative Citation:</strong><br>
+        According to Smith (2023), cloud computing has revolutionized data storage solutions.
+      </div>
+
+      <div class="example-box incorrect">
+        <strong>✗ Incorrect - Missing year:</strong><br>
+        Cloud computing has revolutionized data storage solutions (Smith).
+      </div>
+
+      <h3 style="color: #b30000; margin-top: 2rem;">Multiple Authors:</h3>
+      <div class="example-box correct">
+        <strong>Two authors:</strong> (Johnson & Lee, 2024)<br>
+        <strong>Three to five authors:</strong> (Brown, Davis, Wilson, & Chen, 2023)<br>
+        <strong>Six or more authors:</strong> (Martinez et al., 2022)
+      </div>
+
+      <h3 style="color: #b30000; margin-top: 2rem;">MTAC-Specific Example:</h3>
+      <div class="example-box correct">
+        Research at Makerere University has shown significant advances in IoT security (Okello & Nakimuli, 2024).
+      </div>
+    </div>
+
+    <!-- Reference List Section -->
+    <div class="content-section" id="references">
+      <button class="bookmark-btn" data-section="references">★</button>
+      <h2>Reference List</h2>
+      <p>The reference list appears at the end of your paper and provides complete information about each source.</p>
+
+      <h3 style="color: #b30000; margin-top: 2rem;">Book Format:</h3>
+      <div class="example-box correct">
+        Author, A. A. (Year). <em>Title of work: Capital letter also for subtitle</em>. Location: Publisher.
+      </div>
+
+      <h3 style="color: #b30000; margin-top: 1.5rem;">Journal Article Format:</h3>
+      <div class="example-box correct">
+        Author, A. A., Author, B. B., & Author, C. C. (Year). Title of article. <em>Title of Periodical, volume</em>(issue), pages.
+      </div>
+
+      <h3 style="color: #b30000; margin-top: 1.5rem;">Website Format:</h3>
+      <div class="example-box correct">
+        Author, A. A. (Year, Month Day). Title of page. Retrieved from http://www.example.com
+      </div>
+
+      <h3 style="color: #b30000; margin-top: 1.5rem;">MTAC-Relevant Examples:</h3>
+      <div class="example-box correct">
+        <strong>Book:</strong><br>
+        Musoke, R. (2023). <em>Cybersecurity fundamentals for African institutions</em>. Kampala: East African Publishers.
+      </div>
+
+      <div class="example-box correct">
+        <strong>Journal Article:</strong><br>
+        Namusoke, J., & Wasswa, P. (2024). IoT security challenges in Ugandan universities. <em>African Journal of Technology, 15</em>(2), 45-62.
+      </div>
+    </div>
+
+    <!-- Citation Generator Section -->
+    <div class="content-section" id="generator">
+      <button class="bookmark-btn" data-section="generator">★</button>
+      <h2>Citation Generator</h2>
+      <p>Generate properly formatted APA citations for your sources.</p>
+
+      <div class="citation-generator">
+        <div class="form-group">
+          <label>Source Type:</label>
+          <select id="sourceType">
+            <option value="book">Book</option>
+            <option value="journal">Journal Article</option>
+            <option value="website">Website</option>
+            <option value="conference">Conference Paper</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Author(s) Last Name(s) (comma separated):</label>
+          <input type="text" id="authors" placeholder="e.g., Smith, Johnson">
+        </div>
+
+        <div class="form-group">
+          <label>Year:</label>
+          <input type="text" id="year" placeholder="e.g., 2024">
+        </div>
+
+        <div class="form-group">
+          <label>Title:</label>
+          <input type="text" id="title" placeholder="e.g., Introduction to Cybersecurity">
+        </div>
+
+        <div class="form-group" id="publisherGroup">
+          <label>Publisher/Journal Name:</label>
+          <input type="text" id="publisher" placeholder="e.g., McGraw-Hill or Journal of Computing">
+        </div>
+
+        <div class="form-group" id="locationGroup">
+          <label>Location:</label>
+          <input type="text" id="location" placeholder="e.g., Kampala">
+        </div>
+
+        <div class="form-group" id="urlGroup" style="display:none;">
+          <label>URL:</label>
+          <input type="text" id="url" placeholder="https://example.com">
+        </div>
+
+        <button class="generate-btn" onclick="generateCitation()">Generate Citation</button>
+
+        <div class="citation-output" id="citationOutput">
+          Your generated citation will appear here...
+        </div>
+
+        <button class="generate-btn" onclick="copyCitation()" style="background: #00aa00;">Copy Citation</button>
+        <button class="generate-btn" onclick="exportCitation()" style="background: #0066cc; margin-left: 0.5rem;">Export to Word</button>
+      </div>
+    </div>
+
+    <!-- Examples Section -->
+    <div class="content-section" id="examples">
+      <button class="bookmark-btn" data-section="examples">★</button>
+      <h2>Quick Reference Examples</h2>
+      <p>Common citation formats used in MTAC assignments.</p>
+
+      <div class="quick-ref-card">
+        <h3 style="color: #b30000;">📱 Software/App</h3>
+        <p><strong>Format:</strong> Developer. (Year). <em>App name</em> (Version) [Mobile application software]. Retrieved from http://</p>
+        <div class="example-box">
+          Google. (2024). <em>Google Maps</em> (Version 6.0) [Mobile application software]. Retrieved from http://play.google.com
+        </div>
+      </div>
+
+      <div class="quick-ref-card">
+        <h3 style="color: #b30000;">💻 GitHub Repository</h3>
+        <p><strong>Format:</strong> Username. (Year). <em>Repository name</em> [Computer software]. Retrieved from https://github.com/</p>
+        <div class="example-box">
+          Okello, J. (2024). <em>MTAC-IoT-Security</em> [Computer software]. Retrieved from https://github.com/jokello/mtac-iot-security
+        </div>
+      </div>
+
+      <div class="quick-ref-card">
+        <h3 style="color: #b30000;">🎓 Thesis/Dissertation</h3>
+        <p><strong>Format:</strong> Author. (Year). <em>Title</em> (Doctoral dissertation or Master's thesis). Retrieved from Database name.</p>
+        <div class="example-box">
+          Nakato, S. (2023). <em>Machine learning applications in Ugandan agriculture</em> (Master's thesis). Retrieved from Makerere University Digital Repository.
+        </div>
+      </div>
+
+      <div class="quick-ref-card">
+        <h3 style="color: #b30000;">📄 Technical Report</h3>
+        <p><strong>Format:</strong> Author. (Year). <em>Title</em> (Report No. xxx). Location: Publisher.</p>
+        <div class="example-box">
+          Uganda Communications Commission. (2024). <em>Cybersecurity assessment report</em> (Report No. UCC-2024-15). Kampala: UCC.
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="content-section" id="quiz">
+      <button class="bookmark-btn" data-section="quiz">★</button>
+      <h2>Test Your Knowledge</h2>
+      <p>Check your understanding of APA citation rules.</p>
+
+      <div class="quiz-container">
+        <div class="quiz-question">
+          <h3>Question 1: Which is the correct in-text citation format?</h3>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">A) (Smith 2023)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, true)">B) (Smith, 2023)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">C) (Smith. 2023)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">D) Smith (2023.)</div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>Question 2: How do you cite a source with three authors for the first time?</h3>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">A) (Author1 et al., 2024)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, true)">B) (Author1, Author2, & Author3, 2024)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">C) (Author1, Author2, Author3, 2024)</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">D) (Author1 and Author2 and Author3, 2024)</div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>Question 3: In the reference list, entries should be ordered:</h3>
+          <div class="quiz-option" onclick="checkAnswer(this, true)">A) Alphabetically by author's last name</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">B) By year of publication</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">C) By order of appearance in text</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">D) By source type</div>
+        </div>
+
+        <div class="quiz-question">
+          <h3>Question 4: Book titles in the reference list should be:</h3>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">A) In quotation marks</div>
+          <div class="quiz-option" onclick="checkAnswer(this, true)">B) Italicized</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">C) In ALL CAPS</div>
+          <div class="quiz-option" onclick="checkAnswer(this, false)">D) Underlined</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 2rem;">
+        <p id="quizScore" style="font-size: 1.2rem; color: #b30000; font-weight: bold;">Score: 0/4</p>
+      </div>
+    </div>
+
+    <!-- Bookmarks Section -->
+    <div class="content-section" id="bookmarks">
+      <h2>My Bookmarks</h2>
+      <p>Your saved sections for quick access.</p>
+      <div id="bookmarksList" style="margin-top: 1rem;">
+        <p style="color: #999; font-style: italic;">No bookmarks yet. Click the ★ on any section to bookmark it.</p>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const cursor = document.getElementById('custom-cursor');
-      const colors = ['#b30000', '#dc143c', '#ff4500', '#0066cc', '#00aa00', '#9900cc'];
-      let colorIndex = 0;
+    // Custom cursor
+    const cursor = document.getElementById('custom-cursor');
+    const colors = ['#b30000', '#dc143c', '#ff4500', '#0066cc', '#00aa00', '#9900cc'];
+    let colorIndex = 0;
 
-      document.addEventListener('mousemove', function(e) {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-      });
+    document.addEventListener('mousemove', function(e) {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
 
-      document.addEventListener('mousedown', function() {
-        cursor.classList.add('clicking');
-      });
+    document.addEventListener('mousedown', function() {
+      cursor.classList.add('clicking');
+    });
 
-      document.addEventListener('mouseup', function() {
-        cursor.classList.remove('clicking');
-      });
+    document.addEventListener('mouseup', function() {
+      cursor.classList.remove('clicking');
+    });
 
-      document.addEventListener('click', function() {
-        colorIndex = (colorIndex + 1) % colors.length;
-        const newColor = colors[colorIndex];
-        const shield = cursor.querySelector('path');
-        shield.style.fill = newColor;
-        cursor.style.filter = `drop-shadow(0 0 8px ${newColor})`;
+    document.addEventListener('click', function() {
+      colorIndex = (colorIndex + 1) % colors.length;
+      const newColor = colors[colorIndex];
+      const shield = cursor.querySelector('path');
+      shield.style.fill = newColor;
+      cursor.style.filter = `drop-shadow(0 0 8px ${newColor})`;
+    });
+
+    // Navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.content-section');
+    const completedSections = new Set();
+    const bookmarkedSections = new Set();
+
+    navItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const sectionId = this.dataset.section;
+        
+        navItems.forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        
+        sections.forEach(section => section.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        
+        completedSections.add(sectionId);
+        updateProgress();
+        saveToStorage();
       });
     });
+
+    // Progress tracking
+    function updateProgress() {
+      const progress = (completedSections.size / (navItems.length - 1)) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+    }
+
+    // Bookmark functionality
+    const bookmarkBtns = document.querySelectorAll('.bookmark-btn');
+    bookmarkBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const sectionId = this.dataset.section;
+        
+        if (bookmarkedSections.has(sectionId)) {
+          bookmarkedSections.delete(sectionId);
+          this.classList.remove('active');
+        } else {
+          bookmarkedSections.add(sectionId);
+          this.classList.add('active');
+        }
+        
+        updateBookmarksList();
+        saveToStorage();
+      });
+    });
+
+    function updateBookmarksList() {
+      const bookmarksList = document.getElementById('bookmarksList');
+      
+      if (bookmarkedSections.size === 0) {
+        bookmarksList.innerHTML = '<p style="color: #999; font-style: italic;">No bookmarks yet. Click the ★ on any section to bookmark it.</p>';
+      } else {
+        let html = '';
+        bookmarkedSections.forEach(sectionId => {
+          const navItem = document.querySelector(`[data-section="${sectionId}"]`);
+          const sectionName = navItem.textContent;
+          html += `
+            <div class="quick-ref-card" onclick="navigateToSection('${sectionId}')">
+              <h3 style="color: #b30000;">${sectionName}</h3>
+              <button class="generate-btn" onclick="event.stopPropagation(); removeBookmark('${sectionId}')" style="background: #dc143c; padding: 0.4rem 1rem; font-size: 0.85rem;">Remove</button>
+            </div>
+          `;
+        });
+        bookmarksList.innerHTML = html;
+      }
+    }
+
+    function navigateToSection(sectionId) {
+      document.querySelector(`[data-section="${sectionId}"]`).click();
+    }
+
+    function removeBookmark(sectionId) {
+      bookmarkedSections.delete(sectionId);
+      document.querySelector(`[data-section="${sectionId}"] + .bookmark-btn`).classList.remove('active');
+      updateBookmarksList();
+      saveToStorage();
+    }
+
+    // Dark mode
+    document.getElementById('darkModeBtn').addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      this.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+      saveToStorage();
+    });
+
+    // Font size
+    let fontSize = 16;
+    document.getElementById('fontSizeBtn').addEventListener('click', function() {
+      fontSize = fontSize >= 20 ? 16 : fontSize + 2;
+      document.body.style.fontSize = fontSize + 'px';
+      saveToStorage();
+    });
+
+    // Print
+    document.getElementById('printBtn').addEventListener('click', function() {
+      window.print();
+    });
+
+    // Search
+    document.getElementById('searchBox').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      
+      sections.forEach(section => {
+        const text = section.textContent.toLowerCase();
+        const navItem = document.querySelector(`[data-section="${section.id}"]`);
+        
+        if (text.includes(searchTerm) || searchTerm === '') {
+          if (navItem) navItem.style.display = 'block';
+        } else {
+          if (navItem) navItem.style.display = 'none';
+        }
+      });
+    });
+
+    // Citation Generator
+    document.getElementById('sourceType').addEventListener('change', function() {
+      const type = this.value;
+      const publisherGroup = document.getElementById('publisherGroup');
+      const locationGroup = document.getElementById('locationGroup');
+      const urlGroup = document.getElementById('urlGroup');
+      
+      if (type === 'website') {
+        publisherGroup.style.display = 'none';
+        locationGroup.style.display = 'none';
+        urlGroup.style.display = 'block';
+      } else if (type === 'journal') {
+        publisherGroup.querySelector('label').textContent = 'Journal Name:';
+        publisherGroup.style.display = 'block';
+        locationGroup.style.display = 'none';
+        urlGroup.style.display = 'none';
+      } else {
+        publisherGroup.querySelector('label').textContent = 'Publisher:';
+        publisherGroup.style.display = 'block';
+        locationGroup.style.display = 'block';
+        urlGroup.style.display = 'none';
+      }
+    });
+
+    function generateCitation() {
+      const type = document.getElementById('sourceType').value;
+      const authors = document.getElementById('authors').value.trim();
+      const year = document.getElementById('year').value.trim();
+      const title = document.getElementById('title').value.trim();
+      const publisher = document.getElementById('publisher').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const url = document.getElementById('url').value.trim();
+      
+      if (!authors || !year || !title) {
+        document.getElementById('citationOutput').innerHTML = '<span style="color: #dc143c;">Please fill in all required fields (Authors, Year, Title).</span>';
+        return;
+      }
+      
+      let citation = '';
+      const authorList = authors.split(',').map(a => a.trim()).join(', ') + (authors.split(',').length > 1 ? ', &' : '');
+      
+      if (type === 'book') {
+        citation = `${authorList.replace(', &', ' &')} (${year}). <em>${title}</em>. ${location}: ${publisher}.`;
+      } else if (type === 'journal') {
+        citation = `${authorList.replace(', &', ' &')} (${year}). ${title}. <em>${publisher}</em>.`;
+      } else if (type === 'website') {
+        citation = `${authorList.replace(', &', ' &')} (${year}). ${title}. Retrieved from ${url}`;
+      } else if (type === 'conference') {
+        citation = `${authorList.replace(', &', ' &')} (${year}). ${title}. In <em>${publisher}</em>. ${location}.`;
+      }
+      
+      document.getElementById('citationOutput').innerHTML = citation;
+    }
+
+    function copyCitation() {
+      const citationText = document.getElementById('citationOutput').innerText;
+      if (citationText && citationText !== 'Your generated citation will appear here...') {
+        navigator.clipboard.writeText(citationText).then(() => {
+          alert('Citation copied to clipboard!');
+        });
+      } else {
+        alert('Generate a citation first!');
+      }
+    }
+
+    function exportCitation() {
+      const citationText = document.getElementById('citationOutput').innerText;
+      if (citationText && citationText !== 'Your generated citation will appear here...') {
+        const blob = new Blob([citationText], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'citation.txt';
+        a.click();
+      } else {
+        alert('Generate a citation first!');
+      }
+    }
+
+    // Quiz
+    let quizScore = 0;
+    let quizAttempts = 0;
+
+    function checkAnswer(element, isCorrect) {
+      if (element.classList.contains('correct') || element.classList.contains('incorrect')) {
+        return;
+      }
+      
+      quizAttempts++;
+      
+      if (isCorrect) {
+        element.classList.add('correct');
+        quizScore++;
+      } else {
+        element.classList.add('incorrect');
+      }
+      
+      document.getElementById('quizScore').textContent = `Score: ${quizScore}/4`;
+      
+      const siblings = element.parentElement.querySelectorAll('.quiz-option');
+      siblings.forEach(sibling => {
+        if (sibling !== element) {
+          sibling.style.pointerEvents = 'none';
+          sibling.style.opacity = '0.6';
+        }
+      });
+    }
+
+    // Storage functions
+    function saveToStorage() {
+      const data = {
+        completedSections: Array.from(completedSections),
+        bookmarkedSections: Array.from(bookmarkedSections),
+        darkMode: document.body.classList.contains('dark-mode'),
+        fontSize: fontSize
+      };
+      localStorage.setItem('mtac_apa_data', JSON.stringify(data));
+    }
+
+    function loadFromStorage() {
+      const stored = localStorage.getItem('mtac_apa_data');
+      if (stored) {
+        const data = JSON.parse(stored);
+        
+        if (data.completedSections) {
+          data.completedSections.forEach(id => completedSections.add(id));
+          updateProgress();
+        }
+        
+        if (data.bookmarkedSections) {
+          data.bookmarkedSections.forEach(id => {
+            bookmarkedSections.add(id);
+            const btn = document.querySelector(`[data-section="${id}"]`)?.nextElementSibling;
+            if (btn) btn.classList.add('active');
+          });
+          updateBookmarksList();
+        }
+        
+        if (data.darkMode) {
+          document.body.classList.add('dark-mode');
+          document.getElementById('darkModeBtn').textContent = '☀️';
+        }
+        
+        if (data.fontSize) {
+          fontSize = data.fontSize;
+          document.body.style.fontSize = fontSize + 'px';
+        }
+      }
+    }
+
+    // Load saved data on page load
+    loadFromStorage();
+
+    // Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(() => {
+        console.log('Offline mode enabled');
+      }).catch(() => {
+        console.log('Offline mode not available');
+      });
+    }
   </script>
 </body>
 </html>

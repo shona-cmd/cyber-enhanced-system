@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MTAC NaashonSecureIoT - Threat Intelligence</title>
+  <style>
+        body{
+          cursor: none;
+          font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;
+        }
+        #custom-cursor {
+          position: fixed;
+          top: 0;
+          left: 0;
+          pointer-events: none;
+          z-index: 9999;
+          transition: none;
+        }
+        #custom-cursor img {
+          width: 32px;
+          height: 32px;
+        }
+        .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
+        h1{color:#b30000;text-align:center;}
+        .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
+        table{width:100%;border-collapse:collapse;margin-top:1rem;}
+        th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
+        th{background:#b30000;color:white;}
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" id="cursor-img">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const img = document.getElementById('cursor-img');
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        img.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>MTAC NaashonSecureIoT - Threat Intelligence Dashboard</h1>
+    <div class="alert">
+      <strong>High-Risk Alert:</strong> CVE-2025-12345 – RCE in Flask (CVSS 9.8)
+    </div>
+    <p><a href="/">Back to APA Guide</a></p>
+
+    <h2>Active Threats ({{ threats|length }})</h2>
+    <table>
+      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th><th>Time</th></tr>
+      {% for t in threats %}
+      <tr>
+        <td>{{ t.ioc }}</td>
+        <td>{{ t.type }}</td>
+        <td>{{ t.source }}</td>
+        <td>{{ t.risk }}</td>
+        <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</body>
+</html>

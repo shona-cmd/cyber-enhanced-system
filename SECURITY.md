@@ -1,47 +1,48 @@
 ## Security and Compliance Information
 
 ### EU Digital Services Act Compliance
-I do not operate as a trader under EU regulations.
+This software is developed for research and educational purposes and does not operate as a trader under EU regulations.
 
 ### Business Address
-nathanielkuts@gmail.com
+Contact: nathanielkuts@gmail.com
 
 ### Business ID
-Other unique identifier (specify)
-Business ID Type: 02340421
-Business ID: CM0105210K4ZUH
+Business ID Type: Research Project ID
+Business ID: CIS/03.24/015D (Naashon Kuteesa Final Semester Research Project)
 
 ### Attestation of EU Law Compliance
-I agree to comply with applicable EU regulations in operating my app.
+We attest to complying with applicable EU regulations including GDPR for data handling in this research software.
 
 ### Privacy Policy URL
-http://localhost:3000/support.html
+https://github.com/naashon/naashon-secure-iot/blob/main/PRIVACY.md
 
 ### Terms of Service URL
-http://localhost:3000/support.html
+https://github.com/naashon/naashon-secure-iot/blob/main/TERMS.md
 
 ### Third-party services required
-None
+None - All components are self-contained.
 
 ### Repository visibility
-Private
+Public (for academic and research purposes)
 
 ### Transparency disclosures
 
 #### Security Measures
-Authentication methods: username/password
-Access controls: role-based access control
-Incident response plans: yes
+Authentication methods: JWT tokens with PBKDF2 password hashing
+Access controls: Role-based access control (RBAC) with zero-trust architecture
+Incident response plans: Automated threat detection and response mechanisms
 
 #### Data Handling
-Data encryption: yes, using AES-256
-Data collection and usage: minimal data collection for authentication and authorization
-Privacy protections: data is anonymized and pseudonymized
-Data retention policies: data is retained for 30 days
-Cross-border transfers: no
+Data encryption: AES-256 encryption for data at rest and TLS 1.3 for data in transit
+Data collection and usage: Minimal data collection limited to device telemetry and authentication
+Privacy protections: Data anonymization, pseudonymization, and encryption
+Data retention policies: Configurable retention (default 90 days) with automated deletion
+Cross-border transfers: Not applicable - data remains local
 
 #### Compliance
-Compliance certifications: None
+Compliance certifications: Research-grade implementation following NIST cybersecurity frameworks
+GDPR compliance: Data minimization, consent management, right to erasure
+HIPAA compliance: Not applicable (not healthcare data)
 
 #### High-Risk Systems
-Not applicable
+This is a research prototype for IoT cybersecurity - not intended for production critical systems.

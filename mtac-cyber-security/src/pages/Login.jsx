@@ -10,8 +10,25 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const res = await login(username, password);
-    if (res.error) setError(res.error);
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        login(data.token); // Assuming login function in AuthContext takes the token
+      } else {
+        setError(data.msg || 'Login failed');
+      }
+    } catch (error) {
+      setError('Network error');
+    }
   };
 
   return (

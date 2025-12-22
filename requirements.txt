@@ -8,3 +8,4 @@ mypy>=1.0.0
 torch[cuda]>=2.0.0
 sphinx>=5.0.0
 sphinx-rtd-theme>=1.2.0
+PyInstaller>=5.0.0
