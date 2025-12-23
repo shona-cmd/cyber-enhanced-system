@@ -1,3 +1,8 @@
+bandit==1.7.7  # Security linter
+cryptography==42.0.8  # Post-quantum crypto
+flask-jwt-extended==4.6.0  # JWT for zero-trust
+>>>>>>> 9adf6bc6a76c410760b3f7bbbbfa975ff5950c1b
+=======
 Flask==2.3.3
 Flask-SQLAlchemy==3.0.5
 gunicorn==21.2.0
@@ -9,3 +14,11 @@ torch[cuda]>=2.0.0
 sphinx>=5.0.0
 sphinx-rtd-theme>=1.2.0
 PyInstaller>=5.0.0
+bandit==1.7.7  # Security linter
+cryptography==42.0.8  # Post-quantum crypto
+flask-jwt-extended==4.6.0  # JWT for zero-trust
+=======
+bandit==1.7.7  # Security linter
+cryptography==42.0.8  # Post-quantum crypto
+flask-jwt-extended==4.6.0  # JWT for zero-trust
+>>>>>>> 9adf6bc6a76c410760b3f7bbbbfa975ff5950c1b

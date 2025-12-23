@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white;
+    font-family: 'Roboto Mono', monospace;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-gray-800 border border-cyan-500 rounded-xl p-5 shadow-lg transition-all hover:shadow-cyan-500/30;
+  }
+}

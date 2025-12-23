@@ -1,0 +1,6 @@
+.btn { @apply px-4 py-2 rounded bg-cyan-600 text-white hover:bg-cyan-700 transition duration-200; }
+.btn:disabled { @apply opacity-50 cursor-not-allowed; }
+.spinner { @apply animate-spin; }
+.status-online { @apply text-green-500; }
+.status-warn { @apply text-red-500; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; } /* Custom if needed */

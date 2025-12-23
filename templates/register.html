@@ -1,19 +1,296 @@
+>>>>>>> 9adf6bc6a76c410760b3f7bbbbfa975ff5950c1b
+</head>
+<body>
+    <h2>Register</h2>
+    <form method="post" action="/register">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+
+        <label for="confirm_password">Confirm Password:</label><br>
+        <input type="password" id="confirm_password" name="confirm_password"><br><br>
+
+        <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+</body>
+</html>
+=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>MTAC NaashonSecureIoT - Register</title>
+
+    <!-- Prevent caching so edits show instantly -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
+        :root {
+            --red: #b30000;
+            --gold: #d4af37;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-        .container {
-            margin-top: 50px;
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            cursor: none;
+            font-family:'Inter',sans-serif;
+            background:#fff;
+            color:#333;
+            line-height:1.6;
+            overflow-x:hidden;
+        }
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            transition: none;
+        }
+        #custom-cursor svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* === COVER LAYOUT === */
+        .cover {
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            padding:3rem;
+            position:relative;
+            background:#fff;
+        }
+        .cover::before {
+            content:'';
+            position:absolute;
+            left:0; top:0; bottom:0;
+            width:120px;
+            background:var(--red);
+        }
+        .cover-title {
+            text-align:center;
+            margin-top:6rem;
+            color:var(--red);
+            font-size:2.2rem;
+            font-weight:700;
+            font-family:'Playfair Display',serif;
+        }
+        .cover-title span {
+            display:block;
+            font-size:1.8rem;
+            margin-top:.5rem;
+        }
+        .apa-book {
+            width:180px;
+            align-self:center;
+            margin:2rem 0;
+            box-shadow:var(--shadow);
+            border-radius:6px;
+        }
+        .cover-footer {
+            text-align:center;
+            font-size:.9rem;
+            color:#555;
+            margin-bottom:1rem;
+        }
+        .ucol-logo {
+            width:180px;
+            align-self:center;
+            margin-top:1rem;
+        }
+
+        /* === REGISTER OVERLAY === */
+        .auth-overlay {
+            position:fixed;
+            top:0; left:0; right:0; bottom:0;
+            background:rgba(0,0,0,0.7);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            opacity:0;
+            visibility:hidden;
+            transition:all .4s ease;
+            z-index:1000;
+        }
+        .auth-overlay.show { opacity:1; visibility:visible; }
+        .auth-box {
+            background:#fff;
+            padding:2.5rem;
+            border-radius:16px;
+            max-width:420px;
+            width:90%;
+            box-shadow:0 20px 50px rgba(0,0,0,0.25);
+            position:relative;
+            animation:slideUp .5s ease;
+        }
+        @keyframes slideUp {
+            from { transform:translateY(50px); opacity:0; }
+            to { transform:translateY(0); opacity:1; }
+        }
+
+        /* === BRAND TITLE === */
+        .brand-title {
+            text-align:center;
+            font-size:2.1rem;
+            font-weight:700;
+            margin-bottom:1.5rem;
+            background:linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
+            -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent;
+            background-clip:text;
+            text-shadow:
+                0 0 10px rgba(255,107,107,0.4),
+                0 0 20px rgba(78,205,196,0.3),
+                0 4px 8px rgba(0,0,0,0.2);
+            letter-spacing:1.2px;
+            animation:pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform:scale(1); }
+            50% { transform:scale(1.03); }
+        }
+
+        /* === TABS === */
+        .tab {
+            display:flex;
+            margin-bottom:1.5rem;
+            border-bottom:2px solid #eee;
+        }
+        .tab button {
+            flex:1;
+            padding:.75rem;
+            font-weight:600;
+            background:transparent;
+            border:none;
+            cursor:pointer;
+            font-size:1rem;
+            color:#666;
+            transition:all .3s;
+        }
+        .tab button.active {
+            color:var(--red);
+            border-bottom:3px solid var(--red);
+        }
+
+        /* === FORM === */
+        .form-title {
+            font-size:1.5rem;
+            color:var(--red);
+            margin-bottom:1.5rem;
+            text-align:center;
+            font-weight:600;
+        }
+        input, select, button {
+            width:100%;
+            padding:.85rem;
+            margin:.5rem 0;
+            border:1px solid #ddd;
+            border-radius:8px;
+            font-size:1rem;
+            transition:border .3s;
+        }
+        input:focus, select:focus {
+            outline:none;
+            border-color:var(--red);
+            box-shadow:0 0 0 3px rgba(179,0,0,0.1);
+        }
+        button.primary {
+            background:var(--red);
+            color:#fff;
+            font-weight:600;
+            cursor:pointer;
+            border:none;
+            padding:.9rem;
+            border-radius:8px;
+            font-size:1.05rem;
+            transition:.3s;
+            margin-top:1rem;
+        }
+        button.primary:hover {
+            background:#a00000;
+            transform:translateY(-2px);
+            box-shadow:0 8px 20px rgba(179,0,0,0.2);
+        }
+        .msg {
+            margin-top:1rem;
+            text-align:center;
+            font-weight:600;
+            font-size:.95rem;
+        }
+        .error { color:#e74c3c; }
+        .success { color:#27ae60; }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .cover-title { font-size:1.8rem; margin-top:4rem; }
+            .cover-title span { font-size:1.5rem; }
+            .auth-box { padding:2rem; }
+            .brand-title { font-size:1.8rem; }
         }
     </style>
+</head>
+<body>
+
+    <!-- COVER -->
+    <div class="cover">
+        <div>
+            <h1 class="cover-title">
+                MTAC NaashonSecureIoT
+                <span>Secure Registration</span>
+            </h1>
+            <img src="/static/img/apa_manual.jpg" alt="APA Manual" class="apa-book">
+        </div>
+        <div class="cover-footer">
+            <p>Management Training and Advisory Centre (MTAC), Kampala, Uganda</p>
+            <img src="/static/img/ucol_logo.png" alt="UCOL" class="ucol-logo">
+        </div>
+    </div>
+
+    <!-- REGISTER OVERLAY -->
+    <div class="auth-overlay show">
+        <div class="auth-box">
+            <h2 class="brand-title">MTAC NaashonSecureIoT</h2>
+
+            <!-- TABS -->
+            <div class="tab">
+                <button onclick="window.location.href='/login'">Login</button>
+                <button class="active" onclick="showRegister()">Register</button>
+            </div>
+
+            <!-- REGISTER FORM -->
+            <form method="post" action="/register">
+                <div class="form-title">Create Account</div>
+
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+
+                <button type="submit" class="primary">Register Securely</button>
+            </form>
+
+            <div class="msg success" id="msg"></div>
+        </div>
+    </div>
+
     <script>
+        // Custom cursor
         document.addEventListener('DOMContentLoaded', function() {
             const cursor = document.createElement('div');
             cursor.id = 'custom-cursor';
@@ -31,44 +308,34 @@
                 cursor.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
             });
         });
+
+        function showRegister() {
+            // Already on register
+        }
     </script>
+
+</body>
+</html>
+=======
+>>>>>>> 9adf6bc6a76c410760b3f7bbbbfa975ff5950c1b
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        Register
-                    </div>
-                    <div class="card-body">
-                        <form action="/register" method="post">
-                            <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" class="form-control" id="username" name="username" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="password">Password:</label>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email:</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </form>
-                        {% if error %}
-                            <div class="alert alert-danger mt-3">
-                                {{ error }}
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <h2>Register</h2>
+    <form method="post" action="/register">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br><br>
+
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+
+        <label for="confirm_password">Confirm Password:</label><br>
+        <input type="password" id="confirm_password" name="confirm_password"><br><br>
+
+        <input type="submit" value="Register">
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
 </body>
 </html>

@@ -7,6 +7,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>NaashonSecureIoT – Dashboard</title>
+  <p>Hello, World!</p>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -303,8 +305,8 @@
         </h1>
 
         <img 
-          src="{{ url_for('static', filename='img/apa_manual.jpg') }}" 
-          alt="APA 6th Edition Manual" 
+          src="/static/img/apa_manual.jpg"
+          alt="APA 6th Edition Manual"
           class="apa-book"
         >
 
@@ -314,9 +316,9 @@
           December 2011
         </div>
 
-        <img 
-          src="{{ url_for('static', filename='img/ucol_logo.png') }}" 
-          alt="UCOL" 
+        <img
+          src="/static/img/ucol_logo.png"
+          alt="UCOL"
           class="ucol-logo"
         >
       </div>
