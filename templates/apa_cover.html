@@ -1,12 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>APA 6th – Secure Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTAC NaashonSecureIoT - APA 6th Guide Cover</title>
+
+  <!-- Prevent caching so edits show instantly -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --red: #b30000;
+      --gold: #d4af37;
+      --dark: #1a1a1a;
+      --light: #f8f9fa;
+      --shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
       cursor: none;
-      font-family:'Arial';
+      font-family:'Inter',sans-serif;
+      background:#fff;
+      color:#333;
+      line-height:1.6;
+      overflow-x:hidden;
     }
     #custom-cursor {
       position: fixed;
@@ -21,51 +42,129 @@
       height: 32px;
     }
   </style>
+
+  <style>
+    /* === COVER LAYOUT (responsive and attractive) === */
+    .cover {
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:3rem;
+      position:relative;
+      background:#fff;
+    }
+    .cover::before {
+      content:'';
+      position:absolute;
+      left:0; top:0; bottom:0;
+      width:120px;
+      background:var(--red);
+    }
+    .cover-title {
+      text-align:center;
+      margin-top:6rem;
+      color:var(--red);
+      font-size:2.2rem;
+      font-weight:700;
+      font-family:'Playfair Display',serif;
+    }
+    .cover-title span {
+      display:block;
+      font-size:1.8rem;
+      margin-top:.5rem;
+    }
+    .apa-book {
+      width:180px;
+      align-self:center;
+      margin:2rem 0;
+      box-shadow:var(--shadow);
+      border-radius:6px;
+    }
+    .cover-footer {
+      text-align:center;
+      font-size:.9rem;
+      color:#555;
+      margin-bottom:1rem;
+    }
+    .ucol-logo {
+      width:180px;
+      align-self:center;
+      margin-top:1rem;
+    }
+    .nav-links {
+      text-align:center;
+      margin-top:2rem;
+    }
+    .nav-links a {
+      color:var(--red);
+      text-decoration:none;
+      font-weight:600;
+      margin:0 1rem;
+      padding:.5rem 1rem;
+      border-radius:8px;
+      transition:.3s;
+    }
+    .nav-links a:hover {
+      background:var(--red);
+      color:#fff;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .cover-title { font-size:1.8rem; margin-top:4rem; }
+      .cover-title span { font-size:1.5rem; }
+      .apa-book { width:140px; }
+      .ucol-logo { width:140px; }
+      .cover::before { width:80px; }
+      .cover { padding:2rem; }
+    }
+    @media (max-width: 480px) {
+      .cover-title { font-size:1.5rem; }
+      .cover-title span { font-size:1.2rem; }
+      .apa-book { width:120px; }
+      .ucol-logo { width:120px; }
+      .cover::before { width:60px; }
+      .cover { padding:1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- COVER -->
+  <div class="cover">
+    <div>
+      <h1 class="cover-title">
+        A beginner’s guide to the<br>
+        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+      </h1>
+      <img src="/static/img/apa_manual.jpg" alt="APA Manual" class="apa-book">
+    </div>
+    <div class="cover-footer">
+      <p>The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+      Library and Learning Services<br>
+      December 2011</p>
+      <img src="/static/img/ucol_logo.png" alt="UCOL" class="ucol-logo">
+      <div class="nav-links">
+        <a href="/login">Login</a> | <a href="/register">Register</a>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Custom cursor
     document.addEventListener('DOMContentLoaded', function() {
       const cursor = document.createElement('div');
       cursor.id = 'custom-cursor';
-      cursor.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" width="32" height="32"><path d="M32 2C20 2 10 12 10 24V40C10 48 16 54 24 56V62H40V56C48 54 54 48 54 40V24C54 12 44 2 32 2Z"/><path d="M22 32L28 38L42 24" stroke="black" stroke-width="3" fill="none"/><circle cx="32" cy="32" r="8" fill="black"/></svg>';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" alt="cursor">';
       document.body.appendChild(cursor);
 
       document.addEventListener('mousemove', function(e) {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
       });
-
-      document.addEventListener('click', function() {
-        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        cursor.style.color = randomColor;
-        cursor.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
-      });
     });
   </script>
-</head>
-<body>
-
-  <!-- ==== COVER PAGE ==== -->
-  <div>
-    <div>
-      <h1>
-        A beginner’s guide to the<br>
-        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
-      </h1>
-      <img src="static/img/apa_manual.jpg" alt="APA Manual">
-      <div>
-        The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
-        Library and Learning Services<br>
-        December 2011
-      </div>
-      <img src="static/img/ucol_logo.png" alt="UCOL">
-    </div>
-
-    <div>
-      <p>
-        <a href="/login">Login</a> | <a href="/register">Register</a>
-      </p>
-    </div>
-  </div>
-
 
 </body>
 </html>

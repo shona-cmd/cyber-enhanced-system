@@ -2,41 +2,236 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTAC NaashonSecureIoT - Threat Intelligence</title>
+
+  <!-- Prevent caching so edits show instantly -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-        body{
-          font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;
-        }
-        .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
-        h1{color:#b30000;text-align:center;}
-        .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
-        table{width:100%;border-collapse:collapse;margin-top:1rem;}
-        th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
-        th{background:#b30000;color:white;}
+    :root {
+      --red: #b30000;
+      --dark: #1a1a1a;
+      --light: #f8f9fa;
+      --shadow: 0 8px 25px rgba(0,0,0,0.15);
+      --transition: all 0.3s ease;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      cursor: none;
+      font-family: 'Inter', sans-serif;
+      background: var(--light);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
   </style>
 
+  <style>
+    /* === HEADER === */
+    .site-header {
+      background: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand-title {
+      color: var(--red);
+      font-weight: 700;
+      font-size: 1.5rem;
+    }
+    .nav-links a {
+      margin-left: 1.5rem;
+      color: #555;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+    .nav-links a:hover {
+      color: var(--red);
+    }
+
+    /* === MAIN CONTENT === */
+    .main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .page-title {
+      text-align: center;
+      color: var(--red);
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    .alert {
+      background: #ffebee;
+      padding: 1.5rem;
+      border-left: 5px solid var(--red);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .alert strong {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .back-link a {
+      color: var(--red);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+    .back-link a:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .threat-section h2 {
+      color: var(--red);
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .threat-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .threat-table th,
+    .threat-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .threat-table th {
+      background: var(--red);
+      color: white;
+      font-weight: 600;
+    }
+    .threat-table tr:hover {
+      background: #f9f9f9;
+    }
+    .risk-high { color: #e74c3c; font-weight: 600; }
+    .risk-medium { color: #f39c12; font-weight: 600; }
+    .risk-low { color: #27ae60; font-weight: 600; }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .site-header { padding: 1rem; flex-direction: column; gap: 0.5rem; }
+      .nav-links a { margin: 0 0.75rem; }
+      .main { padding: 0 1rem; }
+      .page-title { font-size: 2rem; }
+      .threat-table { font-size: 0.9rem; }
+      .threat-table th,
+      .threat-table td { padding: 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .threat-table { display: block; overflow-x: auto; }
+      .threat-table th,
+      .threat-table td { white-space: nowrap; }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>MTAC NaashonSecureIoT - Threat Intelligence Dashboard</h1>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="brand-title">MTAC NaashonSecureIoT</div>
+    <nav class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/threat_intel">Threat Intel</a>
+      <a href="/device_manager">Device Manager</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <h1 class="page-title">Threat Intelligence Dashboard</h1>
+
     <div class="alert">
       <strong>High-Risk Alert:</strong> CVE-2025-12345 – RCE in Flask (CVSS 9.8)
     </div>
-    <p><a href="/">Back to APA Guide</a></p>
 
-    <h2>Active Threats ({{ threats|length }})</h2>
-    <table>
-      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th><th>Time</th></tr>
-      {% for t in threats %}
-      <tr>
-        <td>{{ t.ioc }}</td>
-        <td>{{ t.type }}</td>
-        <td>{{ t.source }}</td>
-        <td>{{ t.risk }}</td>
-        <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-      </tr>
-      {% endfor %}
-    </table>
-  </div>
+    <div class="back-link">
+      <a href="/">Back to APA Guide</a>
+    </div>
+
+    <section class="threat-section">
+      <h2>Active Threats ({{ threats|length }})</h2>
+      <table class="threat-table">
+        <thead>
+          <tr>
+            <th>IOC</th>
+            <th>Type</th>
+            <th>Source</th>
+            <th>Risk</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in threats %}
+          <tr>
+            <td>{{ t.ioc }}</td>
+            <td>{{ t.type }}</td>
+            <td>{{ t.source }}</td>
+            <td class="risk-{{ t.risk.lower() }}">{{ t.risk }}</td>
+            <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    // Custom cursor
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<img src="/static/cyber-security.png" alt="cursor">';
+      document.body.appendChild(cursor);
+
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+    });
+  </script>
+
 </body>
 </html>
