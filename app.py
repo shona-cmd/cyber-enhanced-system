@@ -55,8 +55,32 @@ def home():
 def login():
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Basic validation
+        if not all([name, email, password, confirm_password]):
+            flash("All fields are required!", "danger")
+            return redirect(url_for('register'))
+
+        if password != confirm_password:
+            flash("Passwords do not match!", "danger")
+            return redirect(url_for('register'))
+
+        if len(password) < 6:
+            flash("Password must be at least 6 characters long!", "danger")
+            return redirect(url_for('register'))
+
+        # Check if user already exists (in real app, check database)
+        # For demo purposes, we'll just flash success
+        flash("Registration successful! You can now login.", "success")
+        return redirect(url_for('login'))
+
     return render_template('register.html')
 
 @app.route('/logout')
