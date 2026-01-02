@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>APA 6th – Secure Login</title>
   <style>
     body {
       cursor: none;
-      font-family:'Arial';
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     #custom-cursor {
       position: fixed;
@@ -19,6 +29,54 @@
     #custom-cursor img {
       width: 32px;
       height: 32px;
+    }
+    .cover-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 3rem;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+      font-weight: 300;
+    }
+    h1 span {
+      color: #3498db;
+      font-weight: 500;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: #7f8c8d;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .logo-placeholder {
+      font-size: 3rem;
+      color: #3498db;
+      margin: 1rem 0;
+      font-weight: bold;
+    }
+    .nav-links {
+      margin-top: 2rem;
+    }
+    .nav-links a {
+      display: inline-block;
+      margin: 0 1rem;
+      padding: 0.75rem 1.5rem;
+      background: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .nav-links a:hover {
+      background: #2980b9;
     }
   </style>
   <script>
@@ -42,30 +100,21 @@
   </script>
 </head>
 <body>
-
-  <!-- ==== COVER PAGE ==== -->
-  <div>
-    <div>
-      <h1>
-        A beginner’s guide to the<br>
-        <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
-      </h1>
-      <img src="static/img/apa_manual.jpg" alt="APA Manual">
-      <div>
-        The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
-        Library and Learning Services<br>
-        December 2011
-      </div>
-      <img src="static/img/ucol_logo.png" alt="UCOL">
+  <div class="cover-container">
+    <h1>
+      A beginner's guide to the<br>
+      <span>APA 6<sup>th</sup> ed.<br>referencing style</span>
+    </h1>
+    <div class="logo-placeholder">📚</div>
+    <div class="subtitle">
+      The guide has been prepared by staff from the UCOL Student Experience Team (SET)<br>
+      Library and Learning Services<br>
+      December 2011
     </div>
-
-    <div>
-      <p>
-        <a href="/login">Login</a> | <a href="/register">Register</a>
-      </p>
+    <div class="nav-links">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
     </div>
   </div>
-
-
 </body>
 </html>

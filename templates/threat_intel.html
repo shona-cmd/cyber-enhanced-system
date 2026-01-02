@@ -2,19 +2,134 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTAC NaashonSecureIoT - Threat Intelligence</title>
   <style>
-        body{
-          font-family:Arial,sans-serif;background:#f4f4f4;color:#333;margin:0;padding:2rem;
-        }
-        .container{max-width:900px;margin:auto;background:#fff;padding:2rem;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);}
-        h1{color:#b30000;text-align:center;}
-        .alert{background:#ffebee;padding:1rem;border-left:5px solid #b30000;margin:1rem 0;}
-        table{width:100%;border-collapse:collapse;margin-top:1rem;}
-        th,td{border:1px solid #ddd;padding:.75rem;text-align:left;}
-        th{background:#b30000;color:white;}
+    body {
+      cursor: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    #custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: none;
+    }
+    #custom-cursor img {
+      width: 32px;
+      height: 32px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #b30000;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 2.5rem;
+      font-weight: 300;
+    }
+    .alert {
+      background: linear-gradient(135deg, #ffebee, #ffcdd2);
+      padding: 1.5rem;
+      border-left: 5px solid #b30000;
+      margin: 1.5rem 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(179, 0, 0, 0.1);
+    }
+    .alert strong {
+      color: #b30000;
+      font-size: 1.1rem;
+    }
+    .back-link {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .back-link a {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: #3498db;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      transition: background 0.3s ease;
+      font-weight: 500;
+    }
+    .back-link a:hover {
+      background: #2980b9;
+    }
+    h2 {
+      color: #2c3e50;
+      margin-top: 2rem;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      text-align: left;
+    }
+    th {
+      background: linear-gradient(135deg, #b30000, #a00000);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+    tr:hover {
+      background: #e9ecef;
+    }
+    .no-threats {
+      text-align: center;
+      padding: 2rem;
+      color: #7f8c8d;
+      font-style: italic;
+    }
   </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const cursor = document.createElement('div');
+      cursor.id = 'custom-cursor';
+      cursor.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" width="32" height="32"><path d="M32 2C20 2 10 12 10 24V40C10 48 16 54 24 56V62H40V56C48 54 54 48 54 40V24C54 12 44 2 32 2Z"/><path d="M22 32L28 38L42 24" stroke="black" stroke-width="3" fill="none"/><circle cx="32" cy="32" r="8" fill="black"/></svg>';
+      document.body.appendChild(cursor);
 
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+
+      document.addEventListener('click', function() {
+        const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        cursor.style.color = randomColor;
+        cursor.style.filter = `drop-shadow(0 0 10px ${randomColor})`;
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="container">
@@ -22,21 +137,39 @@
     <div class="alert">
       <strong>High-Risk Alert:</strong> CVE-2025-12345 – RCE in Flask (CVSS 9.8)
     </div>
-    <p><a href="/">Back to APA Guide</a></p>
+    <div class="back-link">
+      <a href="/">Back to APA Guide</a>
+    </div>
 
-    <h2>Active Threats ({{ threats|length }})</h2>
+    <h2>Active Threats {% if threats %}({{ threats|length }}){% endif %}</h2>
+    {% if threats %}
     <table>
-      <tr><th>IOC</th><th>Type</th><th>Source</th><th>Risk</th><th>Time</th></tr>
-      {% for t in threats %}
-      <tr>
-        <td>{{ t.ioc }}</td>
-        <td>{{ t.type }}</td>
-        <td>{{ t.source }}</td>
-        <td>{{ t.risk }}</td>
-        <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
-      </tr>
-      {% endfor %}
+      <thead>
+        <tr>
+          <th>IOC</th>
+          <th>Type</th>
+          <th>Source</th>
+          <th>Risk</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in threats %}
+        <tr>
+          <td>{{ t.ioc }}</td>
+          <td>{{ t.type }}</td>
+          <td>{{ t.source }}</td>
+          <td>{{ t.risk }}</td>
+          <td>{{ t.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+    {% else %}
+    <div class="no-threats">
+      No active threats detected at this time.
+    </div>
+    {% endif %}
   </div>
 </body>
 </html>
